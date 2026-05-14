@@ -56,8 +56,8 @@
 
 \title[Deep Learning cho ánh xạ điều chế]{Ứng dụng Deep Learning cho ánh xạ điều chế trong hệ thống BIBCM-ID}
 \subtitle{Báo cáo chuyên đề}
-\author{Lại Tiến Đệ, Phạm Xuân Nghĩa, Trần Đức Trung}
-\institute{REV-JOURNAL, 05/2026}
+\author{Học viên: Lại Tiến Đệ}
+\institute{Giáo viên hướng dẫn: TS. Phạm Xuân Nghĩa}
 \date{}
 
 \begin{document}
@@ -69,8 +69,8 @@
     {\Large\bfseries\color{MtaBlue}BÁO CÁO CHUYÊN ĐỀ}\\[5mm]
     {\LARGE\bfseries\color{MtaInk}Ứng dụng Deep Learning cho ánh xạ điều chế trong hệ thống BIBCM-ID}\\[7mm]
     {\large\color{MtaTeal}Trọng tâm: AutoEncoder-based modulation trên kênh vô tuyến không lý tưởng}\\[9mm]
-    {\normalsize Lại Tiến Đệ, Phạm Xuân Nghĩa, Trần Đức Trung}\\[1mm]
-    {\small REV-JOURNAL, tháng 5/2026}
+    {\normalsize Học viên: Lại Tiến Đệ}\\[1mm]
+    {\normalsize Giáo viên hướng dẫn: TS. Phạm Xuân Nghĩa}
   \end{center}
 \end{frame}
 
@@ -140,25 +140,6 @@
 \end{frame}
 
 % 5
-\begin{frame}{Mạch Phân Tích Và Triển Khai}
-  \begin{center}
-  \begin{tikzpicture}[font=\small, node distance=6mm]
-    \node[draw,rounded corners,fill=MtaSoft,minimum width=30mm,minimum height=9mm] (p1) {Đặt vấn đề};
-    \node[draw,rounded corners,fill=MtaSoft,right=of p1,minimum width=30mm,minimum height=9mm] (p2) {Mô hình kênh};
-    \node[draw,rounded corners,fill=MtaSoft,right=of p2,minimum width=30mm,minimum height=9mm] (p3) {Kiến trúc AE};
-    \node[draw,rounded corners,fill=MtaSoft,below=of p3,minimum width=30mm,minimum height=9mm] (p4) {Training};
-    \node[draw,rounded corners,fill=MtaSoft,left=of p4,minimum width=30mm,minimum height=9mm] (p5) {Kết quả BER};
-    \node[draw,rounded corners,fill=MtaGold!20,left=of p5,minimum width=30mm,minimum height=9mm] (p6) {Kết luận};
-    \draw[-{Stealth},thick,MtaTeal] (p1)--(p2)--(p3)--(p4)--(p5)--(p6);
-  \end{tikzpicture}
-  \end{center}
-  \vspace{2mm}
-  \begin{block}{Nguyên tắc trình bày}
-  Nội dung được triển khai từ giới hạn của hệ thống khối cổ điển, sau đó xây dựng mô hình kênh không lý tưởng, đề xuất ba kiến trúc AutoEncoder và phân tích kết quả mô phỏng theo từng kịch bản.
-  \end{block}
-\end{frame}
-
-% 6
 \begin{frame}[plain]
   \vspace{5mm}
   {\Large\bfseries\color{MtaBlue}Intelligent AutoEncoder-Based Modulation}\\[2mm]
@@ -168,9 +149,6 @@
       \begin{block}{Mục tiêu báo cáo}
       Trình bày cơ sở khoa học, mô hình triển khai và kết quả mô phỏng của bộ thu phát học sâu dạng AutoEncoder, tập trung vào PA phi tuyến, CFO, fading Rayleigh và khả năng liên kết với giải điều chế mềm.
       \end{block}
-      \vspace{2mm}
-      {\small Lại Tiến Đệ, Phạm Xuân Nghĩa, Trần Đức Trung\\
-      REV-JOURNAL, tháng 5/2026}
     \end{column}
     \begin{column}{0.40\textwidth}
       \centering
@@ -193,17 +171,18 @@
       \end{itemize}
     \end{column}
     \begin{column}{0.46\textwidth}
-      \begin{tikzpicture}[font=\scriptsize, node distance=3mm]
-        \node[draw,rounded corners,fill=MtaSoft,minimum width=32mm,minimum height=7mm] (qam) {16-QAM cố định};
-        \node[draw,rounded corners,fill=MtaSoft,below=of qam,minimum width=32mm,minimum height=7mm] (pa) {PA phi tuyến};
-        \node[draw,rounded corners,fill=MtaSoft,below=of pa,minimum width=32mm,minimum height=7mm] (cfo) {CFO};
-        \node[draw,rounded corners,fill=MtaSoft,below=of cfo,minimum width=32mm,minimum height=7mm] (eq) {ZF/PLL/MMSE};
-        \node[draw,rounded corners,fill=MtaGold!18,below=of eq,minimum width=32mm,minimum height=7mm] (ber) {Error floor};
+      \centering
+      \begin{tikzpicture}[font=\scriptsize, node distance=1.4mm]
+        \node[draw,rounded corners,fill=MtaSoft,minimum width=30mm,minimum height=5mm] (qam) {16-QAM cố định};
+        \node[draw,rounded corners,fill=MtaSoft,below=of qam,minimum width=30mm,minimum height=5mm] (pa) {PA phi tuyến};
+        \node[draw,rounded corners,fill=MtaSoft,below=of pa,minimum width=30mm,minimum height=5mm] (cfo) {CFO};
+        \node[draw,rounded corners,fill=MtaSoft,below=of cfo,minimum width=30mm,minimum height=5mm] (eq) {ZF/PLL/MMSE};
+        \node[draw,rounded corners,fill=MtaGold!18,below=of eq,minimum width=30mm,minimum height=5mm] (ber) {Error floor};
         \draw[-{Stealth},thick,MtaTeal] (qam)--(pa)--(cfo)--(eq)--(ber);
       \end{tikzpicture}
-      \vspace{0.5mm}
+      \vspace{0.3mm}
       \begin{block}{Vấn đề cốt lõi}
-      Tối ưu từng khối riêng lẻ không bảo đảm tối ưu toàn tuyến khi nhiều suy hao cùng tồn tại.
+      {\scriptsize Tối ưu cục bộ không bảo đảm tối ưu toàn tuyến.}
       \end{block}
     \end{column}
   \end{columns}
@@ -514,7 +493,7 @@
 % 15
 \begin{frame}{Kết Luận Và Hướng Phát Triển}
   \begin{columns}[T,onlytextwidth]
-    \begin{column}{0.53\textwidth}
+    \begin{column}{0.47\textwidth}
       \begin{block}{Kết luận chính}
       \begin{itemize}
         \item AE học chòm sao kháng PA, đạt lợi SNR \gain{3--4 dB}.
@@ -523,7 +502,8 @@
       \end{itemize}
       \end{block}
     \end{column}
-    \begin{column}{0.45\textwidth}
+    \hfill
+    \begin{column}{0.47\textwidth}
       \begin{block}{Giới hạn và hướng tiếp theo}
       \begin{itemize}
         \item Cần kiểm chứng trên OFDM và kênh chọn lọc tần số.
