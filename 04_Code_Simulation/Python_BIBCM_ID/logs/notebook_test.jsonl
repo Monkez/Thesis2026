@@ -1,0 +1,2 @@
+{"event": "session_start", "name": "notebook_test", "python": "3.8.20", "platform": "Windows-10-10.0.26200-SP0", "timestamp": "2026-05-04T18:01:15.603721", "_ts": "2026-05-04T18:01:15.603721"}
+{"event": "session_end", "total_elapsed_s": 895.537, "_ts": "2026-05-04T18:16:11.140084"}

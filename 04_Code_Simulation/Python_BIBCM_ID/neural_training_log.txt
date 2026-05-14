@@ -1,0 +1,21 @@
+=== Neural BICM-ID Training Log ===
+Es=1.0, BPS=4, CODE_RATE=0.5
+EPOCHS=50, STEPS=50, BATCH=2048
+
+Epoch 10/50 - Loss: 0.4522
+Epoch 20/50 - Loss: 0.4435
+Epoch 30/50 - Loss: 0.4399
+Epoch 40/50 - Loss: 0.4378
+Epoch 50/50 - Loss: 0.4371
+
+=== BER Simulation Results (0 to 7 dB) ===
+SNR=+0.0dB | Iter1=3.30e-01 Iter5=3.19e-01 Iter10=3.19e-01 | Blocks=200
+SNR=+1.0dB | Iter1=2.98e-01 Iter5=2.80e-01 Iter10=2.80e-01 | Blocks=200
+SNR=+2.0dB | Iter1=2.60e-01 Iter5=2.29e-01 Iter10=2.28e-01 | Blocks=200
+SNR=+3.0dB | Iter1=2.19e-01 Iter5=1.60e-01 Iter10=1.56e-01 | Blocks=500
+SNR=+4.0dB | Iter1=1.75e-01 Iter5=6.10e-02 Iter10=1.02e-02 | Blocks=500
+SNR=+5.0dB | Iter1=1.29e-01 Iter5=2.40e-03 Iter10=4.88e-06 | Blocks=1000
+SNR=+6.0dB | Iter1=8.49e-02 Iter5=1.46e-06 Iter10=0.00e+00 | Blocks=2000
+SNR=+7.0dB | Iter1=5.06e-02 Iter5=0.00e+00 Iter10=0.00e+00 | Blocks=2000
+
+Done.

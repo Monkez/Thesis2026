@@ -1,0 +1,372 @@
+\documentclass[a4paper,14pt]{extreport}
+
+% ============================================================
+%  LUAN VAN THAC SI - LATEX CLEAN VERSION
+%  Build with: xelatex thesis.tex
+% ============================================================
+
+\usepackage{fontspec}
+\setmainfont{Times New Roman}
+\usepackage{amsmath,amssymb,amsfonts,mathtools}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{multirow}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{geometry}
+\usepackage{setspace}
+\usepackage{indentfirst}
+\usepackage{titlesec}
+\usepackage{tocloft}
+\usepackage{fancyhdr}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{xcolor}
+
+\geometry{
+  top=3.5cm,
+  bottom=3cm,
+  left=3.5cm,
+  right=2cm,
+  includehead=false,
+  headheight=18pt
+}
+
+\onehalfspacing
+\setlength{\parindent}{1.25cm}
+\setlength{\parskip}{0pt}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+\graphicspath{{figures/}}
+
+\hypersetup{
+  colorlinks=false,
+  pdfborder={0 0 0},
+  pdftitle={Utilization of Artificial Neural Networks in LDPC Decoding for BIBCM-ID Systems},
+  pdfauthor={Lại Tiến Đệ}
+}
+
+% English-style names without relying on babel.
+\renewcommand{\contentsname}{TABLE OF CONTENTS}
+\renewcommand{\listfigurename}{LIST OF FIGURES}
+\renewcommand{\listtablename}{LIST OF TABLES}
+\renewcommand{\bibname}{REFERENCES}
+\renewcommand{\figurename}{Figure}
+\renewcommand{\tablename}{Table}
+\renewcommand{\chaptername}{Chapter}
+
+\titleformat{\chapter}[display]
+  {\normalfont\bfseries\centering}
+  {\chaptername\ \thechapter.}
+  {0.2cm}
+  {\MakeUppercase}
+\titlespacing*{\chapter}{0pt}{0pt}{1.0cm}
+
+\titleformat{\section}
+  {\normalfont\bfseries}
+  {\thesection.}
+  {0.5em}
+  {}
+\titleformat{\subsection}
+  {\normalfont\bfseries}
+  {\thesubsection.}
+  {0.5em}
+  {}
+\titleformat{\subsubsection}
+  {\normalfont\itshape}
+  {\thesubsubsection.}
+  {0.5em}
+  {}
+
+\captionsetup{
+  font=normalsize,
+  labelfont=bf,
+  justification=centering
+}
+
+% ===================== TABLE OF CONTENTS STYLE =====================
+% The academy sample uses a compact centered TOC title and dotted leaders.
+\renewcommand{\cfttoctitlefont}{\hfill\normalsize\bfseries}
+\renewcommand{\cftaftertoctitle}{\hfill\mbox{}\par\vspace{0.35cm}}
+\setlength{\cftbeforetoctitleskip}{0pt}
+\setlength{\cftaftertoctitleskip}{0.25cm}
+\renewcommand{\cftchapfont}{\bfseries}
+\renewcommand{\cftchappagefont}{\normalfont}
+\renewcommand{\cftchapleader}{\cftdotfill{\cftdotsep}}
+\renewcommand{\cftsecfont}{\normalfont}
+\renewcommand{\cftsecpagefont}{\normalfont}
+\renewcommand{\cftsubsecfont}{\normalfont}
+\renewcommand{\cftsubsecpagefont}{\normalfont}
+\setlength{\cftbeforechapskip}{0.12cm}
+\setlength{\cftbeforesecskip}{0.02cm}
+\renewcommand{\cftchappresnum}{Chapter\ }
+\renewcommand{\cftchapaftersnum}{.}
+\setlength{\cftchapnumwidth}{2.45cm}
+\setlength{\cftsecindent}{0.65cm}
+\setlength{\cftsecnumwidth}{1.2cm}
+\setlength{\cftsubsecindent}{1.65cm}
+\setlength{\cftsubsecnumwidth}{1.55cm}
+
+\makeatletter
+\newcommand{\manualtocline}[2]{%
+  \addtocontents{toc}{\protect\contentsline{chapter}{#1}{#2}{manual.#1}\protected@file@percent}%
+}
+\newcommand{\customtableofcontents}{%
+  \begin{center}
+    {\bfseries TABLE OF CONTENTS}
+  \end{center}
+  \vspace{0.25cm}
+  \@starttoc{toc}%
+}
+\newcommand{\customlistoftables}{%
+  \begin{center}
+    {\bfseries LIST OF TABLES}
+  \end{center}
+  \vspace{0.25cm}
+  \@starttoc{lot}%
+}
+\newcommand{\customlistoffigures}{%
+  \begin{center}
+    {\bfseries LIST OF FIGURES}
+  \end{center}
+  \vspace{0.25cm}
+  \@starttoc{lof}%
+}
+\makeatother
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[C]{\thepage}
+\renewcommand{\headrulewidth}{0pt}
+\fancypagestyle{plain}{
+  \fancyhf{}
+  \fancyhead[C]{\thepage}
+  \renewcommand{\headrulewidth}{0pt}
+}
+
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newcommand{\thesisTitle}{UTILIZATION OF ARTIFICIAL NEURAL NETWORKS IN LDPC DECODING FOR BIBCM-ID SYSTEMS}
+\newcommand{\thesisTitleEN}{UTILIZATION OF ARTIFICIAL NEURAL NETWORKS IN LDPC DECODING FOR BIBCM-ID SYSTEMS}
+\newcommand{\studentName}{LẠI TIẾN ĐỆ}
+\newcommand{\supervisorName}{TS. PHẠM XUÂN NGHĨA}
+\newcommand{\supervisorNameTwo}{TS. HOÀNG VĂN DŨNG}
+\newcommand{\majorName}{Kỹ thuật viễn thông}
+\newcommand{\fieldName}{Kỹ thuật viễn thông}
+\newcommand{\academyName}{HỌC VIỆN KỸ THUẬT QUÂN SỰ}
+
+\begin{document}
+\sloppy
+
+% ============================================================
+% COVER
+% ============================================================
+\thispagestyle{empty}
+\begin{center}
+  \textbf{BỘ GIÁO DỤC VÀ ĐÀO TẠO \hfill BỘ QUỐC PHÒNG}\\[0.5cm]
+  \textbf{\academyName}\\[2.4cm]
+
+  {\bfseries\studentName}\\[2.0cm]
+
+  {\bfseries\MakeUppercase{\thesisTitle}}\\[2.2cm]
+
+  {\bfseries LUẬN VĂN THẠC SĨ}\\[0.5cm]
+  \textbf{Ngành: \majorName}\\
+  \textbf{Chuyên ngành: \fieldName}\\
+
+  \vfill
+  \textbf{Hà Nội - Năm 2026}
+\end{center}
+
+\newpage
+\thispagestyle{empty}
+\begin{center}
+  \textbf{BỘ GIÁO DỤC VÀ ĐÀO TẠO \hfill BỘ QUỐC PHÒNG}\\[0.5cm]
+  \textbf{\academyName}\\[2.2cm]
+
+  {\bfseries\studentName}\\[1.8cm]
+
+  {\bfseries\MakeUppercase{\thesisTitle}}\\[1.4cm]
+
+  \begin{tabular}{ll}
+    \textbf{Ngành:} & \textbf{\majorName}\\
+    \textbf{Chuyên ngành:} & \textbf{\fieldName}\\
+    \textbf{Mã số:} & \textbf{\ldots\ldots\ldots}
+  \end{tabular}\\[1.6cm]
+
+  \textbf{CÁN BỘ HƯỚNG DẪN KHOA HỌC}\\[0.4cm]
+  \textbf{Cán bộ hướng dẫn thứ nhất: \supervisorName}\\[0.25cm]
+  \textbf{Cán bộ hướng dẫn thứ hai: \supervisorNameTwo}
+
+  \vfill
+  \textbf{Hà Nội - Năm 2026}
+\end{center}
+
+\newpage
+\thispagestyle{empty}
+\begin{center}
+  \textbf{CÔNG TRÌNH ĐƯỢC HOÀN THÀNH TẠI}\\[0.25cm]
+  \textbf{\academyName}\\[1.2cm]
+\end{center}
+
+\noindent Cán bộ chấm phản biện 1: \dotfill\\[-0.1cm]
+\begin{center}
+  \textit{(Học hàm, học vị, họ và tên)}
+\end{center}
+
+\vspace{0.3cm}
+\noindent Cán bộ chấm phản biện 2: \dotfill\\[-0.1cm]
+\begin{center}
+  \textit{(Học hàm, học vị, họ và tên)}
+\end{center}
+
+\vspace{1.0cm}
+\noindent Luận văn thạc sĩ được bảo vệ tại:
+
+\vspace{0.6cm}
+\begin{center}
+  \textbf{HỘI ĐỒNG CHẤM LUẬN VĂN THẠC SĨ}\\
+  \textbf{\academyName}\\[0.25cm]
+  Ngày \ldots\ tháng \ldots\ năm 2026
+\end{center}
+
+\newpage
+\pagenumbering{roman}
+\setcounter{page}{1}
+
+\noindent\textbf{Declaration:}
+
+I hereby declare that the research results presented in this thesis are truthful and were carried out within the scope of my thesis topic under the scientific guidance of my supervisors. Referenced materials, inherited results from published works, specialized documents, and simulation source codes are used for academic purposes and are cited in the thesis. I do not copy the work of others and present it as my own. I take full responsibility for this declaration in accordance with the regulations of the Academy.
+
+\vspace{2.0cm}
+\begin{flushright}
+  \begin{tabular}{c}
+    \textbf{THESIS AUTHOR}\\[2.0cm]
+    \textbf{Lai Tien De}
+  \end{tabular}
+\end{flushright}
+
+\newpage
+\manualtocline{Supplementary title page}{}
+\manualtocline{Thesis correction confirmation}{}
+\manualtocline{Declaration}{i}
+\manualtocline{TABLE OF CONTENTS}{ii}
+{\singlespacing\customtableofcontents}
+
+\newpage
+\addcontentsline{toc}{chapter}{TÓM TẮT LUẬN VĂN THẠC SĨ}
+\begin{center}
+  {\bfseries TÓM TẮT LUẬN VĂN THẠC SĨ}
+\end{center}
+
+\noindent\textbf{Tên luận văn:} Utilization of Artificial Neural Networks in LDPC Decoding for BIBCM-ID Systems.
+
+\noindent\textbf{Tác giả:} Lại Tiến Đệ.
+
+\noindent\textbf{Ngành, chuyên ngành:} Kỹ thuật viễn thông.
+
+\noindent\textbf{Ngày bảo vệ:} \ldots
+
+\noindent\textbf{Cán bộ hướng dẫn:} TS. Phạm Xuân Nghĩa; TS. Hoàng Văn Dũng. \textbf{Đơn vị:} Khoa Vô tuyến điện tử, Học viện Kỹ thuật Quân sự.
+
+\noindent\textbf{Mục đích và nhiệm vụ nghiên cứu:}
+Luận văn nghiên cứu khả năng ứng dụng mạng nơ-ron nhân tạo vào một số khối xử lý quan trọng trong hệ thống điều chế mã có hoán vị bit và giải mã lặp dạng BIBCM-ID. Trên cơ sở khảo sát cấu trúc BIBCM-ID gồm điều chế, mã kênh và hoán vị, luận văn tập trung vào hai hướng chính: hỗ trợ giải mã kênh LDPC bằng mô hình học sâu và đánh giá điều chế dựa trên AutoEncoder trong các điều kiện kênh không lý tưởng. Nhiệm vụ nghiên cứu bao gồm xây dựng mô hình hệ thống, biểu diễn thông tin mềm dạng LLR, phân tích cơ chế trao đổi thông tin ngoại lai trong giải mã lặp, khảo sát mô hình mạng nơ-ron cho cập nhật thông điệp trong giải mã LDPC, và đánh giá kết quả mô phỏng trên các kịch bản kênh có nhiễu, phi tuyến khuếch đại công suất và sai lệch tần số sóng mang.
+
+\noindent\textbf{Những đóng góp mới của luận văn:}
+Luận văn hệ thống hóa cơ sở lý thuyết của BIBCM-ID theo cách nhấn mạnh ba thành phần kỹ thuật: điều chế, mã kênh và bộ hoán vị. Trên nền tảng đó, luận văn phân tích cách dùng mạng nơ-ron để xấp xỉ hoặc hiệu chỉnh thông tin mềm trong giải mã LDPC, đặc biệt tại khâu cập nhật nút kiểm tra. Phần điều chế AutoEncoder được trình bày như một nghiên cứu bổ trợ cho giao diện điều chế/giải điều chế, nhằm làm rõ ảnh hưởng của kênh không lý tưởng tới chất lượng thông tin mềm đưa vào bộ giải mã LDPC.
+
+\newpage
+\addcontentsline{toc}{chapter}{MASTER THESIS SUMMARY}
+\begin{center}
+  {\bfseries MASTER THESIS SUMMARY}
+\end{center}
+
+\noindent\textbf{Thesis title:} Utilization of Artificial Neural Networks in LDPC Decoding for BIBCM-ID Systems.
+
+\noindent\textbf{Author:} Lai Tien De.
+
+\noindent\textbf{Major, field:} Telecommunications Engineering.
+
+\noindent\textbf{Thesis defense date:} \ldots
+
+\noindent\textbf{Supervisors:} Dr. Pham Xuan Nghia; Dr. Hoang Van Dung. \textbf{Affiliation:} Faculty of Radio Electronics, Military Technical Academy.
+
+\noindent\textbf{Objectives and tasks:}
+This thesis investigates the use of artificial neural networks in selected signal processing blocks of Block-Interleaved Bit-Interleaved Coded Modulation with Iterative Decoding (BIBCM-ID) systems. Starting from the fundamental architecture of BIBCM-ID, the work emphasizes three essential components: modulation and bit labeling, channel coding, and interleaving. The research then focuses on two remaining directions that are directly related to the author's current results: neural assistance for LDPC decoding and AutoEncoder-based modulation under non-ideal wireless channels. The tasks include formulating the soft-information model, reviewing iterative decoding and log-likelihood ratio processing, developing neural models for LDPC check-node message updates, and evaluating AutoEncoder-based modulation in channels affected by power-amplifier nonlinearity, carrier frequency offset, fading, and additive noise.
+
+\noindent\textbf{Scientific contributions:}
+The thesis provides a consolidated technical review of BIBCM-ID and analyzes how deep learning can be introduced into physical-layer receiver design. It presents a neural approach to support LDPC decoding through compact check-node message approximation and studies AutoEncoder-based Modulation as a complementary analysis of the Modulation/Demodulation interface under non-ideal channel conditions. The scientific emphasis is on soft-information quality, decoding complexity, and controlled interpretation of simulation evidence.
+
+\newpage
+\addcontentsline{toc}{chapter}{LIST OF ABBREVIATIONS}
+\begin{center}
+  {\bfseries LIST OF ABBREVIATIONS}
+\end{center}
+
+\begin{longtable}{>{\raggedright\arraybackslash}p{3cm}>{\raggedright\arraybackslash}p{11cm}}
+\toprule
+\textbf{Abbreviation} & \textbf{Meaning}\\
+\midrule
+AE & AutoEncoder\\
+ANN & Artificial Neural Network\\
+AWGN & Additive White Gaussian Noise\\
+BER & Bit Error Rate\\
+BICM & Bit-Interleaved Coded Modulation\\
+BICM-ID & Bit-Interleaved Coded Modulation with Iterative Decoding\\
+BIBCM-ID & Block-Interleaved Bit-Interleaved Coded Modulation with Iterative Decoding\\
+BP & Belief Propagation\\
+CFO & Carrier Frequency Offset\\
+FEC & Forward Error Correction\\
+LDPC & Low-Density Parity-Check\\
+LLR & Log-Likelihood Ratio\\
+MAP & Maximum a Posteriori\\
+PA & Power Amplifier\\
+QAM & Quadrature Amplitude Modulation\\
+SNR & Signal-to-Noise Ratio\\
+\bottomrule
+\end{longtable}
+
+\newpage
+\addcontentsline{toc}{chapter}{LIST OF MATHEMATICAL SYMBOLS}
+\begin{center}
+  {\bfseries LIST OF MATHEMATICAL SYMBOLS}
+\end{center}
+
+\begin{longtable}{p{3cm}p{11cm}}
+\toprule
+\textbf{Symbol} & \textbf{Meaning}\\
+\midrule
+$\mathbf{u}$ & Information-bit vector at the channel encoder input\\
+$\mathbf{c}$ & Codeword after channel encoding\\
+$\pi(\cdot)$ & Interleaving or bit-permutation operation\\
+$s_m$ & Signal point associated with label $m$ in the modulation constellation\\
+$x[n]$ & Complex transmitted sample at discrete time $n$\\
+$y[n]$ & Complex received sample at discrete time $n$\\
+$N_0$ & Noise power spectral density\\
+$L(b_i)$ & Log-likelihood ratio of bit $i$\\
+$\mathcal{N}(\cdot)$ & Gaussian distribution\\
+$\theta$ & Parameter set of the neural network\\
+$\mathcal{L}$ & Loss function used during training\\
+\bottomrule
+\end{longtable}
+
+\newpage
+\addcontentsline{toc}{chapter}{LIST OF TABLES}
+\customlistoftables
+
+\newpage
+\addcontentsline{toc}{chapter}{LIST OF FIGURES}
+\customlistoffigures
+
+\clearpage
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+% ============================================================
+% MAIN CONTENT GENERATED FROM DOCX
+% ============================================================
+\input{body_from_docx.tex}
+\end{document}

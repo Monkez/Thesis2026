@@ -1,0 +1,19 @@
+{"event": "session_start", "name": "test_pipeline", "python": "3.13.5", "platform": "Windows-11-10.0.26200-SP0", "timestamp": "2026-04-30T15:35:22.329405", "_ts": "2026-04-30T15:35:22.329418"}
+{"event": "component_test", "component": "Config", "status": "OK", "details": {"rsc": "(7,5)", "modulation": "16-QAM"}, "_ts": "2026-04-30T15:35:22.329700"}
+{"event": "component_test", "component": "RSC Encoder", "status": "OK", "details": {"info_bits": 100, "coded_bits": 200, "rate": 0.5}, "_ts": "2026-04-30T15:35:22.330427"}
+{"event": "component_test", "component": "Hamming Encoder", "status": "OK", "details": {"n_code": 8, "k_info": 4, "rate": 0.5}, "_ts": "2026-04-30T15:35:22.330609"}
+{"event": "component_test", "component": "Constellation", "status": "OK", "details": {"M": 16, "avg_power": 1.0}, "_ts": "2026-04-30T15:35:22.330772"}
+{"event": "component_test", "component": "Modulation", "status": "OK", "details": {"bits": 200, "symbols": 50}, "_ts": "2026-04-30T15:35:22.330811"}
+{"event": "component_test", "component": "AWGN Channel", "status": "OK", "details": {"N0": 0.1}, "_ts": "2026-04-30T15:35:22.330890"}
+{"event": "component_test", "component": "Soft Demod", "status": "OK", "details": {"shape": [16, 50]}, "_ts": "2026-04-30T15:35:23.047556"}
+{"event": "component_test", "component": "Soft Demapper", "status": "OK", "details": {"num_llrs": 200, "llr_range": [-17.35, 17.71]}, "_ts": "2026-04-30T15:35:23.047713"}
+{"event": "component_test", "component": "SISO Decoder", "status": "OK", "details": {"data_llrs": 100, "code_llrs": 204, "decode_time_s": 0.843}, "_ts": "2026-04-30T15:35:23.890781"}
+{"event": "component_test", "component": "Dual Decoder", "status": "OK", "details": {"input_llrs": 8, "output_llrs": 8}, "_ts": "2026-04-30T15:35:26.103017"}
+{"event": "component_test", "component": "Interleaver", "status": "OK", "details": {"length": 4096, "range": [0, 4095], "valid_perm": true}, "_ts": "2026-04-30T15:35:26.124394"}
+{"event": "component_test", "component": "Girth Analysis", "status": "OK", "details": {"4_cycles": 6, "6_cycles": 32, "8_cycles": 84}, "_ts": "2026-04-30T15:35:26.124530"}
+{"event": "component_test", "component": "TF QAMModulationLayer", "status": "OK", "details": {"input": [4, 200], "output": [4, 50, 2]}, "_ts": "2026-04-30T15:35:26.154242"}
+{"event": "component_test", "component": "TF AWGNChannelLayer", "status": "OK", "details": {"shape": [4, 50, 2]}, "_ts": "2026-04-30T15:35:26.161732"}
+{"event": "component_test", "component": "TF SoftDemodLayer", "status": "OK", "details": {"shape": [4, 16, 50]}, "_ts": "2026-04-30T15:35:26.167024"}
+{"event": "component_test", "component": "TF SoftDemapperLayer", "status": "OK", "details": {"shape": [4, 200]}, "_ts": "2026-04-30T15:35:26.194265"}
+{"event": "component_test", "component": "BICM-ID Frame", "status": "OK", "details": {"coded_bits": 4096, "errors_per_iter": [1076, 1007, 976], "frame_time_s": 0.019}, "_ts": "2026-04-30T15:35:26.213710"}
+{"event": "session_end", "total_elapsed_s": 3.9, "_ts": "2026-04-30T15:35:26.213838"}

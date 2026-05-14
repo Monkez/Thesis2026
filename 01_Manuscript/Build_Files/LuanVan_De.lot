@@ -1,0 +1,18 @@
+\babel@toc {english}{}\relax 
+\babel@toc {vietnamese}{}\relax 
+\babel@toc {english}{}\relax 
+\babel@toc {vietnamese}{}\relax 
+\babel@toc {english}{}\relax 
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {2.1}{\ignorespaces Architecture and parameter distribution of the proposed sequential ANN.}}{21}{table.caption.9}%
+\contentsline {table}{\numberline {2.2}{\ignorespaces Computation complexity comparison of algorithms}}{25}{table.caption.14}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {3.1}{\ignorespaces Training parameters for the three architectural scenarios.}}{42}{table.caption.24}%
+\contentsline {table}{\numberline {3.2}{\ignorespaces BER comparison at SNR = 20 dB across CFO values.}}{46}{table.caption.29}%
+\contentsline {table}{\numberline {3.3}{\ignorespaces Summary of AE system advantages and limitations vs.\ conventional 16-QAM.}}{48}{table.caption.31}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {4.1}{\ignorespaces Simulation Parameters for the Combined BIBCM-ID System.}}{51}{table.caption.32}%
+\contentsline {table}{\numberline {4.2}{\ignorespaces Bit Error Rate (BER) performance under combined PA and CFO distortions.}}{51}{table.caption.33}%
+\contentsline {table}{\numberline {4.3}{\ignorespaces Hardware Execution Overhead and Storage Profile Estimates.}}{54}{table.caption.34}%
+\babel@toc {vietnamese}{}\relax 

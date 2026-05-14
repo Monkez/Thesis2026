@@ -1,0 +1,129 @@
+\section{Detailed Soft-Information Model of BIBCM-ID}
+The central technical object in BIBCM-ID is the reliability message attached to each coded bit. A conventional receiver can be described as a sequence of hard decisions, but such a description hides the main advantage of iterative coded modulation. In BIBCM-ID, the Demodulation block and the channel decoder exchange soft information. The channel decoder does not only decide whether a bit is zero or one; it evaluates how reliable that decision is. The Demodulation block does not only choose the nearest constellation point; it evaluates the probability of each label bit after observing a noisy channel sample. This distinction is essential because iterative processing can only improve the receiver when the exchanged soft information carries probabilistic meaning.
+
+Let $\mathbf{b}_t=[b_{t,1},\ldots,b_{t,m}]$ denote the bit label associated with a transmitted symbol at time $t$, where $m=\log_2 M$ for an $M$-ary constellation. The Modulation function maps this label to a complex symbol
+\begin{equation}
+  x_t=\mu(\mathbf{b}_t), \qquad \mu:\{0,1\}^{m}\rightarrow\mathcal{X}.
+\end{equation}
+For coherent reception over a flat-fading channel, the observation is
+\begin{equation}
+  y_t=h_t x_t+w_t,
+\end{equation}
+where $h_t$ is the channel coefficient and $w_t\sim\mathcal{CN}(0,N_0)$ is complex Gaussian noise. The likelihood used by the soft Demodulation block is then
+\begin{equation}
+  p(y_t|x,h_t)=\frac{1}{\pi N_0}\exp\left(-\frac{|y_t-h_t x|^2}{N_0}\right).
+\end{equation}
+This likelihood is the bridge between the analog received sample and the digital LDPC decoder. If the likelihood is accurately modeled, the resulting LLR values are statistically meaningful. If the likelihood is mismatched, the decoder receives biased reliability messages even when the hard-decision symbol error rate appears acceptable.
+
+For the $k$-th bit of a symbol label, define the two subsets
+\begin{equation}
+  \mathcal{X}_{k}^{(b)}=\{x\in\mathcal{X}: b_k(x)=b\}, \qquad b\in\{0,1\}.
+\end{equation}
+When no a priori information is available from the decoder, the demodulator LLR can be written as
+\begin{equation}
+  L_{\mathrm{dem}}(b_k|y_t)
+  =\log\frac{\sum_{x\in\mathcal{X}_{k}^{(1)}}p(y_t|x,h_t)}
+  {\sum_{x\in\mathcal{X}_{k}^{(0)}}p(y_t|x,h_t)}.
+\end{equation}
+At later iterations, however, the Demodulation block receives a priori bit information from the decoder. In that case, the symbol prior is no longer uniform. If the a priori LLR of label bit $b_i$ is $L_A(b_i)$, the prior probability of a candidate label can be expressed as
+\begin{equation}
+  P_A(\mathbf{b}(x))=
+  \prod_{i=1}^{m}
+  \frac{\exp(b_i(x)L_A(b_i))}
+  {1+\exp(L_A(b_i))}.
+\end{equation}
+The updated a posteriori Demodulation LLR becomes
+\begin{equation}
+  L_{\mathrm{APP}}(b_k|y_t)
+  =
+  \log
+  \frac{\sum_{x\in\mathcal{X}_{k}^{(1)}}p(y_t|x,h_t)
+  \prod_{i\ne k} P_A(b_i(x))}
+  {\sum_{x\in\mathcal{X}_{k}^{(0)}}p(y_t|x,h_t)
+  \prod_{i\ne k} P_A(b_i(x))}.
+\end{equation}
+The extrinsic output of the Demodulation block is obtained by removing the a priori contribution of the same bit:
+\begin{equation}
+  L_E^{\mathrm{dem}}(b_k)=L_{\mathrm{APP}}(b_k|y_t)-L_A(b_k).
+\end{equation}
+This subtraction is not a cosmetic detail. It prevents the same evidence from being counted repeatedly in the iterative loop. If the receiver repeatedly feeds back a message that includes its own previous information, the iterative process can become artificially confident and may converge to an incorrect codeword.
+
+The computational burden of exact LLR evaluation grows with the constellation size because the demodulator sums over subsets of $\mathcal{X}$. For large $M$, the max-log approximation is often used:
+\begin{equation}
+  L_{\mathrm{dem}}(b_k|y_t)
+  \approx
+  \frac{1}{N_0}
+  \left[
+  \min_{x\in\mathcal{X}_{k}^{(0)}}|y_t-h_t x|^2
+  -
+  \min_{x\in\mathcal{X}_{k}^{(1)}}|y_t-h_t x|^2
+  \right].
+\end{equation}
+This expression is attractive because it replaces sums of exponentials by distance comparisons. Nevertheless, the approximation changes the magnitude of LLRs. In a one-shot receiver, a magnitude error may have limited effect if the sign is correct. In an iterative receiver, a magnitude error changes the influence of the message on subsequent decoding iterations. Therefore, LLR scaling, clipping, and calibration are not secondary implementation details; they directly affect BIBCM-ID convergence.
+
+A practical receiver commonly clips LLRs to a finite interval:
+\begin{equation}
+  \tilde{L}=\mathrm{clip}(L,L_{\min},L_{\max}).
+\end{equation}
+Clipping protects the decoder from numerical overflow and reduces memory width in fixed-point hardware. However, overly aggressive clipping removes reliability information, while insufficient clipping allows rare overconfident values to dominate the decoder. This issue is closely related to the ANN-assisted LDPC part of the thesis. A neural check-node update can be interpreted as a learned nonlinear transformation of reliability messages; its value depends not only on the final hard decision but also on how it reshapes message magnitudes during iterations.
+
+\section{Role of Labeling, Interleaving, and Iterative Gain}
+The mapping between bit labels and constellation points affects the reliability profile of the Demodulation output. In conventional non-iterative BICM, Gray labeling is usually preferred because adjacent constellation points differ in one bit, reducing the number of bit errors caused by a symbol error. In BICM-ID and BIBCM-ID, the best labeling may differ because the Demodulation block can exploit a priori information from the channel decoder. Set-partitioning labels, anti-Gray labels, and other mappings can provide stronger iterative gain under certain conditions because they create different extrinsic-information transfer characteristics.
+
+This point clarifies why Modulation is relevant even when the thesis title emphasizes LDPC decoding. The LDPC decoder receives LLR values whose distribution is determined partly by the constellation geometry and labeling rule. A decoder-side improvement cannot fully compensate for a Demodulation block that consistently produces poorly calibrated or weak LLRs. Conversely, a Modulation/Demodulation design that produces more separable and better-calibrated reliability messages can make the LDPC decoder more effective without changing the parity-check matrix.
+
+For a label bit $b_k$, define the conditional LLR density $p(L|b_k)$. A good Demodulation design should not only shift the mean of this density away from zero; it should also reduce harmful overlap between the densities conditioned on $b_k=0$ and $b_k=1$. The mutual information between a bit and its LLR is often used to summarize this behavior:
+\begin{equation}
+  I(B;L)=
+  \sum_{b\in\{0,1\}}\int p(b,L)
+  \log_2\frac{p(b,L)}{p(b)p(L)}\,dL.
+\end{equation}
+In EXIT-chart analysis, the Demodulation block and the channel decoder are viewed as two components that transform input mutual information into output mutual information. Although this thesis does not construct full EXIT charts, the underlying idea is important: iterative gain appears when the transfer curve of the Demodulation block and the transfer curve of the decoder leave an open convergence tunnel. If the Demodulation output saturates too early or the decoder cannot exploit the a priori information, additional iterations provide little benefit.
+
+The block interleaver changes the statistical relationship between neighboring coded bits and neighboring modulation positions. Suppose the encoder output is $\mathbf{c}=[c_1,\ldots,c_N]$ and the interleaver is a permutation $\pi$ on $\{1,\ldots,N\}$. The interleaved sequence is
+\begin{equation}
+  v_i=c_{\pi(i)}.
+\end{equation}
+For an ideal random interleaver, bits that are nearby in the code graph are likely to be separated across different symbol positions. A block interleaver imposes a more structured permutation, which can be beneficial for implementation and memory access. The design objective is to reduce harmful correlation while supporting practical hardware constraints such as parallel read/write access and deterministic addressing.
+
+From the decoder viewpoint, interleaving also affects error events. If several unreliable channel observations are mapped to code bits that participate in closely related parity checks, the decoder may see a concentrated reliability deficit. A good interleaver spreads such unreliable bits so that parity constraints can compensate for them. This is why interleaver design has a strong literature of its own. The thesis treats it as a mature and essential part of the BIBCM-ID framework, while focusing the technical contribution on the decoder-side ANN approximation and the supporting Modulation/Demodulation study.
+
+The BIBCM-ID iteration can be summarized by two coupled transformations:
+\begin{equation}
+  \mathbf{L}_{E,\mathrm{dem}}^{(t)}
+  =
+  \mathcal{M}\left(\mathbf{y},\Pi\mathbf{L}_{E,\mathrm{dec}}^{(t-1)}\right),
+\end{equation}
+\begin{equation}
+  \mathbf{L}_{E,\mathrm{dec}}^{(t)}
+  =
+  \mathcal{D}\left(\Pi^{-1}\mathbf{L}_{E,\mathrm{dem}}^{(t)}\right).
+\end{equation}
+Here $\mathcal{M}$ denotes soft Demodulation and $\mathcal{D}$ denotes channel decoding. The LDPC decoder is therefore not an isolated block. It is one component in a feedback loop whose behavior depends on message quality, message independence, and message scaling. This observation is used throughout the thesis to justify why the ANN-assisted LDPC study should be evaluated in terms of both BER and message-processing complexity.
+
+\section{Practical Receiver Issues Relevant to the Thesis}
+Several practical receiver issues are important for interpreting the simulation results. First, the LLR sign convention must be used consistently. Some references define $L=\log P(b=0|y)/P(b=1|y)$, while others define the reverse. A sign mismatch between Demodulation and decoding would make the decoder reinforce the wrong hypothesis. The equations in this thesis use one convention consistently within each derivation, and the discussion focuses on relative reliability rather than on a universal sign convention.
+
+Second, SNR normalization affects both Demodulation and decoding. For coded modulation, the relationship between symbol energy and bit energy is
+\begin{equation}
+  E_b=\frac{E_s}{R_c\log_2 M},
+\end{equation}
+so that
+\begin{equation}
+  \left(\frac{E_b}{N_0}\right)_{\mathrm{dB}}
+  =
+  \left(\frac{E_s}{N_0}\right)_{\mathrm{dB}}
+  -
+  10\log_{10}(R_c\log_2 M).
+\end{equation}
+If this conversion is not handled carefully, curves for different coding rates or modulation orders may be compared unfairly. This is one reason why the thesis avoids making broad superiority claims from a single BER curve.
+
+Third, fixed-point implementation changes message behavior. A floating-point simulation can represent very small probability differences and very large LLR magnitudes. A hardware decoder normally uses quantized messages:
+\begin{equation}
+  L_Q=Q_{\Delta,L_{\max}}(L),
+\end{equation}
+where $Q_{\Delta,L_{\max}}(\cdot)$ denotes a quantizer with step size $\Delta$ and clipping limit $L_{\max}$. Quantization can degrade SPA more than Min-Sum in some settings because precise nonlinear corrections are lost. This observation strengthens the motivation for a compact ANN approximation: a learned function can be trained or fine-tuned under quantization constraints instead of being derived only for ideal real-valued arithmetic.
+
+Fourth, the number of iterations is part of the system design. More iterations usually improve BER up to a point, but they increase latency and power consumption. Let $I_{\max}$ be the maximum number of decoding iterations and $E$ be the number of edges in the Tanner graph. A message-passing decoder has a computational load that scales approximately with $I_{\max}E$. If an ANN check-node update reduces the cost per edge but requires more iterations to converge, the net benefit may be small. Therefore, the thesis interprets ANN assistance through both convergence behavior and per-update complexity.
+
+Finally, the receiver must remain robust to model mismatch. The Demodulation formula derived for AWGN does not fully describe PA nonlinearity, CFO, or multipath fading. Similarly, an ANN trained on one distribution of messages may not generalize to another distribution. The most credible engineering interpretation is therefore not that neural networks automatically outperform classical methods, but that they provide trainable approximations for specific nonlinear or mismatched operations when the training and validation conditions are carefully defined.

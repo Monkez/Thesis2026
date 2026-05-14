@@ -1,0 +1,74 @@
+{
+  "TRAIN_PA_RANGE": {
+    "a_sat": [
+      1.05,
+      1.55
+    ],
+    "p_rapp": [
+      1.5,
+      3.5
+    ],
+    "alpha_pm": [
+      0.0,
+      0.08
+    ],
+    "beta_pm": [
+      0.0,
+      0.0
+    ]
+  },
+  "TRAIN_PHASE_RANGE": [
+    -0.7853981633974483,
+    0.7853981633974483
+  ],
+  "TEST_SCENARIOS": {
+    "no_phase_mild_pa": {
+      "pa": {
+        "a_sat": 1.45,
+        "p_rapp": 2.5,
+        "alpha_pm": 0.02,
+        "beta_pm": 0.0
+      },
+      "phase_rad": 0.0
+    },
+    "seen_phase_strong_pa": {
+      "pa": {
+        "a_sat": 1.12,
+        "p_rapp": 2.0,
+        "alpha_pm": 0.06,
+        "beta_pm": 0.0
+      },
+      "phase_rad": 0.4886921905584123
+    },
+    "edge_phase_unseen_pa": {
+      "pa": {
+        "a_sat": 0.98,
+        "p_rapp": 1.35,
+        "alpha_pm": 0.1,
+        "beta_pm": 0.0
+      },
+      "phase_rad": 0.9075712110370514
+    }
+  },
+  "WINDOW_RADIUS": 3,
+  "QUICK_TRAIN": true,
+  "TRAIN_STEPS": 250,
+  "QUICK_RUN": true,
+  "BLOCKS_BY_SNR": {
+    "0": 5,
+    "1": 5,
+    "2": 8,
+    "3": 10,
+    "4": 12,
+    "4.5": 15,
+    "5": 20,
+    "5.5": 25,
+    "6": 30
+  },
+  "symbol_metrics": {
+    "MSE mismatch": 5.156692981719971,
+    "MSE sequence": 4.331684112548828,
+    "Corr mismatch": 0.6962063235666858,
+    "Corr sequence": 0.7136464524761041
+  }
+}

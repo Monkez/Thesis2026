@@ -1,0 +1,64 @@
+\section{Evaluation Protocol for ANN-Assisted Decoding}
+A technically convincing decoder study requires an evaluation protocol that separates algorithmic effect from simulation artifact. The BER curve is the most visible result, but it is not the only evidence. A fair comparison requires the baseline algorithms to use the same code, modulation, channel model, iteration limit, stopping rule, and LLR scaling. If any of these conditions differ, the comparison may reflect an implementation difference rather than a true decoding advantage.
+
+The first requirement is a consistent code configuration. For an LDPC code with block length $n$, information length $k$, and rate $R_c=k/n$, every compared decoder should operate on the same parity-check matrix $\mathbf{H}$. If the ANN is trained for a QC-LDPC matrix, the test should clearly state whether the same matrix is used or whether a different matrix is used for generalization. A decoder that performs well on one structured matrix may not automatically transfer to another because the distribution of node degrees, short cycles, and trapping sets changes.
+
+The second requirement is a consistent channel and modulation setting. If the training data are generated from BPSK over AWGN, then the first validation should use the same setting to isolate the check-node approximation. Only after that should the method be tested with higher-order Modulation or with BIBCM-ID-style soft Demodulation input. This staged evaluation is important. It prevents a single experiment from mixing too many effects: channel mismatch, Demodulation mismatch, LDPC graph behavior, and neural approximation error.
+
+The third requirement is a sufficient number of simulated bits. At low BER, a small number of errors produces a noisy estimate. If $N_{\mathrm{err}}$ errors are observed over $N_{\mathrm{bit}}$ transmitted bits, the BER estimate is
+\begin{equation}
+  \widehat{\mathrm{BER}}=\frac{N_{\mathrm{err}}}{N_{\mathrm{bit}}}.
+\end{equation}
+For rare errors, the relative uncertainty is large when $N_{\mathrm{err}}$ is small. A simple rule in communication simulations is to collect a minimum number of error events before trusting a point on a BER curve. Therefore, a low-BER point based on too few errors is interpreted only as an indicative trend rather than as strong evidence of superiority.
+
+The fourth requirement is to report the iteration limit and stopping rule. A syndrome-based stopping rule terminates decoding when
+\begin{equation}
+  \mathbf{H}\hat{\mathbf{c}}^T=\mathbf{0}.
+\end{equation}
+If one decoder reaches this condition earlier than another, it may reduce average complexity even when the maximum iteration limit is the same. Therefore, average iteration count is a useful companion metric:
+\begin{equation}
+  \bar{I}=\frac{1}{N_f}\sum_{r=1}^{N_f}I_r,
+\end{equation}
+where $N_f$ is the number of simulated frames and $I_r$ is the number of iterations used for frame $r$. A decoder that preserves BER while reducing $\bar{I}$ can be attractive even if its per-iteration cost is slightly higher.
+
+The fifth requirement is to include frame error rate when possible. BER measures the fraction of wrong bits, while FER measures whether the entire frame is decoded correctly:
+\begin{equation}
+  \mathrm{FER}=\frac{N_{\mathrm{frame,err}}}{N_{\mathrm{frame}}}.
+\end{equation}
+In coded systems, FER is often important because many applications treat a frame with one error as unusable. An ANN check-node update that reduces BER but leaves FER unchanged may still be useful, but the distinction should be understood.
+
+\section{Ablation View of the ANN Decoder}
+An ablation view helps clarify which part of the method is responsible for the observed behavior. The first ablation is SPA imitation versus reliability-aware labeling. If the SPA-imitation network matches SPA, this supports the claim that the MLP can approximate the nonlinear check-node function. If the reliability-aware network improves the curve, this supports the additional claim that learned magnitude control can help under finite loopy decoding. These are two different claims and should not be merged.
+
+The second ablation is network size. A compact network is central to the engineering argument. If a larger network improves BER slightly but greatly increases cost, it may be less relevant to a receiver implementation. Therefore, the hidden-layer size should be interpreted as part of the design trade-off:
+\begin{equation}
+  \mathrm{Tradeoff}=
+  \left(\mathrm{BER},\ \mathrm{FER},\ \bar{I},\ C_{\mathrm{op}},\ M_{\theta}\right),
+\end{equation}
+where $C_{\mathrm{op}}$ denotes computational operations and $M_{\theta}$ denotes model memory. This vector view is more informative than a single BER number.
+
+The third ablation is message clipping. LDPC decoders often clip LLRs to a finite range. If the ANN is trained on unclipped floating-point SPA messages but tested in a clipped decoder, performance may change. A fair test should either train and test under the same clipping range or explicitly analyze the mismatch. The clipping range can be written as
+\begin{equation}
+  L_{\mathrm{clip}}=\max(-L_{\max},\min(L,L_{\max})).
+\end{equation}
+The value of $L_{\max}$ affects both numerical stability and decoding confidence.
+
+The fourth ablation is node degree. A single MLP may be trained for one check-node degree. If the LDPC matrix has multiple check-node degrees, the decoder can either use separate networks for each degree, pad inputs to a common dimension, or design a permutation-invariant architecture. Separate networks increase memory. Padding may waste computation. A permutation-invariant architecture can be written as
+\begin{equation}
+  g_\theta(\{|q_\ell|\})=
+  \rho_\theta\left(\sum_{\ell}\psi_\theta(|q_\ell|)\right),
+\end{equation}
+where $\psi_\theta$ and $\rho_\theta$ are learnable functions. This form respects the fact that the check-node update should not depend on the arbitrary ordering of incoming edges.
+
+The fifth ablation is iteration dependence. A network can share the same parameters across all iterations or use iteration-specific parameters. Shared parameters reduce memory and are easier to justify. Iteration-specific parameters may improve performance but risk overfitting to a fixed iteration schedule. For a practical decoder, shared or lightly parameterized iteration dependence is preferable unless the gain is substantial.
+
+\section{Scientific Boundaries of the Decoder Study}
+The comparison between the ANN decoder and normalized Min-Sum should be interpreted through both performance and implementation criteria. Normalized Min-Sum is extremely simple and may be preferable when minimum complexity is the only goal. The ANN method is more relevant when the designer wants SPA-like behavior without explicit transcendental functions, or when reliability-aware damping provides a controlled advantage. The result is therefore a trade-off, not a universal replacement.
+
+The statistical reliability of the reported BER gain depends on simulation length and the number of observed errors. The available curves show a trend under the reported conditions, while lower-BER regions would require longer simulations and more error events for standard-level claims. This interpretation is consistent with a study whose main contribution is algorithmic analysis and feasibility evaluation.
+
+The ANN does not remove the interpretability of LDPC decoding because the proposed method preserves the Tanner graph and changes only a local update function. The parity-check matrix, syndrome test, variable-node update, and iterative schedule remain interpretable. The MLP acts as a learned approximation or correction for the nonlinear check-node operation. This is very different from replacing the decoder by a neural classifier that directly maps channel samples to messages.
+
+The method is compatible with soft information from BIBCM-ID Demodulation at the message-interface level: the LDPC decoder consumes LLRs regardless of whether they originate from BPSK Demodulation or high-order BIBCM-ID Demodulation. However, the distribution of those LLRs may differ. BPSK-AWGN is therefore a controlled first evaluation, while BIBCM-ID soft input is the broader system context.
+
+These possible challenges are not defects if they are addressed explicitly. They define the boundary between a focused master's-level contribution and a full standard-ready receiver implementation. The revised text uses this boundary to keep the claims credible: ANN-assisted check-node processing is the central contribution; AutoEncoder Modulation is a supporting analysis of the soft-information source; broader multi-channel validation remains an engineering continuation.

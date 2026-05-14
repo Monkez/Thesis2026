@@ -1,0 +1,111 @@
+\section{Soft-Output Neural Demodulation Requirements}
+A learned Demodulation block becomes relevant to LDPC decoding only when its output can be used as decoder input. A classifier that outputs a message index is not sufficient for iterative coded modulation. The LDPC decoder requires bit-level reliability. Therefore, a neural Demodulator should output either calibrated bit probabilities or directly output LLR values:
+\begin{equation}
+  \mathbf{\hat{L}}=
+  [\hat{L}_1,\hat{L}_2,\ldots,\hat{L}_m]^T.
+\end{equation}
+If the neural receiver outputs logits $\mathbf{z}$, one possible conversion is
+\begin{equation}
+  \hat{L}_k=z_k,
+\end{equation}
+when the logits are trained as log-odds for bit $k$. If the receiver outputs probabilities, the conversion is
+\begin{equation}
+  \hat{L}_k=\log\frac{\hat{p}_k}{1-\hat{p}_k}.
+\end{equation}
+The probability must be clipped away from zero and one in implementation to avoid infinite LLRs:
+\begin{equation}
+  \hat{p}_{k,\epsilon}=\min(1-\epsilon,\max(\epsilon,\hat{p}_k)).
+\end{equation}
+This simple numerical detail matters because one overconfident wrong LLR can dominate several iterations of LDPC decoding.
+
+A soft-output neural Demodulator can be trained with bit-wise binary cross-entropy:
+\begin{equation}
+  \mathcal{L}_{\mathrm{BCE}}=
+  -\frac{1}{m}\sum_{k=1}^{m}
+  \left[
+  b_k\log\hat{p}_k+(1-b_k)\log(1-\hat{p}_k)
+  \right].
+\end{equation}
+This loss is closer to LDPC input requirements than message-level cross-entropy. However, BCE still does not guarantee perfect calibration. Therefore, a validation set should be used to evaluate whether the predicted probabilities correspond to empirical reliability. Calibration can be improved by temperature scaling, isotonic regression, or training objectives that penalize overconfidence.
+
+If iterative feedback is considered, the Demodulator should also accept a priori information from the decoder:
+\begin{equation}
+  \mathbf{\hat{L}}^{(t)}
+  =
+  g_\phi(\mathbf{y},\mathbf{L}_A^{(t)}).
+\end{equation}
+The extrinsic output is then
+\begin{equation}
+  \mathbf{L}_E^{(t)}=\mathbf{\hat{L}}^{(t)}-\mathbf{L}_A^{(t)}.
+\end{equation}
+This equation is the neural analogue of classical iterative Demodulation. It shows how AutoEncoder ideas can be connected to BIBCM-ID without overstating the current results. The present thesis uses AutoEncoder Modulation as a supporting study, but the mathematical interface for future soft-output Demodulation is already clear.
+
+\section{Learned Demapper Architectures and Engineering Trade-Offs}
+Several neural architectures can be used for learned Demodulation. A memoryless multilayer perceptron can process the real and imaginary parts of one received symbol:
+\begin{equation}
+  \mathbf{r}_t=[\Re(y_t),\Im(y_t),\Re(h_t),\Im(h_t),\sigma^2]^T.
+\end{equation}
+This architecture is simple and low-latency, but it cannot exploit temporal structure such as CFO evolution or ISI memory. A sequence model can process a window of samples:
+\begin{equation}
+  \mathbf{R}_t=[\mathbf{r}_{t-L},\ldots,\mathbf{r}_t,\ldots,\mathbf{r}_{t+L}],
+\end{equation}
+which improves the ability to compensate memory and phase drift at the cost of latency.
+
+Convolutional neural networks can exploit local temporal patterns with shared filters. Recurrent neural networks can model sequential dependence but may be harder to parallelize. Attention-based models can learn long-range dependence, but they may be too expensive for a low-latency receiver unless the sequence length is small. For a master's thesis focused on LDPC decoding, it is not necessary to implement all architectures. It is more useful to explain which architectural properties matter: soft-output capability, calibration, latency, parameter count, and compatibility with a priori information.
+
+The engineering trade-off can be summarized as
+\begin{equation}
+  \mathcal{J}
+  =
+  \mathrm{BER}
+  +\lambda_1 C_{\mathrm{comp}}
+  +\lambda_2 T_{\mathrm{lat}}
+  +\lambda_3 M_{\mathrm{mem}},
+\end{equation}
+where $C_{\mathrm{comp}}$ is computational cost, $T_{\mathrm{lat}}$ is latency, and $M_{\mathrm{mem}}$ is memory. The weights $\lambda_1,\lambda_2,\lambda_3$ depend on the target receiver. This expression does not define a universal objective, but it makes clear that BER alone is not enough for engineering evaluation.
+
+The learned Demodulator must also respect signal normalization. If the transmitter network changes the constellation, the receiver should know the effective scaling or learn it robustly. If the channel gain varies, the receiver may need CSI or an implicit channel-estimation mechanism. If the Demodulator is trained with perfect CSI but deployed with imperfect CSI, the resulting LLRs may be overconfident. Therefore, training should include the same uncertainty expected in deployment:
+\begin{equation}
+  \hat{h}=h+e_h, \qquad e_h\sim\mathcal{CN}(0,\sigma_h^2).
+\end{equation}
+This channel-estimation error can be added during training so that the learned receiver does not depend unrealistically on perfect channel knowledge.
+
+\section{Why Chapter 3 Strengthens Rather Than Dilutes the Thesis}
+The title emphasizes ANN utilization in LDPC decoding for BIBCM-ID systems. A narrow interpretation would include only the channel decoder. However, BIBCM-ID is an iterative receiver architecture, and the LDPC decoder is driven by soft information produced by Demodulation. Therefore, a technically mature treatment explains not only the decoder update but also the nature of the input messages that the decoder receives. Chapter 3 serves this purpose.
+
+The chapter does not change the main contribution. The direct contribution remains the ANN-assisted check-node update in LDPC decoding. The AutoEncoder material supports the system context by analyzing how learned Modulation and Demodulation can affect the reliability of the decoder input. This framing is stronger than presenting AutoEncoder Modulation as an unrelated second topic. It connects both research directions through one technical theme: the generation, transformation, and use of soft information.
+
+If Chapter 3 were written as a general deep-learning communication chapter, it would appear misaligned with the title. The revised structure instead explains that learned Modulation is relevant because it changes the distribution and calibration of LLRs. The LDPC decoder is then understood as the downstream component whose performance depends on those LLRs. The discussion is therefore system-aware while keeping the LDPC decoder as the center of the thesis.
+
+The correct level of conclusion is also important. AutoEncoder Modulation is presented as evidence and analysis for channel-aware signal mapping under non-ideal conditions, not as a finished solution to BIBCM-ID receiver design. The next technical step would be a soft-output neural Demodulator that produces calibrated bit LLRs and can exchange extrinsic information with an LDPC decoder. This is a natural continuation of the current contribution.
+
+\section{Recommended Validation Extension}
+For a stronger continuation of the work, the following validation path is technically coherent. First, evaluate the ANN-assisted LDPC decoder using BPSK-AWGN input to isolate the check-node approximation. Second, evaluate the same decoder using LLRs produced by conventional high-order Demodulation under BIBCM-ID-like interleaving. Third, evaluate a learned Demodulator that outputs calibrated bit LLRs under PA and CFO impairments. Fourth, compare the LDPC decoder with and without the ANN check-node update under the same Demodulation input.
+
+This staged validation has a clear reason. It separates the decoder contribution from the Modulation/Demodulation contribution. If performance changes after replacing the check-node update, the effect can be attributed to the decoder. If performance changes after replacing the Demodulator, the effect can be attributed to the soft-information source. If both are changed simultaneously, interpretation becomes more difficult.
+
+The staged path can be expressed as four receiver configurations:
+\begin{equation}
+  \mathcal{R}_1=(\mathrm{Conventional\ Demodulation},\mathrm{SPA\ LDPC}),
+\end{equation}
+\begin{equation}
+  \mathcal{R}_2=(\mathrm{Conventional\ Demodulation},\mathrm{ANN\ LDPC}),
+\end{equation}
+\begin{equation}
+  \mathcal{R}_3=(\mathrm{Learned\ Demodulation},\mathrm{SPA\ LDPC}),
+\end{equation}
+\begin{equation}
+  \mathcal{R}_4=(\mathrm{Learned\ Demodulation},\mathrm{ANN\ LDPC}).
+\end{equation}
+The current thesis provides the strongest evidence for $\mathcal{R}_2$ and supporting analysis for the learned-Demodulation side. This statement is precise, defensible, and aligned with the available materials.
+
+\section{Consistency Check of the Three-Chapter Structure}
+From an examination viewpoint, the three chapters should form one argument rather than three separate reports. Chapter 1 defines the BIBCM-ID context and explains why Modulation, Demodulation, interleaving, and channel decoding are coupled through soft information. Chapter 2 then focuses on the main contribution: ANN-assisted LDPC decoding through local check-node message approximation. Chapter 3 supports the same system context by analyzing how learned Modulation and Demodulation can affect the reliability values supplied to the LDPC decoder. This ordering keeps the thesis title credible because the decoder remains the central contribution, while the AutoEncoder material is used to explain the upstream source of decoder input quality.
+
+The main scientific boundary is the level of claim. AutoEncoder Modulation is not used as evidence that the whole BIBCM-ID receiver has already been improved. The structure uses three levels of claim. The first level is established theory: LDPC decoding, BICM-ID/BIBCM-ID soft-information exchange, and classical Modulation/Demodulation. The second level is the implemented or directly analyzed contribution: ANN-assisted LDPC check-node processing. The third level is supporting investigation: learned Modulation under non-ideal channels and its relevance to soft-output Demodulation. These levels remain distinct throughout the thesis.
+
+Complexity reduction is treated through concrete criteria: removal of nonlinear SPA operations, parameter count, weight sharing, quantization, average iteration count, and latency. This makes the argument more robust. The ANN is presented as a practical approximation of a costly nonlinear update with a measurable trade-off between performance and implementation cost, rather than as a universally simpler decoder.
+
+The evaluation framework also avoids relying only on BER. The expanded discussion includes FER, average iteration count, simulation length, LLR calibration, and validation over SNR ranges. These criteria reduce the possibility of selecting only the metric that favors the proposed method. For a technical master's thesis, this balanced evaluation framework is often as important as the numerical curve itself.
+
+The final consistency requirement is terminology. The text uses Modulation for the transmitter-side mapping, Demodulation for the receiver-side soft metric computation, LDPC decoding for parity-check message passing, and AutoEncoder Modulation for the learned signal-mapping study. Maintaining these terms consistently reduces ambiguity and helps the reader see why Chapter 3 belongs in the thesis without changing the main LDPC-decoding emphasis.

@@ -1,0 +1,155 @@
+\section{From SPA to Neural Check-Node Approximation}
+The LDPC part of the thesis is strongest when it is interpreted as a model-driven neural approximation rather than a generic black-box application of deep learning. The Tanner graph already provides a precise computational structure. Each variable node represents a coded bit, each check node represents a parity constraint, and each edge carries a soft message. The neural network is introduced only at the check-node update, which is both nonlinear and repeatedly evaluated. This local formulation is important because it preserves the LDPC code constraints and avoids replacing the entire decoder by an opaque classifier.
+
+For a parity check involving the set of variable nodes $\mathcal{N}(i)$, the constraint is
+\begin{equation}
+  \bigoplus_{j\in\mathcal{N}(i)} c_j=0.
+\end{equation}
+In belief propagation, the message from check node $i$ to variable node $j$ depends on all incoming messages from the other variable nodes connected to the same check:
+\begin{equation}
+  L_{i\rightarrow j}=F_{\mathrm{CN}}\left(\{L_{j'\rightarrow i}:j'\in\mathcal{N}(i)\setminus j\}\right).
+\end{equation}
+The exact SPA function in the LLR domain is
+\begin{equation}
+  F_{\mathrm{CN}}(\mathbf{q})=
+  2\tanh^{-1}\left(\prod_{\ell}\tanh\frac{q_\ell}{2}\right).
+\end{equation}
+This function has a clear probabilistic meaning. It combines the signs of incoming messages to determine parity consistency and combines their magnitudes to determine reliability. The sign part is simple:
+\begin{equation}
+  \mathrm{sign}\left(F_{\mathrm{CN}}(\mathbf{q})\right)
+  =
+  \prod_{\ell}\mathrm{sign}(q_\ell).
+\end{equation}
+The difficult part is the magnitude. The magnitude depends on all incoming reliabilities through nonlinear hyperbolic functions. The Min-Sum approximation keeps only the weakest reliability:
+\begin{equation}
+  |F_{\mathrm{MS}}(\mathbf{q})|=\min_{\ell}|q_\ell|.
+\end{equation}
+This approximation is computationally efficient but systematically overestimates the SPA magnitude in many cases. Normalized Min-Sum and Offset Min-Sum correct this tendency by applying either a scaling factor or a magnitude offset. The ANN approach generalizes this idea. Instead of using one fixed correction rule, the neural network learns a nonlinear mapping from the vector of incoming magnitudes to the target output magnitude.
+
+The check-node update can also be written through the box-plus operator:
+\begin{equation}
+  a\boxplus b
+  =
+  2\tanh^{-1}\left(\tanh\frac{a}{2}\tanh\frac{b}{2}\right).
+\end{equation}
+Using the Jacobian logarithm, this operation has the equivalent form
+\begin{equation}
+  a\boxplus b
+  =
+  \mathrm{sign}(ab)\min(|a|,|b|)
+  +\log\left(1+e^{-|a+b|}\right)
+  -\log\left(1+e^{-|a-b|}\right).
+\end{equation}
+The first term is the Min-Sum part. The two logarithmic terms are correction factors. This equation explains why Min-Sum works reasonably well and also why it is not exact. It also provides a theoretical interpretation of the neural model: the MLP can be seen as learning a data-dependent correction to the Min-Sum magnitude without explicitly computing the logarithmic terms.
+
+For a check node of degree $d_c$, the input to the ANN for one outgoing edge has dimension $d_c-1$. If the decoder uses the raw incoming messages
+\begin{equation}
+  \mathbf{q}_{i,j}^{(t)}
+  =
+  [L_{j_1\rightarrow i}^{(t)},\ldots,L_{j_{d_c-1}\rightarrow i}^{(t)}]^T,
+\end{equation}
+then the neural approximation is
+\begin{equation}
+  \hat{L}_{i\rightarrow j}^{(t)}
+  =
+  f_\theta(\mathbf{q}_{i,j}^{(t)}).
+\end{equation}
+However, the check-node function has useful symmetries. The output sign is determined by the product of input signs, while the magnitude is determined by the input magnitudes. Therefore, a more structured implementation can compute
+\begin{equation}
+  \hat{L}_{i\rightarrow j}^{(t)}
+  =
+  \left(\prod_{\ell}\mathrm{sign}(q_\ell)\right)
+  g_\theta(|q_1|,\ldots,|q_{d_c-1}|).
+\end{equation}
+This structure reduces the burden on the neural network because the network does not need to learn sign symmetry from data. It only learns the magnitude correction. Even when a compact MLP is used directly for the update function, this symmetry-based interpretation is important for future hardware-oriented refinement.
+
+\section{Training Data, Label Design, and Validation Logic}
+The quality of an ANN-assisted decoder depends strongly on how training labels are constructed. In the SPA-approximation scenario, the target label is the exact or high-precision SPA check-node output:
+\begin{equation}
+  r^{\mathrm{target}}=F_{\mathrm{SPA}}(\mathbf{q}).
+\end{equation}
+This scenario tests whether the MLP can learn a deterministic nonlinear function. If the network approximates SPA accurately over the message range used during decoding, the expected BER should be close to SPA. The benefit is then complexity reduction, especially if the neural function is easier to quantize or pipeline than the original nonlinear function.
+
+In the reliability-aware scenario, the target is modified:
+\begin{equation}
+  r^{\mathrm{target}}=\rho(\mathbf{q},s,\mathrm{SNR})F_{\mathrm{SPA}}(\mathbf{q}),
+\end{equation}
+where $\rho$ is a reliability factor. In a simple form, $\rho<1$ when a message is suspected to be unreliable and $\rho\approx 1$ otherwise. This strategy is related to damping:
+\begin{equation}
+  L^{(t)}_{\mathrm{damped}}
+  =
+  \delta L^{(t)}+(1-\delta)L^{(t-1)},
+\end{equation}
+but it is more flexible because the attenuation can depend on the local message pattern rather than on a fixed global scalar.
+
+The label design must be treated carefully. If the reliability-aware label is generated using information that would not be available in a real decoder, then the trained model may implicitly learn from an unrealistic oracle. This does not invalidate the study, but it changes the interpretation. The result should be described as evidence that message-magnitude control can improve finite-length loopy decoding, not as a universal proof that the same trained model will always outperform SPA. This is why the thesis uses restrained language when discussing the reported 0.2 to 0.4 dB gain.
+
+A robust validation procedure should separate training, validation, and testing SNR ranges. If training uses only one SNR, the network may learn a narrow message distribution. For example, at high SNR most LLR magnitudes are large and signs are reliable; at low SNR magnitudes are small and sign errors are frequent. A neural correction trained only at high SNR may overtrust messages at low SNR. A neural correction trained only at low SNR may unnecessarily damp messages at high SNR. Therefore, training over a range of SNR values is more appropriate for a decoder intended to operate across channel conditions.
+
+Let $\mathcal{S}_{\mathrm{train}}$ be the set of SNR values used in training and $\mathcal{S}_{\mathrm{test}}$ be the set used in testing. The most informative evaluation includes both interpolation and extrapolation:
+\begin{equation}
+  \mathcal{S}_{\mathrm{test}}
+  =
+  \mathcal{S}_{\mathrm{interp}}\cup\mathcal{S}_{\mathrm{extra}},
+\end{equation}
+where $\mathcal{S}_{\mathrm{interp}}$ lies inside the training range and $\mathcal{S}_{\mathrm{extra}}$ lies outside it. A model that works only in interpolation may still be useful, but the operating range must be stated clearly.
+
+The loss function also affects the learned behavior. MAE penalizes absolute message error:
+\begin{equation}
+  \mathcal{L}_{\mathrm{MAE}}=\frac{1}{N}\sum_{n=1}^{N}|\hat{r}_n-r_n|.
+\end{equation}
+Mean-square error would penalize large errors more strongly:
+\begin{equation}
+  \mathcal{L}_{\mathrm{MSE}}=\frac{1}{N}\sum_{n=1}^{N}(\hat{r}_n-r_n)^2.
+\end{equation}
+For LLR messages, the best loss is not always obvious. A small absolute error near zero can change the hard decision sign and may be more harmful than a larger magnitude error when the sign is already reliable. A sign-aware loss could include an additional penalty:
+\begin{equation}
+  \mathcal{L}_{\mathrm{sign}}
+  =
+  \mathcal{L}_{\mathrm{MAE}}
+  +
+  \lambda
+  \frac{1}{N}\sum_{n=1}^{N}
+  \mathbf{1}\{\mathrm{sign}(\hat{r}_n)\ne\mathrm{sign}(r_n)\}.
+\end{equation}
+This thesis does not require such a loss to justify the current results, but discussing it clarifies the connection between regression accuracy and decoding performance.
+
+\section{Complexity Accounting for ANN-Assisted LDPC Decoding}
+A precise complexity assessment requires more than the statement that the neural network is small. The number of parameters is one part of the argument, but the number of operations per iteration and the memory-access pattern are also important. Consider a one-hidden-layer MLP with input dimension $d_{\mathrm{in}}$, hidden dimension $d_h$, and output dimension $d_{\mathrm{out}}=1$. The number of weights and biases is
+\begin{equation}
+  N_\theta=d_{\mathrm{in}}d_h+d_h+d_h+d_{\mathrm{out}},
+\end{equation}
+where the first two terms belong to the hidden layer and the last two terms belong to the output layer. The number of multiply-accumulate operations per inference is approximately
+\begin{equation}
+  C_{\mathrm{MLP}}\approx d_{\mathrm{in}}d_h+d_h d_{\mathrm{out}}.
+\end{equation}
+For $d_{\mathrm{in}}=5$, $d_h=8$, and $d_{\mathrm{out}}=1$, this is about 48 multiplications and additions per outgoing message, plus ReLU comparisons. Whether this is cheaper than SPA depends on the hardware cost assigned to tanh, inverse tanh, or lookup-table access. In digital hardware, a multiply-add may be cheaper and easier to pipeline than a high-precision transcendental operation, especially when weights are quantized.
+
+If a Tanner graph has $E$ edges and the decoder runs $I_{\max}$ iterations, a local check-node update is evaluated on the order of $E I_{\max}$ times. The total ANN operation count is therefore approximately
+\begin{equation}
+  C_{\mathrm{total}}\approx E I_{\max} C_{\mathrm{MLP}}.
+\end{equation}
+This expression shows why the network must remain compact. A large neural network may look acceptable for one check-node update, but the cost is multiplied by all edges and all iterations. The local MLP architecture is therefore a more defensible design than a large end-to-end decoder.
+
+Memory cost also matters. If one set of weights is shared across all check nodes of the same degree, the parameter memory is small:
+\begin{equation}
+  M_{\theta}=N_{\theta}Q_w,
+\end{equation}
+where $Q_w$ is the number of bits per weight. With 8-bit quantization and 49 parameters, the weight memory is only a few hundred bits. If separate weights were learned for each node or each iteration, the memory cost would increase substantially. The thesis therefore favors weight sharing and model-driven structure because they are consistent with a practical receiver.
+
+Quantization can be incorporated into the neural model. A fixed-point network computes
+\begin{equation}
+  \hat{r}=Q_o\left(f_{Q_\theta(\theta)}(Q_i(\mathbf{q}))\right),
+\end{equation}
+where $Q_i$, $Q_\theta$, and $Q_o$ are quantizers for input messages, weights, and output messages. Quantization-aware training can simulate these quantizers during training so that the network learns parameters robust to finite precision. This would be an important continuation of the current work because LDPC decoders are usually implemented with fixed-point messages.
+
+\section{Scientific Interpretation of the Reported Gains}
+The reported gain of the enhanced ANN scenario should be presented as a conditional result. In communication research, a BER improvement is meaningful only when the code, block length, modulation, channel model, decoder schedule, iteration count, and simulation length are known. A curve obtained for one QC-LDPC code over AWGN cannot be generalized to all LDPC codes or all BIBCM-ID configurations. The thesis therefore interprets the gain as evidence that learned reliability control can be beneficial in a specific finite-length loopy decoder.
+
+This interpretation is scientifically stronger than an exaggerated claim. SPA is optimal for tree-like factor graphs under correct probability models, but practical LDPC graphs contain cycles. In a loopy graph, messages can become correlated. When correlated messages are repeatedly combined, the decoder may become overconfident. Reliability-aware attenuation can reduce this effect. The ANN method is thus not contradicting the theory of SPA; it is exploiting the difference between the ideal assumptions behind SPA and the finite-length conditions of practical decoding.
+
+The decoder-side result is also relevant to BIBCM-ID because the Demodulation block may deliver imperfect LLRs. If the Demodulation output is slightly biased or overconfident, a reliability-aware LDPC update may prevent the decoder from amplifying that bias too quickly. This is a plausible system-level benefit even before joint optimization of Modulation and decoding is considered. The ANN decoder is therefore treated as a controlled modification inside the channel decoder, while AutoEncoder Modulation is treated as a complementary investigation of the soft-information source.
+
+The complexity benefit depends on the implementation baseline. Compared with Min-Sum, the ANN may be more complex. Compared with exact SPA using tanh and inverse tanh, the ANN may be more hardware-friendly. Therefore, the fair statement is not that the ANN is always the lowest-complexity decoder, but that it offers a trade-off between SPA-like performance and implementable nonlinear approximation.
+
+Generalization remains an engineering requirement and can be tested through multiple parity-check matrices, multiple node degrees, multiple SNR ranges, quantized messages, and mismatched channel conditions. This does not weaken the current contribution; it places it at the correct level of evidence. The study demonstrates a focused method and interprets it with appropriate technical boundaries.

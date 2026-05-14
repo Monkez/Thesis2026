@@ -1,0 +1,89 @@
+{
+  "TRAIN_PA_RANGE": {
+    "a_sat": [
+      1.05,
+      1.55
+    ],
+    "p_rapp": [
+      1.5,
+      3.5
+    ],
+    "alpha_pm": [
+      0.0,
+      0.08
+    ],
+    "beta_pm": [
+      0.0,
+      0.0
+    ]
+  },
+  "TRAIN_MEMORY_RANGE": {
+    "mem_pre": [
+      -0.18,
+      0.18
+    ],
+    "mem_post": [
+      -0.1,
+      0.1
+    ]
+  },
+  "TEST_SCENARIOS": {
+    "memoryless_mild_pa": {
+      "pa": {
+        "a_sat": 1.45,
+        "p_rapp": 2.5,
+        "alpha_pm": 0.02,
+        "beta_pm": 0.0
+      },
+      "memory": {
+        "mem_pre": 0.0,
+        "mem_post": 0.0
+      }
+    },
+    "seen_memory_strong_pa": {
+      "pa": {
+        "a_sat": 1.12,
+        "p_rapp": 2.0,
+        "alpha_pm": 0.06,
+        "beta_pm": 0.0
+      },
+      "memory": {
+        "mem_pre": 0.16,
+        "mem_post": -0.06
+      }
+    },
+    "edge_memory_unseen_pa": {
+      "pa": {
+        "a_sat": 0.98,
+        "p_rapp": 1.35,
+        "alpha_pm": 0.1,
+        "beta_pm": 0.0
+      },
+      "memory": {
+        "mem_pre": 0.24,
+        "mem_post": -0.14
+      }
+    }
+  },
+  "WINDOW_RADIUS": 3,
+  "QUICK_TRAIN": true,
+  "TRAIN_STEPS": 250,
+  "QUICK_RUN": true,
+  "BLOCKS_BY_SNR": {
+    "0": 5,
+    "1": 5,
+    "2": 8,
+    "3": 10,
+    "4": 12,
+    "4.5": 15,
+    "5": 20,
+    "5.5": 25,
+    "6": 30
+  },
+  "symbol_metrics": {
+    "BCE mismatch": 0.4753771722316742,
+    "BCE sequence": 0.4623759984970093,
+    "BitAcc mismatch": 0.756195068359375,
+    "BitAcc sequence": 0.761871337890625
+  }
+}

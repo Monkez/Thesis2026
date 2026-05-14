@@ -1,0 +1,986 @@
+﻿\documentclass[a4paper,14pt]{extreport}
+
+% ============================================================
+%  LUAN VAN THAC SI - LATEX CLEAN VERSION
+%  Build with: xelatex thesis.tex
+% ============================================================
+
+\usepackage{fontspec}
+\setmainfont{Times New Roman}
+\usepackage{amsmath,amssymb,amsfonts,mathtools}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{multirow}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{geometry}
+\usepackage{setspace}
+\usepackage{indentfirst}
+\usepackage{titlesec}
+\usepackage{tocloft}
+\usepackage{fancyhdr}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{xcolor}
+
+\geometry{
+  top=3.5cm,
+  bottom=3cm,
+  left=3.5cm,
+  right=2cm,
+  includehead=false,
+  headheight=18pt
+}
+
+\onehalfspacing
+\setlength{\parindent}{1.25cm}
+\setlength{\parskip}{0pt}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+\graphicspath{{figures/}}
+
+\hypersetup{
+  colorlinks=false,
+  pdfborder={0 0 0},
+  pdftitle={Utilization of Artificial Neural Networks in LDPC Decoding for BIBCM-ID Systems},
+  pdfauthor={Lại Tiến Đệ}
+}
+
+% English-style names without relying on babel.
+\renewcommand{\contentsname}{TABLE OF CONTENTS}
+\renewcommand{\listfigurename}{LIST OF FIGURES}
+\renewcommand{\listtablename}{LIST OF TABLES}
+\renewcommand{\bibname}{REFERENCES}
+\renewcommand{\figurename}{Figure}
+\renewcommand{\tablename}{Table}
+\renewcommand{\chaptername}{Chapter}
+
+\titleformat{\chapter}[display]
+  {\normalfont\bfseries\centering}
+  {\chaptername\ \thechapter.}
+  {0.2cm}
+  {\MakeUppercase}
+\titlespacing*{\chapter}{0pt}{0pt}{1.0cm}
+
+\titleformat{\section}
+  {\normalfont\bfseries}
+  {\thesection.}
+  {0.5em}
+  {}
+\titleformat{\subsection}
+  {\normalfont\bfseries}
+  {\thesubsection.}
+  {0.5em}
+  {}
+\titleformat{\subsubsection}
+  {\normalfont\itshape}
+  {\thesubsubsection.}
+  {0.5em}
+  {}
+
+\captionsetup{
+  font=normalsize,
+  labelfont=bf,
+  justification=centering
+}
+
+% ===================== TABLE OF CONTENTS STYLE =====================
+% The academy sample uses a compact centered TOC title and dotted leaders.
+\renewcommand{\cfttoctitlefont}{\hfill\normalsize\bfseries}
+\renewcommand{\cftaftertoctitle}{\hfill\mbox{}\par\vspace{0.35cm}}
+\setlength{\cftbeforetoctitleskip}{0pt}
+\setlength{\cftaftertoctitleskip}{0.25cm}
+\renewcommand{\cftchapfont}{\normalfont}
+\renewcommand{\cftchappagefont}{\normalfont}
+\renewcommand{\cftchapleader}{\cftdotfill{\cftdotsep}}
+\renewcommand{\cftsecfont}{\normalfont}
+\renewcommand{\cftsecpagefont}{\normalfont}
+\renewcommand{\cftsubsecfont}{\normalfont}
+\renewcommand{\cftsubsecpagefont}{\normalfont}
+\setlength{\cftbeforechapskip}{0.12cm}
+\setlength{\cftbeforesecskip}{0.02cm}
+\renewcommand{\cftchappresnum}{Chapter\ }
+\renewcommand{\cftchapaftersnum}{.}
+\setlength{\cftchapnumwidth}{2.45cm}
+\setlength{\cftsecindent}{0.65cm}
+\setlength{\cftsecnumwidth}{1.2cm}
+\setlength{\cftsubsecindent}{1.65cm}
+\setlength{\cftsubsecnumwidth}{1.55cm}
+
+\makeatletter
+\newcommand{\manualtocline}[2]{%
+  \addtocontents{toc}{\protect\contentsline{chapter}{#1}{#2}{manual.#1}\protected@file@percent}%
+}
+\newcommand{\customtableofcontents}{%
+  \begin{center}
+    {\bfseries TABLE OF CONTENTS}
+  \end{center}
+  \vspace{0.25cm}
+  \@starttoc{toc}%
+}
+\newcommand{\customlistoftables}{%
+  \begin{center}
+    {\bfseries LIST OF TABLES}
+  \end{center}
+  \vspace{0.25cm}
+  \@starttoc{lot}%
+}
+\newcommand{\customlistoffigures}{%
+  \begin{center}
+    {\bfseries LIST OF FIGURES}
+  \end{center}
+  \vspace{0.25cm}
+  \@starttoc{lof}%
+}
+\makeatother
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[C]{\thepage}
+\renewcommand{\headrulewidth}{0pt}
+\fancypagestyle{plain}{
+  \fancyhf{}
+  \fancyhead[C]{\thepage}
+  \renewcommand{\headrulewidth}{0pt}
+}
+
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newcommand{\thesisTitle}{UTILIZATION OF ARTIFICIAL NEURAL NETWORKS IN LDPC DECODING FOR BIBCM-ID SYSTEMS}
+\newcommand{\thesisTitleEN}{UTILIZATION OF ARTIFICIAL NEURAL NETWORKS IN LDPC DECODING FOR BIBCM-ID SYSTEMS}
+\newcommand{\studentName}{LẠI TIẾN ĐỆ}
+\newcommand{\supervisorName}{TS. PHẠM XUÂN NGHĨA}
+\newcommand{\majorName}{Kỹ thuật viễn thông}
+\newcommand{\fieldName}{Kỹ thuật viễn thông}
+\newcommand{\academyName}{HỌC VIỆN KỸ THUẬT QUÂN SỰ}
+
+\begin{document}
+\sloppy
+
+% ============================================================
+% COVER
+% ============================================================
+\thispagestyle{empty}
+\begin{center}
+  \textbf{BỘ GIÁO DỤC VÀ ĐÀO TẠO \hfill BỘ QUỐC PHÒNG}\\[0.5cm]
+  \textbf{\academyName}\\[2.4cm]
+
+  {\bfseries\studentName}\\[2.0cm]
+
+  {\bfseries\MakeUppercase{\thesisTitle}}\\[2.2cm]
+
+  {\bfseries LUẬN VĂN THẠC SĨ}\\[0.5cm]
+  \textbf{Ngành: \majorName}\\
+  \textbf{Chuyên ngành: \fieldName}\\
+
+  \vfill
+  \textbf{Hà Nội - Năm 2026}
+\end{center}
+
+\newpage
+\thispagestyle{empty}
+\begin{center}
+  \textbf{BỘ GIÁO DỤC VÀ ĐÀO TẠO \hfill BỘ QUỐC PHÒNG}\\[0.5cm]
+  \textbf{\academyName}\\[2.2cm]
+
+  {\bfseries\studentName}\\[1.8cm]
+
+  {\bfseries\MakeUppercase{\thesisTitle}}\\[1.4cm]
+
+  \begin{tabular}{ll}
+    \textbf{Ngành:} & \textbf{\majorName}\\
+    \textbf{Chuyên ngành:} & \textbf{\fieldName}\\
+    \textbf{Mã số:} & \textbf{\ldots\ldots\ldots}
+  \end{tabular}\\[1.6cm]
+
+  \textbf{CÁN BỘ HƯỚNG DẪN KHOA HỌC}\\[0.4cm]
+  \textbf{Cán bộ hướng dẫn thứ nhất: \supervisorName}
+
+  \vfill
+  \textbf{Hà Nội - Năm 2026}
+\end{center}
+
+\newpage
+\thispagestyle{empty}
+\begin{center}
+  \textbf{CÔNG TRÌNH ĐƯỢC HOÀN THÀNH TẠI}\\[0.25cm]
+  \textbf{\academyName}\\[1.2cm]
+\end{center}
+
+\noindent Cán bộ chấm phản biện 1: \dotfill\\[-0.1cm]
+\begin{center}
+  \textit{(Học hàm, học vị, họ và tên)}
+\end{center}
+
+\vspace{0.3cm}
+\noindent Cán bộ chấm phản biện 2: \dotfill\\[-0.1cm]
+\begin{center}
+  \textit{(Học hàm, học vị, họ và tên)}
+\end{center}
+
+\vspace{1.0cm}
+\noindent Luận văn thạc sĩ được bảo vệ tại:
+
+\vspace{0.6cm}
+\begin{center}
+  \textbf{HỘI ĐỒNG CHẤM LUẬN VĂN THẠC SĨ}\\
+  \textbf{\academyName}\\[0.25cm]
+  Ngày \ldots\ tháng \ldots\ năm 2026
+\end{center}
+
+\newpage
+\pagenumbering{roman}
+\setcounter{page}{1}
+
+\noindent\textbf{Declaration:}
+
+I hereby declare that the research results presented in this thesis are truthful and were carried out within the scope of my thesis topic under the scientific guidance of my supervisor. Referenced materials, inherited results from published works, specialized documents, and simulation source codes are used for academic purposes and are cited in the thesis. I do not copy the work of others and present it as my own. I take full responsibility for this declaration in accordance with the regulations of the Academy.
+
+\vspace{2.0cm}
+\begin{flushright}
+  \begin{tabular}{c}
+    \textbf{THESIS AUTHOR}\\[2.0cm]
+    \textbf{Lai Tien De}
+  \end{tabular}
+\end{flushright}
+
+\newpage
+\manualtocline{Supplementary title page}{}
+\manualtocline{Thesis correction confirmation}{}
+\manualtocline{Declaration}{i}
+\manualtocline{TABLE OF CONTENTS}{ii}
+{\singlespacing\customtableofcontents}
+
+\newpage
+\addcontentsline{toc}{chapter}{TÓM TẮT LUẬN VĂN THẠC SĨ}
+\begin{center}
+  {\bfseries TÓM TẮT LUẬN VĂN THẠC SĨ}
+\end{center}
+
+\noindent\textbf{Tên luận văn:} Utilization of Artificial Neural Networks in LDPC Decoding for BIBCM-ID Systems.
+
+\noindent\textbf{Tác giả:} Lại Tiến Đệ.
+
+\noindent\textbf{Ngành, chuyên ngành:} Kỹ thuật viễn thông.
+
+\noindent\textbf{Ngày bảo vệ:} \ldots
+
+\noindent\textbf{Cán bộ hướng dẫn:} TS. Phạm Xuân Nghĩa. \textbf{Đơn vị:} Khoa Vô tuyến điện tử, Học viện Kỹ thuật Quân sự.
+
+\noindent\textbf{Mục đích và nhiệm vụ nghiên cứu:}
+Luận văn nghiên cứu khả năng ứng dụng mạng nơ-ron nhân tạo vào một số khối xử lý quan trọng trong hệ thống điều chế mã có hoán vị bit và giải mã lặp dạng BIBCM-ID. Trên cơ sở khảo sát cấu trúc BIBCM-ID gồm điều chế, mã kênh và hoán vị, luận văn tập trung vào hai hướng chính: hỗ trợ giải mã kênh LDPC bằng mô hình học sâu và đánh giá điều chế dựa trên AutoEncoder trong các điều kiện kênh không lý tưởng. Nhiệm vụ nghiên cứu bao gồm xây dựng mô hình hệ thống, biểu diễn thông tin mềm dạng LLR, phân tích cơ chế trao đổi thông tin ngoại lai trong giải mã lặp, khảo sát mô hình mạng nơ-ron cho cập nhật thông điệp trong giải mã LDPC, và đánh giá kết quả mô phỏng trên các kịch bản kênh có nhiễu, phi tuyến khuếch đại công suất và sai lệch tần số sóng mang.
+
+\noindent\textbf{Những đóng góp mới của luận văn:}
+Luận văn hệ thống hóa cơ sở lý thuyết của BIBCM-ID theo cách nhấn mạnh ba thành phần kỹ thuật: ánh xạ điều chế, mã kênh và bộ hoán vị. Trên nền tảng đó, luận văn đề xuất cách tiếp cận dùng mạng nơ-ron để xấp xỉ hoặc hiệu chỉnh một số bước xử lý thông tin mềm trong giải mã LDPC, đồng thời phân tích tiềm năng của điều chế AutoEncoder trong môi trường kênh không lý tưởng. Các kết quả mô phỏng cho thấy phương pháp học sâu có khả năng cải thiện độ bền của bộ thu trong một số điều kiện nhất định, tuy nhiên việc tích hợp đầy đủ các cải tiến vào hệ BIBCM-ID hoàn chỉnh vẫn là hướng nghiên cứu tiếp theo.
+
+\newpage
+\addcontentsline{toc}{chapter}{MASTER THESIS SUMMARY}
+\begin{center}
+  {\bfseries MASTER THESIS SUMMARY}
+\end{center}
+
+\noindent\textbf{Thesis title:} Utilization of Artificial Neural Networks in LDPC Decoding for BIBCM-ID Systems.
+
+\noindent\textbf{Author:} Lai Tien De.
+
+\noindent\textbf{Major, field:} Telecommunications Engineering.
+
+\noindent\textbf{Thesis defense date:} \ldots
+
+\noindent\textbf{Supervisor:} Dr. Pham Xuan Nghia. \textbf{Affiliation:} Faculty of Radio Electronics, Military Technical Academy.
+
+\noindent\textbf{Objectives and tasks:}
+This thesis investigates the use of artificial neural networks in selected signal processing blocks of Block-Interleaved Bit-Interleaved Coded Modulation with Iterative Decoding (BIBCM-ID) systems. Starting from the fundamental architecture of BIBCM-ID, the work emphasizes three essential components: modulation and bit labeling, channel coding, and interleaving. The research then focuses on two remaining directions that are directly related to the author's current results: neural assistance for LDPC decoding and AutoEncoder-based modulation under non-ideal wireless channels. The tasks include formulating the soft-information model, reviewing iterative decoding and log-likelihood ratio processing, developing neural models for LDPC check-node message updates, and evaluating AutoEncoder-based modulation in channels affected by power-amplifier nonlinearity, carrier frequency offset, fading, and additive noise.
+
+\noindent\textbf{Scientific contributions:}
+The thesis provides a consolidated technical review of BIBCM-ID and analyzes how deep learning can be introduced into physical-layer receiver design. It presents a neural approach to support LDPC decoding and studies AutoEncoder-based modulation as an end-to-end trainable transceiver mechanism. The simulation results indicate that learning-based processing can improve robustness in selected non-ideal channel conditions, although a complete integration into a full BIBCM-ID chain remains a future research direction.
+
+\newpage
+\addcontentsline{toc}{chapter}{LIST OF ABBREVIATIONS}
+\begin{center}
+  {\bfseries LIST OF ABBREVIATIONS}
+\end{center}
+
+\begin{longtable}{>{\raggedright\arraybackslash}p{3cm}>{\raggedright\arraybackslash}p{11cm}}
+\toprule
+\textbf{Abbreviation} & \textbf{Meaning}\\
+\midrule
+AE & AutoEncoder\\
+ANN & Artificial Neural Network\\
+AWGN & Additive White Gaussian Noise\\
+BER & Bit Error Rate\\
+BICM & Bit-Interleaved Coded Modulation\\
+BICM-ID & Bit-Interleaved Coded Modulation with Iterative Decoding\\
+BIBCM-ID & Block-Interleaved Bit-Interleaved Coded Modulation with Iterative Decoding\\
+BP & Belief Propagation\\
+CFO & Carrier Frequency Offset\\
+FEC & Forward Error Correction\\
+LDPC & Low-Density Parity-Check\\
+LLR & Log-Likelihood Ratio\\
+MAP & Maximum a Posteriori\\
+PA & Power Amplifier\\
+QAM & Quadrature Amplitude Modulation\\
+SNR & Signal-to-Noise Ratio\\
+\bottomrule
+\end{longtable}
+
+\newpage
+\addcontentsline{toc}{chapter}{LIST OF MATHEMATICAL SYMBOLS}
+\begin{center}
+  {\bfseries LIST OF MATHEMATICAL SYMBOLS}
+\end{center}
+
+\begin{longtable}{p{3cm}p{11cm}}
+\toprule
+\textbf{Symbol} & \textbf{Meaning}\\
+\midrule
+$\mathbf{u}$ & Information-bit vector at the channel encoder input\\
+$\mathbf{c}$ & Codeword after channel encoding\\
+$\pi(\cdot)$ & Interleaving or bit-permutation operation\\
+$s_m$ & Signal point associated with label $m$ in the modulation constellation\\
+$x[n]$ & Complex transmitted sample at discrete time $n$\\
+$y[n]$ & Complex received sample at discrete time $n$\\
+$N_0$ & Noise power spectral density\\
+$L(b_i)$ & Log-likelihood ratio of bit $i$\\
+$\mathcal{N}(\cdot)$ & Gaussian distribution\\
+$\theta$ & Parameter set of the neural network\\
+$\mathcal{L}$ & Loss function used during training\\
+\bottomrule
+\end{longtable}
+
+\newpage
+\addcontentsline{toc}{chapter}{LIST OF TABLES}
+\customlistoftables
+
+\newpage
+\addcontentsline{toc}{chapter}{LIST OF FIGURES}
+\customlistoffigures
+
+\clearpage
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+% ============================================================
+% MAIN CONTENT GENERATED FROM DOCX
+% ============================================================
+\input{body_from_docx.tex}
+\end{document}
+
+% Legacy manually drafted content kept below for traceability; the active
+% thesis body is loaded from body_from_docx.tex above.
+\iffalse
+\chapter*{MỞ ĐẦU}
+\addcontentsline{toc}{chapter}{\textbf{MỞ ĐẦU}}
+
+Trong các hệ thống thông tin số hiện đại, yêu cầu truyền dẫn tốc độ cao, độ tin cậy lớn và độ trễ thấp đặt ra nhiều thách thức cho thiết kế lớp vật lý. Các kỹ thuật điều chế mã, mã sửa sai và giải mã lặp đã được nghiên cứu rộng rãi nhằm khai thác tốt hơn tài nguyên công suất và băng thông. Trong số đó, hệ thống điều chế mã có hoán vị bit và giải mã lặp, đặc biệt là các biến thể BICM-ID và BIBCM-ID, là hướng tiếp cận có ý nghĩa vì kết hợp được ưu điểm của mã kênh, ánh xạ điều chế và trao đổi thông tin mềm giữa bộ giải điều chế và bộ giải mã.
+
+Hệ thống BIBCM-ID có thể được nhìn nhận như một cấu trúc truyền dẫn gồm ba thành phần quan trọng: bộ điều chế/ánh xạ tín hiệu, mã kênh và bộ hoán vị. Bộ điều chế quyết định hình học chòm sao và cách nhãn bit được gắn với các điểm tín hiệu. Mã kênh tạo ra độ dư có cấu trúc để sửa lỗi. Bộ hoán vị phân tán tương quan lỗi, hỗ trợ quá trình giải mã lặp và ảnh hưởng mạnh tới khả năng hội tụ của hệ thống. Trong những năm gần đây, bộ hoán vị trong BIBCM-ID đã có nhiều nghiên cứu chuyên sâu, đặc biệt liên quan tới thiết kế hoán vị đại số, tối ưu vòng ngắn và cải thiện đặc tính trao đổi thông tin ngoại lai. Vì vậy, luận văn này không đặt trọng tâm vào việc thiết kế bộ hoán vị mới mà tập trung vào hai hướng còn lại: điều chế và giải mã kênh.
+
+Sự phát triển của học sâu mở ra khả năng đưa các mô hình học dữ liệu vào một số khâu xử lý của hệ thống truyền dẫn số. Tuy nhiên, việc sử dụng mạng nơ-ron trong lớp vật lý cần được xem xét thận trọng. Mạng học sâu không thay thế trực tiếp các nguyên lý thông tin số, mà có thể đóng vai trò xấp xỉ các hàm phi tuyến, hiệu chỉnh sai lệch mô hình hoặc học ánh xạ tín hiệu trong các điều kiện kênh khó mô tả chính xác. Đối với BIBCM-ID, hai vị trí có tiềm năng là giải mã kênh dựa trên thông tin mềm và điều chế thích nghi dưới các điều kiện kênh không lý tưởng.
+
+Mục tiêu của luận văn là nghiên cứu khả năng ứng dụng mạng nơ-ron nhân tạo trong giải mã LDPC cho hệ thống BIBCM-ID, đồng thời khảo sát điều chế dựa trên AutoEncoder như một hướng bổ trợ cho thiết kế điều chế trong tương lai. Luận văn phân tích cơ sở lý thuyết BIBCM-ID, mô hình giải mã LDPC bằng lan truyền niềm tin, cách tính thông tin mềm LLR, và phương pháp dùng mạng nơ-ron để hỗ trợ cập nhật thông điệp. Ngoài ra, luận văn cũng trình bày kết quả nghiên cứu điều chế AutoEncoder trên các kênh không lý tưởng như khuếch đại công suất phi tuyến, sai lệch tần số sóng mang và fading.
+
+Phạm vi nghiên cứu của luận văn được giới hạn ở mô hình mô phỏng và phân tích thuật toán. Các kết quả về mạng nơ-ron và AutoEncoder được xem như bằng chứng đánh giá khả năng cải thiện từng khối xử lý, chưa khẳng định đã tích hợp hoàn chỉnh thành một hệ BIBCM-ID đầu-cuối. Cách tiếp cận này phù hợp với trạng thái nghiên cứu hiện tại: đánh giá từng thành phần có kiểm soát trước khi tiến tới tích hợp toàn hệ thống.
+
+Luận văn gồm ba chương. Chương 1 trình bày tổng quan hệ thống BIBCM-ID, tập trung vào nguyên lý điều chế mã, hoán vị, thông tin mềm và giải mã lặp. Chương 2 nghiên cứu giải mã LDPC và khả năng ứng dụng mạng nơ-ron nhân tạo trong tính toán thông điệp cập nhật. Chương 3 phân tích điều chế dựa trên AutoEncoder và đánh giá các kết quả mô phỏng trên kênh không lý tưởng. Phần kết luận tổng hợp các kết quả chính, nêu giới hạn và định hướng nghiên cứu tiếp theo.
+
+% ============================================================
+% CHAPTER 1
+% ============================================================
+\chapter[\textbf{TỔNG QUAN VỀ HỆ THỐNG BIBCM-ID}]{TỔNG QUAN VỀ HỆ THỐNG BIBCM-ID}
+
+\section{Tổng quan hệ thống thông tin số}
+
+Một hệ thống thông tin số điển hình gồm các khối xử lý từ nguồn tin, mã hóa nguồn, mã hóa kênh, điều chế, truyền qua kênh, giải điều chế, giải mã kênh và khôi phục thông tin. Trong mô hình cơ bản, dãy bit thông tin $\mathbf{u}$ được đưa qua bộ mã hóa kênh để tạo từ mã $\mathbf{c}$. Sau đó, các bit mã được ánh xạ thành các ký hiệu điều chế $s_m$ thuộc một chòm sao tín hiệu. Tín hiệu phát đi qua kênh và thu được dưới dạng
+\begin{equation}
+  y = hx + n,
+  \label{eq:flat_channel}
+\end{equation}
+trong đó $x$ là tín hiệu phát, $h$ là hệ số kênh và $n$ là nhiễu Gauss trắng cộng.
+
+Khi kênh là AWGN và bộ khuếch đại công suất hoạt động tuyến tính, các mô hình giải điều chế và giải mã có thể được xây dựng tương đối chính xác. Tuy nhiên, trong hệ thống thực tế, tín hiệu có thể chịu ảnh hưởng bởi fading, nhiễu pha, sai lệch tần số sóng mang, phi tuyến khuếch đại công suất và sai lệch đồng bộ. Những sai lệch này làm thay đổi phân bố tín hiệu nhận, khiến việc thiết kế bộ thu dựa trên giả thiết lý tưởng không còn tối ưu.
+
+Một thước đo phổ biến của chất lượng hệ thống là tỷ lệ lỗi bit BER:
+\begin{equation}
+  \mathrm{BER} = \frac{N_{\mathrm{err}}}{N_{\mathrm{bit}}},
+  \label{eq:ber}
+\end{equation}
+trong đó $N_{\mathrm{err}}$ là số bit bị quyết định sai và $N_{\mathrm{bit}}$ là tổng số bit truyền. Mục tiêu thiết kế là đạt BER thấp tại mức SNR nhỏ nhất có thể, đồng thời giữ độ phức tạp xử lý ở mức phù hợp.
+
+\section{Nguyên lý hệ thống BICM-ID và BIBCM-ID}
+
+BICM-ID là cấu trúc kết hợp mã hóa kênh, hoán vị bit, ánh xạ điều chế bậc cao và giải mã lặp. Trong BICM truyền thống, bộ giải điều chế tạo thông tin mềm cho từng bit rồi đưa vào bộ giải mã kênh. Với BICM-ID, thông tin ngoại lai từ bộ giải mã được phản hồi về bộ giải điều chế, giúp cải thiện dần độ tin cậy của các quyết định bit. BIBCM-ID mở rộng cách nhìn này bằng việc sử dụng hoán vị theo khối, qua đó kiểm soát tốt hơn tương quan giữa các bit và các vị trí điều chế.
+
+Quá trình truyền trong một hệ BIBCM-ID có thể mô tả bằng chuỗi:
+\begin{equation}
+  \mathbf{u}
+  \xrightarrow{\mathrm{Encoder}}
+  \mathbf{c}
+  \xrightarrow{\pi}
+  \mathbf{v}
+  \xrightarrow{\mu}
+  \mathbf{x}
+  \xrightarrow{\mathrm{Channel}}
+  \mathbf{y},
+  \label{eq:bibcm_chain}
+\end{equation}
+trong đó $\pi$ là bộ hoán vị và $\mu$ là ánh xạ điều chế. Ở phía thu, bộ giải điều chế mềm và bộ giải mã trao đổi thông tin ngoại lai theo nhiều vòng lặp:
+\begin{equation}
+  L_{\mathrm{A}}^{(t)}(b_i)
+  \rightarrow
+  L_{\mathrm{E,dem}}^{(t)}(b_i)
+  \rightarrow
+  L_{\mathrm{A,dec}}^{(t)}(b_i)
+  \rightarrow
+  L_{\mathrm{E,dec}}^{(t)}(b_i).
+  \label{eq:iter_exchange}
+\end{equation}
+Ký hiệu $L_{\mathrm{A}}$ biểu diễn thông tin tiên nghiệm, $L_{\mathrm{E}}$ biểu diễn thông tin ngoại lai và $t$ là chỉ số vòng lặp.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.92\textwidth]{sys_diagram.png}
+  \caption{Mô hình truyền dẫn có bộ phát, kênh không lý tưởng và bộ thu.}
+  \label{fig:sys_diagram}
+\end{figure}
+
+\section{Ba thành phần cốt lõi của BIBCM-ID}
+
+\subsection{Điều chế và ánh xạ tín hiệu}
+
+Bộ điều chế ánh xạ nhóm bit thành điểm tín hiệu trong chòm sao. Với điều chế $M$-QAM, mỗi ký hiệu mang $m=\log_2 M$ bit. Nếu $\mathcal{S}$ là tập chòm sao và $s \in \mathcal{S}$, tín hiệu phát có thể viết dưới dạng
+\begin{equation}
+  x[n] = a_I[n] + j a_Q[n],
+  \label{eq:iq_signal}
+\end{equation}
+trong đó $a_I[n]$ và $a_Q[n]$ lần lượt là thành phần đồng pha và vuông pha.
+
+Trong BICM-ID, ánh xạ bit không chỉ ảnh hưởng đến khoảng cách Euclid giữa các điểm tín hiệu, mà còn ảnh hưởng đến chất lượng thông tin mềm được trao đổi trong quá trình giải mã lặp. LLR của bit thứ $i$ có thể tính theo
+\begin{equation}
+  L(b_i|y)
+  =
+  \ln
+  \frac{
+    \sum\limits_{s\in \mathcal{S}_{i,1}}
+    p(y|s)P(s)
+  }{
+    \sum\limits_{s\in \mathcal{S}_{i,0}}
+    p(y|s)P(s)
+  },
+  \label{eq:llr_demodulator}
+\end{equation}
+trong đó $\mathcal{S}_{i,1}$ và $\mathcal{S}_{i,0}$ là các tập điểm tín hiệu có bit thứ $i$ bằng 1 hoặc 0.
+
+Đối với kênh AWGN, xác suất có điều kiện thường được mô hình hóa bởi
+\begin{equation}
+  p(y|s) =
+  \frac{1}{\pi N_0}
+  \exp\left(-\frac{|y-hs|^2}{N_0}\right).
+  \label{eq:awgn_likelihood}
+\end{equation}
+Trong kênh không lý tưởng, biểu thức này chỉ còn là xấp xỉ nếu không đưa đầy đủ méo phi tuyến, fading hoặc sai lệch đồng bộ vào mô hình.
+
+\subsection{Mã kênh}
+
+Mã kênh tạo độ dư có cấu trúc để bộ thu sửa lỗi. Trong hệ thống hiện đại, LDPC là họ mã có hiệu năng tốt nhờ ma trận kiểm tra chẵn lẻ thưa và thuật toán giải mã lặp. Một mã LDPC được xác định bởi ma trận kiểm tra chẵn lẻ $\mathbf{H}$, trong đó từ mã hợp lệ $\mathbf{c}$ thỏa mãn
+\begin{equation}
+  \mathbf{H}\mathbf{c}^{T} = \mathbf{0}.
+  \label{eq:ldpc_constraint}
+\end{equation}
+Đồ thị Tanner của LDPC gồm các nút biến và nút kiểm tra. Quá trình giải mã là quá trình trao đổi thông điệp giữa hai loại nút này.
+
+Trong BIBCM-ID, bộ giải mã kênh không hoạt động độc lập. Nó nhận thông tin mềm từ bộ giải điều chế và trả lại thông tin ngoại lai để cải thiện bước giải điều chế tiếp theo. Vì vậy, độ chính xác của thông điệp LLR và cách cập nhật tại các nút kiểm tra có ảnh hưởng trực tiếp tới hội tụ của toàn hệ.
+
+\subsection{Bộ hoán vị}
+
+Bộ hoán vị có nhiệm vụ phân tán các bit mã trước khi ánh xạ điều chế. Nếu $\pi$ là phép hoán vị, dãy sau hoán vị là
+\begin{equation}
+  v_i = c_{\pi(i)}.
+  \label{eq:interleaver}
+\end{equation}
+Hoán vị tốt giúp giảm tương quan lỗi, tránh việc các bit liên quan mạnh trong mã rơi vào các vị trí có độ tin cậy thấp giống nhau trong chòm sao. Trong nhiều nghiên cứu về BIBCM-ID, bộ hoán vị được thiết kế dựa trên cấu trúc đại số, tối ưu girth, hoặc tối ưu đặc tính trao đổi thông tin để cải thiện hội tụ.
+
+Các nghiên cứu gần đây về hoán vị trong BIBCM-ID tương đối mạnh và đã tạo nền tảng quan trọng cho hệ thống. Do đó, luận văn này kế thừa vai trò của bộ hoán vị như một thành phần đã có cơ sở nghiên cứu tốt, đồng thời tập trung vào hai khối còn lại là điều chế và giải mã kênh.
+
+\section{Thông tin mềm và giải mã lặp}
+
+Một điểm quan trọng của BIBCM-ID là sử dụng thông tin mềm thay vì quyết định cứng. Với bit $b$, LLR được định nghĩa bởi
+\begin{equation}
+  L(b)=\ln\frac{P(b=1|y)}{P(b=0|y)}.
+  \label{eq:llr_definition}
+\end{equation}
+Giá trị $|L(b)|$ biểu diễn độ tin cậy, còn dấu của $L(b)$ biểu diễn quyết định ưu tiên. Trong giải mã lặp, thông tin hậu nghiệm thường được tách thành phần tiên nghiệm, thông tin kênh và thông tin ngoại lai:
+\begin{equation}
+  L_{\mathrm{APP}}(b_i)
+  =
+  L_{\mathrm{ch}}(b_i)
+  +
+  L_{\mathrm{A}}(b_i)
+  +
+  L_{\mathrm{E}}(b_i).
+  \label{eq:app_decomposition}
+\end{equation}
+Việc tách thông tin ngoại lai giúp tránh việc một khối xử lý phản hồi lại chính thông tin mà nó đã nhận ở vòng trước, qua đó hỗ trợ hội tụ ổn định hơn.
+
+\section{Kết luận chương}
+
+Chương này đã trình bày cơ sở hệ thống BIBCM-ID và vai trò của ba thành phần quan trọng: điều chế, mã kênh và bộ hoán vị. BIBCM-ID đạt hiệu quả nhờ trao đổi thông tin mềm giữa bộ giải điều chế và bộ giải mã kênh. Trong đó, bộ hoán vị đã có nhiều nghiên cứu chuyên sâu, còn điều chế và giải mã kênh là hai khối có tiềm năng áp dụng học sâu để cải thiện hiệu năng trong điều kiện kênh không lý tưởng. Đây là cơ sở để Chương 2 nghiên cứu giải mã LDPC với mạng nơ-ron nhân tạo.
+
+% ============================================================
+% CHAPTER 2
+% ============================================================
+\chapter[\textbf{ỨNG DỤNG MẠNG NƠ-RON NHÂN TẠO TRONG GIẢI MÃ LDPC}]{ỨNG DỤNG MẠNG NƠ-RON NHÂN TẠO TRONG GIẢI MÃ LDPC}
+
+\section{Mã LDPC và thuật toán lan truyền niềm tin}
+
+LDPC là họ mã tuyến tính được mô tả bằng ma trận kiểm tra chẵn lẻ thưa. Tính thưa của $\mathbf{H}$ cho phép giải mã lặp với độ phức tạp thấp hơn so với giải mã tối ưu. Đồ thị Tanner gồm tập nút biến $\mathcal{V}$ và tập nút kiểm tra $\mathcal{C}$. Nếu nút biến $v$ nối với nút kiểm tra $c$, hai nút trao đổi các thông điệp LLR trong quá trình giải mã.
+
+Ở dạng sum-product, thông điệp từ nút biến $v$ đến nút kiểm tra $c$ tại vòng lặp $t$ là
+\begin{equation}
+  L_{v\rightarrow c}^{(t)}
+  =
+  L_{\mathrm{ch},v}
+  +
+  \sum_{c'\in \mathcal{N}(v)\setminus c}
+  L_{c'\rightarrow v}^{(t-1)}.
+  \label{eq:v_to_c}
+\end{equation}
+Thông điệp từ nút kiểm tra $c$ đến nút biến $v$ là
+\begin{equation}
+  L_{c\rightarrow v}^{(t)}
+  =
+  2\tanh^{-1}
+  \left[
+  \prod_{v'\in \mathcal{N}(c)\setminus v}
+  \tanh
+  \left(
+  \frac{L_{v'\rightarrow c}^{(t)}}{2}
+  \right)
+  \right].
+  \label{eq:c_to_v}
+\end{equation}
+Biểu thức \eqref{eq:c_to_v} là phi tuyến và có thể gây khó khăn về ổn định số khi LLR có biên độ lớn. Một xấp xỉ thường dùng là min-sum:
+\begin{equation}
+  L_{c\rightarrow v}^{(t)}
+  \approx
+  \left(
+  \prod_{v'\in \mathcal{N}(c)\setminus v}
+  \mathrm{sign}(L_{v'\rightarrow c}^{(t)})
+  \right)
+  \min_{v'\in \mathcal{N}(c)\setminus v}
+  |L_{v'\rightarrow c}^{(t)}|.
+  \label{eq:minsum}
+\end{equation}
+Min-sum giảm độ phức tạp nhưng có thể làm suy giảm hiệu năng so với sum-product. Đây là một trong những động cơ để xem xét mô hình học sâu xấp xỉ hoặc hiệu chỉnh quy tắc cập nhật thông điệp.
+
+\section{Động cơ sử dụng mạng nơ-ron}
+
+Mạng nơ-ron nhân tạo có khả năng xấp xỉ các hàm phi tuyến phức tạp. Trong giải mã LDPC, thay vì thay thế toàn bộ bộ giải mã, một cách tiếp cận thực tế hơn là dùng mạng để hỗ trợ một khâu cụ thể, chẳng hạn cập nhật thông điệp tại nút kiểm tra hoặc hiệu chỉnh hệ số trong thuật toán min-sum. Cách làm này giữ được cấu trúc mã và cơ sở lý thuyết của giải mã lặp, đồng thời tận dụng khả năng học của mạng để xử lý sai lệch mô hình.
+
+Giả sử đầu vào của một nút kiểm tra là vector LLR
+\begin{equation}
+  \mathbf{l}_{\mathrm{in}} =
+  [L_1,L_2,\ldots,L_d]^T,
+  \label{eq:check_input}
+\end{equation}
+trong đó $d$ là bậc nút kiểm tra. Mạng nơ-ron có thể được huấn luyện để sinh ra thông điệp cập nhật
+\begin{equation}
+  \widehat{\mathbf{l}}_{\mathrm{out}}
+  =
+  f_{\theta}(\mathbf{l}_{\mathrm{in}}),
+  \label{eq:nn_decoder}
+\end{equation}
+với $\theta$ là tham số mạng. Mục tiêu là $\widehat{\mathbf{l}}_{\mathrm{out}}$ gần với thông điệp tham chiếu của thuật toán sum-product hoặc gần với thông điệp tối ưu theo tiêu chí BER.
+
+\section{Mô hình mạng nơ-ron cho cập nhật nút kiểm tra}
+
+Một mô hình đơn giản có thể dùng mạng truyền thẳng nhiều lớp. Với đầu vào $\mathbf{l}_{\mathrm{in}}$, tầng ẩn thứ nhất là
+\begin{equation}
+  \mathbf{h}_1 = \sigma(\mathbf{W}_1\mathbf{l}_{\mathrm{in}}+\mathbf{b}_1),
+  \label{eq:nn_layer1}
+\end{equation}
+và đầu ra là
+\begin{equation}
+  \widehat{\mathbf{l}}_{\mathrm{out}}
+  =
+  \mathbf{W}_2\mathbf{h}_1+\mathbf{b}_2.
+  \label{eq:nn_output}
+\end{equation}
+Hàm kích hoạt $\sigma(\cdot)$ có thể là ReLU, tanh hoặc một hàm phi tuyến khác. Trong bối cảnh xử lý LLR, việc giới hạn biên độ đầu ra hoặc chuẩn hóa đầu vào là cần thiết để tránh thông điệp quá lớn làm mất ổn định giải mã.
+
+Hàm mất mát dùng để huấn luyện có thể là sai số bình phương trung bình giữa thông điệp mạng và thông điệp tham chiếu:
+\begin{equation}
+  \mathcal{L}_{\mathrm{MSE}}
+  =
+  \frac{1}{N}
+  \sum_{i=1}^{N}
+  \left\|
+  \widehat{\mathbf{l}}_{\mathrm{out},i}
+  -
+  \mathbf{l}_{\mathrm{out},i}^{\mathrm{ref}}
+  \right\|_2^2.
+  \label{eq:mse_loss}
+\end{equation}
+Nếu huấn luyện trực tiếp theo bit quyết định, có thể dùng cross-entropy:
+\begin{equation}
+  \mathcal{L}_{\mathrm{CE}}
+  =
+  -
+  \frac{1}{N}
+  \sum_{i=1}^{N}
+  \left[
+  b_i\log \hat{p}_i
+  +
+  (1-b_i)\log(1-\hat{p}_i)
+  \right].
+  \label{eq:ce_loss}
+\end{equation}
+
+\section{Tích hợp vào bộ thu BIBCM-ID}
+
+Trong hệ BIBCM-ID, bộ giải mã LDPC nhận LLR từ bộ giải điều chế. Nếu mạng nơ-ron được dùng ở khối cập nhật nút kiểm tra, quá trình trao đổi thông tin có thể mô tả như sau:
+\begin{equation}
+  L_{\mathrm{dem}}(b_i)
+  \rightarrow
+  L_{v\rightarrow c}
+  \rightarrow
+  f_{\theta}(\cdot)
+  \rightarrow
+  L_{c\rightarrow v}
+  \rightarrow
+  L_{\mathrm{dec}}(b_i).
+  \label{eq:nn_bibcmid_flow}
+\end{equation}
+Điểm quan trọng là mạng không làm mất cấu trúc đồ thị Tanner. Các ràng buộc kiểm tra chẵn lẻ vẫn được bảo toàn thông qua ma trận $\mathbf{H}$, còn mạng chỉ hỗ trợ cách tính thông điệp mềm.
+
+Với cách tiếp cận này, độ phức tạp cần được đánh giá cẩn thận. Nếu mạng quá lớn, lợi ích BER có thể không đủ bù cho chi phí tính toán. Do đó, mô hình phù hợp cho bộ thu thực tế thường phải nhỏ, ổn định và có khả năng lượng tử hóa.
+
+\section{Kết quả mô phỏng BIBCM-ID và phân tích}
+
+Các kết quả mô phỏng trong thư mục nghiên cứu cho thấy hệ BIBCM-ID có khả năng cải thiện BER qua các vòng lặp giải mã, đặc biệt khi SNR tăng. Hình \ref{fig:ham_bicmid} và Hình \ref{fig:conv_bicmid} minh họa các đường cong BER thu được từ mô phỏng Python/MATLAB trong tài liệu đi kèm.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.82\textwidth]{ber_ham_bicmid.png}
+  \caption{Kết quả BER của hệ BIBCM-ID trong một kịch bản mô phỏng.}
+  \label{fig:ham_bicmid}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.82\textwidth]{ber_conv_bicmid.png}
+  \caption{Kết quả BER của cấu trúc BIBCM-ID tham chiếu.}
+  \label{fig:conv_bicmid}
+\end{figure}
+
+Một phần kết quả với kênh có phi tuyến khuếch đại công suất được tóm tắt trong Bảng \ref{tab:pa_result}. Bảng này không nhằm thay thế toàn bộ dữ liệu mô phỏng, mà dùng để minh họa xu hướng: khi SNR tăng, BER sau nhiều vòng lặp giảm nhanh hơn so với vòng lặp đầu.
+
+\begin{table}[H]
+  \centering
+  \caption{Ví dụ kết quả BER trong kịch bản có phi tuyến PA}
+  \label{tab:pa_result}
+  \begin{tabular}{cccc}
+    \toprule
+    Chế độ & SNR (dB) & BER vòng 1 & BER vòng 10\\
+    \midrule
+    Mismatch & 4.0 & 0.2455 & 0.2054\\
+    Mismatch & 5.0 & 0.2078 & 0.1235\\
+    Mismatch & 6.0 & 0.1654 & 0.0023\\
+    PA-aware & 4.0 & 0.2373 & 0.1924\\
+    PA-aware & 5.0 & 0.1944 & 0.0602\\
+    PA-aware & 6.0 & 0.1503 & 0.0000\\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Kết quả cho thấy mô hình có xét đến đặc tính PA có thể cải thiện rõ ở vùng SNR cao. Tuy nhiên, việc dùng mạng nơ-ron cần được đánh giá thêm về khả năng tổng quát hóa. Nếu mạng chỉ được huấn luyện trên một phân bố kênh hẹp, hiệu năng có thể suy giảm khi điều kiện kênh thực tế thay đổi.
+
+\section{Kết luận chương}
+
+Chương này đã trình bày cơ sở giải mã LDPC và khả năng đưa mạng nơ-ron vào tính toán thông điệp cập nhật. Cách tiếp cận hợp lý là giữ cấu trúc mã và thuật toán giải mã lặp, sau đó dùng mạng học sâu để xấp xỉ hoặc hiệu chỉnh một số hàm phi tuyến khó tối ưu. Kết quả mô phỏng ban đầu cho thấy hướng nghiên cứu này có tiềm năng trong một số điều kiện kênh không lý tưởng, nhưng vẫn cần kiểm chứng về độ phức tạp, độ bền và khả năng tích hợp với toàn bộ hệ BIBCM-ID.
+
+% ============================================================
+% CHAPTER 3
+% ============================================================
+\chapter[\textbf{ĐIỀU CHẾ DỰA TRÊN AUTOENCODER VÀ KÊNH KHÔNG LÝ TƯỞNG}]{ĐIỀU CHẾ DỰA TRÊN AUTOENCODER VÀ KÊNH KHÔNG LÝ TƯỞNG}
+
+\section{Động cơ nghiên cứu điều chế học sâu}
+
+Trong hệ BIBCM-ID, điều chế là thành phần quyết định cách các bit mã được chuyển thành tín hiệu vật lý. Với 16-QAM truyền thống, các điểm tín hiệu được đặt trên lưới vuông và gán nhãn cố định. Cách thiết kế này thuận lợi cho phân tích, nhưng không nhất thiết tối ưu khi kênh có phi tuyến khuếch đại công suất, CFO hoặc fading. Do đó, điều chế dựa trên AutoEncoder được xem như một phương pháp học ánh xạ tín hiệu trực tiếp theo đặc tính kênh.
+
+AutoEncoder trong truyền thông số xem bộ phát là encoder, kênh là một lớp trung gian và bộ thu là decoder. Với thông điệp $m$, encoder tạo tín hiệu $x=f_{\theta_T}(m)$. Sau kênh, bộ thu nhận $y$ và decoder ước lượng phân bố
+\begin{equation}
+  \widehat{\mathbf{p}} = g_{\theta_R}(y),
+  \label{eq:ae_decoder}
+\end{equation}
+trong đó phần tử thứ $m$ của $\widehat{\mathbf{p}}$ xấp xỉ xác suất hậu nghiệm $P(m|y)$.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.88\textwidth]{autoencoder.png}
+  \caption{Mô hình AutoEncoder cho truyền thông số.}
+  \label{fig:autoencoder}
+\end{figure}
+
+\section{Mô hình kênh không lý tưởng}
+
+\subsection{Phi tuyến khuếch đại công suất}
+
+Mô hình Rapp thường được dùng để mô tả đặc tính AM/AM của PA:
+\begin{equation}
+  g(r)
+  =
+  \frac{r}
+  {
+    \left[
+      1+\left(\frac{r}{A_{\mathrm{sat}}}\right)^{2p}
+    \right]^{1/(2p)}
+  },
+  \label{eq:rapp}
+\end{equation}
+trong đó $r=|x|$, $A_{\mathrm{sat}}$ là biên độ bão hòa và $p$ điều khiển độ mềm của vùng chuyển tiếp. Khi $r$ gần $A_{\mathrm{sat}}$, tín hiệu bị nén biên độ, làm chòm sao nhận bị biến dạng.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.82\textwidth]{pa_characteristic.png}
+  \caption{Đặc tuyến khuếch đại công suất phi tuyến theo mô hình Rapp.}
+  \label{fig:pa_characteristic}
+\end{figure}
+
+Để tránh nghiệm học bằng cách tăng công suất vô hạn, tín hiệu phát được chuẩn hóa:
+\begin{equation}
+  x_{\mathrm{norm}}
+  =
+  \frac{x_{\mathrm{raw}}}
+  {\sqrt{\mathbb{E}\{|x_{\mathrm{raw}}|^2\}+\epsilon}}.
+  \label{eq:power_norm}
+\end{equation}
+Hàm mất mát có thể bổ sung thành phần phạt PA:
+\begin{equation}
+  \mathcal{L}_{\mathrm{PA}}
+  =
+  \mathbb{E}\left[
+  \max(|x|-\gamma A_{\mathrm{sat}},0)^2
+  \right].
+  \label{eq:pa_loss}
+\end{equation}
+
+\subsection{Sai lệch tần số sóng mang}
+
+CFO tạo ra pha quay tăng theo thời gian:
+\begin{equation}
+  y_{\mathrm{CFO}}[n]
+  =
+  x[n]e^{j2\pi \Delta f T_s n}
+  +
+  w[n].
+  \label{eq:cfo}
+\end{equation}
+Nếu bộ thu chỉ xử lý từng symbol độc lập, nó khó khai thác quy luật pha có tính tuần tự này. AutoEncoder nhiều-symbol có thể quan sát một cửa sổ tín hiệu để học xu hướng quay pha.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.82\textwidth]{cfo_effect.png}
+  \caption{Ảnh hưởng của CFO lên chòm sao tín hiệu theo thời gian.}
+  \label{fig:cfo_effect}
+\end{figure}
+
+\subsection{Fading đa đường}
+
+Trong kênh đa đường, tín hiệu nhận có dạng
+\begin{equation}
+  y[n] =
+  \sum_{\ell=0}^{L-1} h[\ell]x[n-\ell] + w[n],
+  \label{eq:multipath}
+\end{equation}
+trong đó $h[\ell]$ là đáp ứng kênh tại đường truyền thứ $\ell$. Khi kết hợp với PA và CFO, phân bố tín hiệu nhận trở nên phức tạp hơn nhiều so với mô hình AWGN lý tưởng.
+
+\section{So sánh 16-QAM và chòm sao học được}
+
+Hình \ref{fig:qam_pa} cho thấy chòm sao 16-QAM trước và sau PA. Trước PA, các điểm tín hiệu nằm trên lưới đều. Sau PA, các điểm ngoài biên bị nén và xoay, làm giảm khoảng cách quyết định.
+
+\begin{figure}[H]
+  \centering
+  \begin{subfigure}{0.45\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{qam16.png}
+    \caption{16-QAM lý tưởng}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}{0.45\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{qam16_after_pa.png}
+    \caption{16-QAM sau PA}
+  \end{subfigure}
+  \caption{Tác động của PA phi tuyến lên chòm sao 16-QAM.}
+  \label{fig:qam_pa}
+\end{figure}
+
+Với AutoEncoder, chòm sao không bị ràng buộc bởi hình lưới vuông. Mạng có thể học cách đặt điểm tín hiệu sao cho sau khi qua PA và kênh, các lớp vẫn tách biệt tốt hơn. Đây là điểm khác biệt quan trọng giữa tối ưu hình học tín hiệu truyền thống và tối ưu đầu-cuối bằng học sâu.
+
+\section{Huấn luyện AutoEncoder}
+
+Với đầu vào dạng one-hot $\mathbf{e}_m$, mục tiêu huấn luyện là tối đa xác suất nhận đúng thông điệp. Hàm mất mát cross-entropy được viết:
+\begin{equation}
+  \mathcal{L}_{\mathrm{CE}}
+  =
+  -
+  \sum_{m=1}^{M}
+  \mathbf{1}\{m\}
+  \log \widehat{p}(m|y).
+  \label{eq:ae_ce}
+\end{equation}
+Khi có ràng buộc công suất và khoảng cách chòm sao, hàm mất mát tổng quát có dạng
+\begin{equation}
+  \mathcal{L}_{\mathrm{total}}
+  =
+  \mathcal{L}_{\mathrm{CE}}
+  +
+  \lambda_P \mathcal{L}_{\mathrm{PA}}
+  +
+  \lambda_D \max(d_{\mathrm{target}}^2-d_{\min}^2,0),
+  \label{eq:ae_total_loss}
+\end{equation}
+trong đó
+\begin{equation}
+  d_{\min} =
+  \min_{i\ne j}\|x_i-x_j\|_2.
+  \label{eq:dmin}
+\end{equation}
+
+Phương pháp curriculum learning có thể được dùng bằng cách huấn luyện từ kênh dễ đến kênh khó. Ban đầu, mạng học trong kênh nhiễu nhẹ hoặc AWGN. Sau đó, các sai lệch PA, CFO và fading được tăng dần để mạng thích nghi ổn định hơn.
+
+\section{Kết quả mô phỏng điều chế AutoEncoder}
+
+\subsection{Kịch bản 1: AE single-symbol trên kênh Rayleigh và PA}
+
+Kịch bản thứ nhất đánh giá khả năng học chòm sao chịu ảnh hưởng PA và Rayleigh. Kết quả BER trong Hình \ref{fig:ae_s1} cho thấy AutoEncoder đạt lợi ích SNR khoảng 3--4 dB so với 16-QAM kết hợp cân bằng ZF trong điều kiện mô phỏng của bài báo.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.88\textwidth]{ae_scenario1_ber.png}
+  \caption{BER của AutoEncoder và 16-QAM trong kịch bản PA/Rayleigh.}
+  \label{fig:ae_s1}
+\end{figure}
+
+Ý nghĩa của kết quả này là chòm sao học được không tối ưu theo khoảng cách Euclid trước kênh, mà tối ưu theo khả năng phân biệt sau khi đi qua méo kênh. Đây là một cách tiếp cận phù hợp với các hệ thống có phần cứng không lý tưởng.
+
+\subsection{Kịch bản 2: AE nhiều-symbol bù CFO mù}
+
+Kịch bản thứ hai dùng AutoEncoder nhiều-symbol để học bù CFO. Với CFO bằng 0.005, kết quả trong Hình \ref{fig:ae_s2a} cho thấy AE duy trì BER thấp hơn 16-QAM tham chiếu ở vùng SNR cao. Với CFO bằng 0.01, lợi ích trở nên rõ hơn như Hình \ref{fig:ae_s2b}.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.88\textwidth]{ae_scenario2_cfo0005.png}
+  \caption{BER của AutoEncoder nhiều-symbol khi CFO = 0.005.}
+  \label{fig:ae_s2a}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.88\textwidth]{ae_scenario2_cfo001.png}
+  \caption{BER của AutoEncoder nhiều-symbol khi CFO = 0.01.}
+  \label{fig:ae_s2b}
+\end{figure}
+
+Cơ chế chính của kịch bản này là khai thác tương quan theo thời gian. CFO không phải nhiễu độc lập giữa các symbol; nó tạo ra một quá trình quay pha có cấu trúc. Khi mạng quan sát nhiều symbol, nó có thêm thông tin để suy ra xu hướng pha và bù sai lệch trong miền đặc trưng.
+
+\subsection{Kịch bản 3: AE với đặc tính mã hóa kênh}
+
+Kịch bản thứ ba mở rộng AutoEncoder từ điều chế sang hướng mã hóa kênh. Nếu $k$ bit được ánh xạ thành $N$ symbol phức, tốc độ hiệu dụng có thể viết:
+\begin{equation}
+  R = \frac{k}{2N}.
+  \label{eq:neural_fec_rate}
+\end{equation}
+Kết quả trong Hình \ref{fig:ae_s3} cho thấy mô hình neural FEC có thể đạt BER dưới $10^{-4}$ trong một số mức SNR của kịch bản mô phỏng.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.88\textwidth]{ae_scenario3_fec.png}
+  \caption{BER của AutoEncoder có đặc tính mã hóa kênh.}
+  \label{fig:ae_s3}
+\end{figure}
+
+Kết quả này có ý nghĩa nghiên cứu, nhưng cần diễn giải thận trọng. Mô hình neural FEC trong bài toán AutoEncoder chưa tương đương với việc tích hợp hoàn chỉnh vào hệ BIBCM-ID sử dụng LDPC hoặc Turbo/BCJR. Để tích hợp, đầu ra của bộ giải điều chế học sâu cần chuyển thành thông tin mềm LLR ổn định:
+\begin{equation}
+  L(b_i)
+  =
+  \ln
+  \frac{
+  \sum_{m:b_i(m)=1}P(s_m|y)
+  }{
+  \sum_{m:b_i(m)=0}P(s_m|y)
+  }.
+  \label{eq:ae_llr}
+\end{equation}
+
+\section{Khả năng liên kết với BIBCM-ID}
+
+Từ góc nhìn BIBCM-ID, điều chế AutoEncoder có thể đóng vai trò như một bộ ánh xạ học được. Tuy nhiên, để đưa vào hệ giải mã lặp, cần đảm bảo ba yêu cầu. Thứ nhất, ánh xạ học được phải có nhãn bit rõ ràng để tương thích với mã kênh. Thứ hai, bộ thu phải sinh được LLR mềm thay vì chỉ quyết định thông điệp cứng. Thứ ba, quá trình phản hồi thông tin ngoại lai từ decoder phải được định nghĩa sao cho không phá vỡ nguyên lý giải mã lặp.
+
+Do đó, luận văn xem AutoEncoder-based modulation là một hướng đánh giá tiềm năng cải thiện khối điều chế, chưa coi đây là giải pháp tích hợp hoàn chỉnh. Cách trình bày này phù hợp với kết quả hiện có và tránh kết luận vượt quá phạm vi mô phỏng.
+
+\section{Kết luận chương}
+
+Chương này đã trình bày cơ sở điều chế AutoEncoder trên các kênh không lý tưởng. Các kết quả cho thấy học sâu có thể cải thiện hiệu năng trong một số kịch bản: chòm sao học được giúp chống méo PA, mô hình nhiều-symbol có thể khai thác cấu trúc thời gian của CFO, và neural FEC cho thấy tiềm năng tối ưu chung giữa điều chế và mã hóa. Tuy nhiên, việc tích hợp các cải tiến này vào BIBCM-ID hoàn chỉnh vẫn cần nghiên cứu thêm về LLR mềm, độ phức tạp, khả năng tổng quát hóa và tương thích với bộ giải mã kênh.
+
+% ============================================================
+% CONCLUSION
+% ============================================================
+\chapter*{KẾT LUẬN VÀ KHUYẾN NGHỊ}
+\addcontentsline{toc}{chapter}{\textbf{KẾT LUẬN VÀ KHUYẾN NGHỊ}}
+
+\section*{1. Kết luận}
+
+Luận văn đã nghiên cứu khả năng ứng dụng mạng nơ-ron nhân tạo trong giải mã LDPC cho hệ thống BIBCM-ID và khảo sát điều chế dựa trên AutoEncoder như một hướng cải thiện khối điều chế. Về mặt lý thuyết, luận văn đã hệ thống hóa cấu trúc BIBCM-ID theo ba thành phần: điều chế, mã kênh và bộ hoán vị. Trong đó, bộ hoán vị là thành phần đã có nhiều nghiên cứu mạnh, còn điều chế và giải mã kênh là hai hướng có thể tiếp tục khai thác bằng học sâu.
+
+Đối với giải mã LDPC, luận văn phân tích thuật toán lan truyền niềm tin, cách cập nhật thông điệp tại nút biến và nút kiểm tra, đồng thời trình bày cách mạng nơ-ron có thể xấp xỉ hoặc hiệu chỉnh thông điệp cập nhật. Cách tiếp cận này giữ được cấu trúc đồ thị Tanner của LDPC, tránh việc thay thế hoàn toàn bộ giải mã bằng một hộp đen học sâu.
+
+Đối với điều chế AutoEncoder, luận văn đã trình bày mô hình đầu-cuối gồm encoder, channel layer và decoder. Các kết quả mô phỏng trên kênh có PA phi tuyến, CFO và fading cho thấy AutoEncoder có thể học chòm sao hoặc đặc trưng thời gian phù hợp với sai lệch kênh. Tuy nhiên, các kết quả này mới chứng minh tiềm năng ở mức từng khối, chưa phải một hệ BIBCM-ID tích hợp hoàn chỉnh.
+
+\section*{2. Khuyến nghị}
+
+Các hướng nghiên cứu tiếp theo gồm: xây dựng bộ giải điều chế học sâu có đầu ra LLR mềm ổn định; tích hợp mạng nơ-ron hỗ trợ LDPC vào vòng lặp BIBCM-ID; đánh giá độ phức tạp tính toán của mô hình học sâu; khảo sát khả năng tổng quát hóa khi kênh thực khác phân bố huấn luyện; và thử nghiệm trên mô hình OFDM hoặc SDR để kiểm chứng gần thực tế hơn.
+
+\begin{thebibliography}{99}
+\addcontentsline{toc}{chapter}{\textbf{TÀI LIỆU THAM KHẢO}}
+
+\bibitem{gallager1962}
+R. G. Gallager (1962), ``Low-density parity-check codes,'' \textit{IRE Transactions on Information Theory}, vol. 8, no. 1, pp. 21--28.
+
+\bibitem{mackay1999}
+D. J. C. MacKay (1999), ``Good error-correcting codes based on very sparse matrices,'' \textit{IEEE Transactions on Information Theory}, vol. 45, no. 2, pp. 399--431.
+
+\bibitem{caire1998}
+G. Caire, G. Taricco, and E. Biglieri (1998), ``Bit-interleaved coded modulation,'' \textit{IEEE Transactions on Information Theory}, vol. 44, no. 3, pp. 927--946.
+
+\bibitem{li2002}
+X. Li and J. A. Ritcey (2002), ``Bit-interleaved coded modulation with iterative decoding,'' \textit{IEEE Communications Letters}, vol. 1, no. 6, pp. 169--171.
+
+\bibitem{nachmani2016}
+E. Nachmani, Y. Be'ery, and D. Burshtein (2016), ``Learning to decode linear codes using deep learning,'' \textit{54th Annual Allerton Conference on Communication, Control, and Computing}, pp. 341--346.
+
+\bibitem{o2017}
+T. J. O'Shea and J. Hoydis (2017), ``An introduction to deep learning for the physical layer,'' \textit{IEEE Transactions on Cognitive Communications and Networking}, vol. 3, no. 4, pp. 563--575.
+
+\bibitem{revjournal}
+L. T. De, P. X. Nghia, and T. T. Duc (2026), ``Intelligent AutoEncoder-Based Modulation: Optimizing Transmission Performance over Non-Ideal Wireless Channels,'' manuscript in Publication 2.
+
+\bibitem{bibcm_sample}
+K. B. Trung (2025), \textit{Nghiên cứu cải thiện tỉ lệ, chất lượng hệ thống BICM-ID sử dụng mã liên kết}, Luận văn thạc sĩ, Học viện Kỹ thuật Quân sự.
+
+\end{thebibliography}
+
+\appendix
+\chapter*{PHỤ LỤC}
+\addcontentsline{toc}{chapter}{\textbf{PHỤ LỤC}}
+
+\section*{Phụ lục A. Ghi chú về dữ liệu mô phỏng}
+
+Các hình và bảng trong luận văn được tổng hợp từ thư mục kết quả mô phỏng, mã nguồn Python/MATLAB BIBCM-ID và bản thảo Publication 2. Các số liệu có tính minh họa cho xu hướng thuật toán và cần được kiểm chứng thêm nếu sử dụng cho báo cáo công bố chính thức.
+
+\end{document}
+\fi

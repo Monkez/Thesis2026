@@ -1,0 +1,90 @@
+{
+  "TRAIN_PA_RANGE": {
+    "a_sat": [
+      1.05,
+      1.55
+    ],
+    "p_rapp": [
+      1.5,
+      3.5
+    ],
+    "alpha_pm": [
+      0.0,
+      0.08
+    ],
+    "beta_pm": [
+      0.0,
+      0.0
+    ]
+  },
+  "TEST_PA_SCENARIOS": {
+    "mild_seen": {
+      "a_sat": 1.45,
+      "p_rapp": 2.5,
+      "alpha_pm": 0.02,
+      "beta_pm": 0.0
+    },
+    "strong_seen": {
+      "a_sat": 1.12,
+      "p_rapp": 2.0,
+      "alpha_pm": 0.06,
+      "beta_pm": 0.0
+    },
+    "edge_unseen": {
+      "a_sat": 0.98,
+      "p_rapp": 1.35,
+      "alpha_pm": 0.1,
+      "beta_pm": 0.0
+    }
+  },
+  "MAPRULE_MSEW": [
+    11,
+    2,
+    1,
+    12,
+    4,
+    9,
+    10,
+    3,
+    5,
+    16,
+    15,
+    6,
+    14,
+    7,
+    8,
+    13
+  ],
+  "dB_range": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    4.5,
+    5,
+    5.5,
+    6
+  ],
+  "QUICK_TRAIN": false,
+  "TRAIN_STEPS": 800,
+  "BATCH_SYMBOLS": 2048,
+  "QUICK_RUN": false,
+  "BLOCKS_BY_SNR": {
+    "0": 80,
+    "1": 80,
+    "2": 120,
+    "3": 160,
+    "4": 250,
+    "4.5": 400,
+    "5": 700,
+    "5.5": 900,
+    "6": 1200
+  },
+  "symbol_metrics": {
+    "MSE mismatch": 0.23921364545822144,
+    "MSE proposed": 0.051178254187107086,
+    "Corr mismatch": 0.9908275037946521,
+    "Corr proposed": 0.9970663719156603
+  }
+}

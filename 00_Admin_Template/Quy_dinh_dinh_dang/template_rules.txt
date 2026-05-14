@@ -1,0 +1,305 @@
+MẪU TRÌNH BÀY QUYỂN LUẬN VĂN THẠC SĨ
+
+1. Hình thức chung trình bày luận văn:
+Luận văn thạc sĩ phải được trình bày rõ ràng, mạch lạc, sạch sẽ, không được tẩy xoá, có đánh số trang, đánh số bảng, hình vẽ, đồ thị và công thức. Luận văn đóng bìa cứng màu xanh tím than, in chữ nhũ vàng. Cụ thể:
+- Soạn thảo văn bản: Luận văn được trình bày trên một mặt giấy trắng khổ A4 (210 x 297 mm), dày không quá 150 trang, và không ít hơn 80 trang, không kể phụ lục. Luận văn sử dụng font chữ Times New Roman cỡ 14 của hệ soạn thảo Winword hoặc tương đương; mật độ chữ bình thường, dãn dòng đặt ở chế độ 1,5 lines; lề trên 3,5cm; lề dưới 3cm; lề trái 3,5cm; lề phải 2cm.
+- Số trang được đánh ở giữa, phía trên đầu mỗi trang giấy bắt đầu từ trang số 1, nằm ở phần MỞ ĐẦU. Nếu có bảng biểu, hình vẽ trình bày theo chiều ngang khổ giấy thì đầu bảng là lề trái của trang.
+- Tiểu mục: Các tiểu mục của luận văn được trình bày và đánh số thành nhóm số, nhiều nhất gồm bốn chữ số với số thứ nhất là chỉ số. Tại mỗi mục phải có ít nhất 2 tiểu mục.
+- Bảng, hình vẽ, công thức: Việc đánh số bảng, hình vẽ, công thức gắn với số chương (ví dụ Hình 3.4 có nghĩa là hình thứ 4 trong chương 3). Đầu đề của bảng biểu ghi phía trên bảng, căn giữa, đầu đề của hình vẽ ghi phía dưới hình, căn giữa, cỡ chữ phải bằng cỡ chữ sử dụng trong văn bản luận văn, số công thức để trong ngoặc đơn và căn phải. Trong trường hợp công thức dài hơn một dòng thì số công thức được đánh ở dòng dưới căn phải.
+- Viết tắt: Chỉ viết tắt những từ, cụm từ hoặc thuật ngữ được sử dụng nhiều lần trong luận văn. Viết tắt sau lần viết đầy đủ thứ nhất và chữ viết tắt để trong ngoặc đơn. Nếu luận văn có nhiều hơn 10 chữ viết tắt thì phải có bảng danh mục các chữ viết tắt (xếp theo thứ tự A, B, C) ở phần đầu luận văn.
+- Phụ lục của luận văn: Phần này bao gồm những nội dung cần thiết nhằm minh họa hoặc bổ trợ cho nội dung luận văn, như: chương trình tính, kết quả khảo sát trên mô hình số, các số liệu, mẫu biểu, tranh ảnh... Phụ lục không được đánh số trang, không được dày hơn phần chính của luận văn.
+- Mục lục: Mục lục chỉ đưa đến nhóm tiểu mục (tức là đến 3 chữ số).
+- Tài liệu tham khảo và cách trích dẫn: 
++ Mọi ý kiến, khái niệm có ý nghĩa, mang tính chất gợi ý không phải của riêng tác giả và mọi tham khảo khác phải được trích dẫn và chỉ rõ nguồn trong danh mục Tài liệu tham khảo của luận văn. Việc trích dẫn là theo số thứ tự của tài liệu ở danh mục Tài liệu tham khảo và được đặt trong ngoặc vuông, khi cần có cả số trang, ví dụ: [15, tr.314-315].
++ Tài liệu tham khảo được xếp riêng theo thứ tự từng ngôn ngữ như sau: Việt, Anh, Pháp, Đức, Nga, Trung, Nhật... Các tài liệu bằng tiếng nước ngoài phải giữ nguyên văn, không phiên âm, không dịch, kể cả tài liệu bằng tiếng Trung Quốc, Nhật ... 
++ Tài liệu tham khảo xếp theo thứ tự ABC họ tên tác giả theo quy định tên của từng nước, riêng tài liệu không có tên tác giả thì xếp theo thứ tự ABC từ đầu tiên của tên cơ quan ban hành báo cáo hay ấn phẩm.
++  Tài liệu tham khảo sách, luận văn, báo cáo phải ghi đầy đủ thông tin sau:
+Tên các tác giả hoặc cơ quan ban hành,
+Năm xuất bản (đặt trong ngoặc đơn, dấu phẩy sau ngoặc đơn),
+Tên sách, luận văn hoặc báo cáo (in nghiêng, dấu phẩy cuối tên),
+Nhà xuất bản (dấu phẩy cuối tên nhà xuất bản),
+Nơi xuất bản (dấu chấm kết thúc tài liệu tham khảo).
++ Tài liệu tham khảo là bài báo trong tạp chí, bài trong một cuốn sách v.v... phải ghi đầy đủ các thông tin sau:
+Tên các tác giả,
+Năm công bố (đặt trong ngoặc đơn, dấu phẩy sau ngoặc đơn),
+Tên bài báo (trong ngoặc kép, không in nghiêng),
+Tên tạp chí hoặc tên sách (in nghiêng, dấu phẩy cuối tên),
+Tập,
+Số (đặt trong ngoặc đơn, dấu phẩy sau ngoặc đơn),
+Các số trang (gạch ngang giữa hai chữ số, dấu chấm kết thúc).
++ Nếu tài liệu dài hơn một dòng thì nên trình bày sao cho từ dòng thứ hai lùi vào so với dòng thứ nhất khoảng 1cm để rõ ràng, dễ theo dõi.
++ Số thứ tự tài liệu được đánh số từ 1 đến hết.
+2. Nộp quyển luận văn và File điện tử
+- Học viên cao học nộp 02 quyển (học viên dân sự 01 quyển) luận văn thạc sĩ và file điện tử cho Thư viện vào các ngày theo quy định. 
+- File điện tử đặt tên theo quy tắc: Mã học viên.doc hoặc Mã học viên.docx, gồm có ba file con như sau:
++ File 1: Chứa nội dung toàn văn của luận văn (Từ bìa đến các phụ lục); tên file đặt theo quy tắc: Mã học viên_LV.doc hoặc Mã học viên_LV.docx
++ File 2: file nén chứa chương trình, kết quả tính, sơ đồ, ảnh,...; tên file đặt theo quy tắc: Mã học viên_PL.rar
++ File 3: chứa mục lục của luận văn, các kết quả đạt được; tên file đặt theo quy tắc: Mã học viên_ML.doc
+2. Hình thức trình bày quyển luận văn:
+Trang bìa ngoài: (Bìa cứng màu tìm than, in chữ nhũ vàng đủ dấu tiếng Việt)
+BỘ GIÁO DỤC VÀ ĐÀO TẠO 	BỘ QUỐC PHÒNG
+HỌC VIỆN KỸ THUẬT QUÂN SỰ
+
+
+
+
+
+HỌ VÀ TÊN HỌC VIÊN
+
+
+
+
+
+TÊN ĐỀ TÀI LUẬN VĂN
+
+
+
+
+
+
+LUẬN VĂN THẠC SĨ
+Ngành: ............................................................
+Chuyên ngành: ...............................................
+
+
+
+
+
+
+
+
+Hà Nội - Năm 20..
+Trang bìa phụ: (In trên giấy trắng)
+BỘ GIÁO DỤC VÀ ĐÀO TẠO 	BỘ QUỐC PHÒNG
+HỌC VIỆN KỸ THUẬT QUÂN SỰ
+
+
+
+
+
+
+HỌ VÀ TÊN HỌC VIÊN
+
+
+
+
+
+
+TÊN ĐỀ TÀI LUẬN VĂN
+Ngành:................................................................
+Chuyên ngành:...................................................
+Mã số:.................................................................
+
+
+
+CÁN BỘ HƯỚNG DẪN KHOA HỌC
+Cán bộ hướng dẫn thứ nhất:...............................................
+Cán bộ hướng dẫn thứ hai (nếu có):...................................
+(Học hàm, học vị, họ và tên)
+
+
+
+
+
+
+Hà Nội - Năm 20..
+Trang tiếp theo:
+
+CÔNG TRÌNH ĐƯỢC HOÀN THÀNH TẠI 
+HỌC VIỆN KỸ THUẬT QUÂN SỰ
+
+	Cán bộ chấm phản biện 1:..................................................................
+(Học hàm, học vị, họ và tên)
+	Cán bộ chấm phản biện 2:..................................................................
+(Học hàm, học vị, họ và tên)
+
+	Luận văn thạc sĩ được bảo vệ tại:
+
+HỘI ĐỒNG CHẤM LUẬN VĂN THẠC SĨ
+HỌC VIỆN KỸ THUẬT QUÂN SỰ
+Ngày  ...  tháng  ...  năm 20..
+
+Trang tiếp theo:
+Tôi xin cam đoan: 
+	Những kết quả nghiên cứu được trình bày trong luận văn là hoàn toàn trung thực, của tôi, không vi phạm bất cứ điều gì trong luật sở hữu trí tuệ và pháp luật Việt . Nếu sai, tôi hoàn toàn chịu trách nhiệm trước pháp luật.
+
+TÁC GIẢ LUẬN VĂN
+(Ký và ghi rõ họ tên)
+
+Trang tiếp theo:
+
+MỤC LỤC
+											    Trang
+Trang phụ bìa:.....................................................................................................
+Bản xác nhận chỉnh sửa luận văn:.......................................................................
+Bản cam đoan: ....................................................................................................
+Mục lục:...............................................................................................................
+Tóm tắt luận văn:.................................................................................................
+Danh mục các ký hiệu, viết tắt, các bảng, các hình vẽ (nếu có)..........................
+MỞ ĐẦU...........................................................................................................1
+Chương 1. TÊN CHƯƠNG 1..........................................................................2
+1.1. Tên mục .....................................................................................................4
+1.1.1. Tên tiểu mục....................................................................................7 
+1.1.2. Tên tiểu mục..................................................................................10 
+1.2. Tên mục....................................................................................................16
+Chương 2. TÊN CHƯƠNG 2........................................................................22
+.....
+KẾT LUẬN VÀ KHUYẾN NGHỊ...............................................................87
+1. Kết luận.......................................................................................................87 
+2. Khuyến nghị................................................................................................88
+TÀI LIỆU THAM KHẢO............................................................................98
+
+Trang tiếp theo:
+
+TÓM TẮT LUẬN VĂN THẠC SĨ
+(Bằng tiếng Việt)
+
+	Tóm tắt luận văn được đưa lên mạng thông tin nội bộ và lưu trữ tại thư viện Học viện, nhằm thông báo rộng rãi kết quả nghiên cứu khoa học của từng học viên, giúp cho việc tra cứu và quản lý đào tạo sau đại học thuận lợi.
+Tóm tắt luận văn được trình bày trên khổ giấy A4, phông chữ Times New Roman, cỡ chữ 14 của hệ soạn thảo Winword. Nội dung chính của tóm tắt được trình bày khoảng 300 đến 350 từ, rõ ràng, mạch lạc (Cho cả phần tiếng Việt và tiếng Anh).
+Nội dung được trình bày gồm:
+Tên luận văn:
+Tác giả:
+Ngành, chuyên ngành:
+Ngày bảo vệ: 
+Cán bộ hướng dẫn: 							Đơn vị:
+Mục đích và nhiệm vụ nghiên cứu:
+Những đóng góp mới của luận văn:
+
+Trang tiếp theo:
+
+MASTER THESIS SUMMARY
+(In English)
+
+
+Thesis title:
+Author (s):
+Major, field:
+Thesis defenes date:
+Supervisor (s):
+Thesis’s objectives and tasks:
+Scientific contributions of the thesit:
+
+300-350 Word
+
+
+Trang tiếp theo: (Trình bày vào giữa trang)
+DANH MỤC CÁC KÝ HIỆU
+(Nếu có)
+Trang tiếp theo: (Trình bày vào giữa trang)
+DANH MỤC CÁC BẢNG
+(Nếu có)
+Trang tiếp theo: (Trình bày vào giữa trang)
+DANH MỤC HÌNH VẼ
+(Nếu có)
+Ví dụ:
+DANH MỤC HÌNH VẼ
+Trang
+Hình 2.1. Hình 1 của chương 2.	....12
+Hình 3.2. Hình 2 của chương 3.	..58
+
+Trang tiếp theo: (Trang 1 bắt đầu từ phần mở đầu) ví dụ:
+1
+MỞ ĐẦU
+	..............
+Trang tiếp theo:
+Chương 1. TÊN CHƯƠNG 1
+	Tóm tắt nội dung chương.....
+1.1. Tên mục... 
+	...
+1.1.1. Tên tiểu mục
+	...
+1.1.1.1. Tên mục con
+	...
+Trang tiếp theo:
+Chương 2. TÊN CHƯƠNG
+	Tóm tắt nội dung chương.....
+
+(Toàn bộ nội dung luận văn)
+Trang tiếp theo:
+KẾT LUẬN VÀ KHUYẾN NGHỊ
+1. Kết luận
+- Những kết luận mới,
+- Đóng góp mới và kiến nghị của tác giả về sử dụng kết quả nghiên cứu của luận văn.
+2. Khuyến nghị
+
+Trang tiếp theo:
+TÀI LIỆU THAM KHẢO
+Tiếng Việt:
+1......
+2......
+........
+Tiếng Anh:
+5......
+6......
+........
+Tiếng Nga:
+12.....
+13.....
+.........
+Trang tiếp theo:
+PHỤ LỤC
+(Nếu có)
+Trang tiếp theo:
+BÀI BÁO KHOA HỌC
+Trang tiếp theo:
+LÝ LỊCH TRÍCH NGANG
+	Họ và tên:....................................................................................................
+	Ngày tháng năm sinh:................................ Nơi sinh:..................................
+	Địa chỉ liên lạc:............................................................................................
+	.....................................................................................................................
+	Quá trình đào tạo:
+(Bắt đầu từ Đại học đến nay)
+	Quá trình công tác:
+(Bắt đầu từ khi đi làm đến nay)
+Trang tiếp theo:
+XÁC NHẬN QUYỂN LUẬN VĂN ĐỦ ĐIỆU KIỆN BẢO VỆ
+
+Họ và tên tác giả luận văn: …………………………………........…
+Đề tài luận văn: ………………………………………….....……….
+Ngành: ………...…………………........................…..........................
+Chuyên ngành: ………...…………………........................….............
+Mã số:……………….. …………………....................................…....
+Cán bộ hướng dẫn: …………….. ………………….........................
+	Đã đủ điều kiện bảo vệ trước Hội đồng đánh giá luận văn tốt nghiệp.
+
+
+CÁN BỘ HƯỚNG DẪN KHOA HỌC		           	  HỌC VIÊN
+	     (Ký và ghi rõ họ tên)				            (Ký và ghi rõ họ tên)
+
+
+
+
+   CHỦ NHIỆM KHOA (BỘ MÔN)			   	    CÁN BỘ KIỂM TRA
+      QUẢN LÝ CHUYÊN NGÀNH				     (Ký và ghi rõ họ tên)
+            (Ký và ghi rõ họ tên)
+Trang tiếp theo:
+CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT 
+Độc lập – Tự do – Hạnh phúc
+
+
+
+BẢN XÁC NHẬN CHỈNH SỬA LUẬN VĂN THẠC SĨ (Nếu có)
+
+Họ và tên tác giả luận văn: …………………………………........…
+Đề tài luận văn: ………………………………………….....……….
+Ngành: ………...…………………........................….........................
+Chuyên ngành:………...…………………........................….............
+Mã số:……………….. …………………....................................…....
+Cán bộ hướng dẫn: …………….. ………………….........................
+Tác giả, cán bộ hướng dẫn khoa học và Hội đồng chấm luận văn xác nhận tác giả đã sửa chữa, bổ sung luận văn theo biên bản họp Hội đồng ngày….........................………… với các nội dung sau:
+………………………………………………………………………………………..………………..……………………………………………………………………………………………………..…………………………………….…..………………………………………………………………………………………..………..……………………………………………………………...………………………………………..………………………………………
+
+							       	          Ngày ..... tháng .... năm 20... 
+Cán bộ hướng dẫn					    Tác giả luận văn
+          (Kỹ và ghi rõ họ tên)					  (Kỹ và ghi rõ họ tên)
+			
+
+
+
+
+CHỦ TỊCH HOẶC THƯ KÝ HỘI ĐỒNG
+(Kỹ và ghi rõ họ tên)
+Trang tiếp theo:
+Bản sao Biên bản họp hội đồng đánh giá luận văn;
+Trang tiếp theo:
+Bản sao Nhận xét của các phản biện.
