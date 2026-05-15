@@ -15,7 +15,7 @@ The fourth requirement is to report the iteration limit and stopping rule. A syn
 \begin{equation}
   \mathbf{H}\hat{\mathbf{c}}^T=\mathbf{0}.
 \end{equation}
-If one decoder reaches this condition earlier than another, it may reduce average complexity even when the maximum iteration limit is the same. Therefore, average iteration count is a useful companion metric:
+For the ANN-LDPC result, the comparison is interpreted as a same-protocol evaluation, but the extracted material does not provide a complete per-SNR record of $I_{\max}$, stopping-rule status, and average iteration count. These quantities must be included in the final simulation archive before making strong implementation-level claims. If one decoder reaches the syndrome condition earlier than another, it may reduce average complexity even when the maximum iteration limit is the same. Therefore, average iteration count is a useful companion metric:
 \begin{equation}
   \bar{I}=\frac{1}{N_f}\sum_{r=1}^{N_f}I_r,
 \end{equation}
@@ -28,9 +28,9 @@ The fifth requirement is to include frame error rate when possible. BER measures
 In coded systems, FER is often important because many applications treat a frame with one error as unusable. An ANN check-node update that reduces BER but leaves FER unchanged may still be useful, but the distinction should be understood.
 
 \section{Ablation View of the ANN Decoder}
-An ablation view helps clarify which part of the method is responsible for the observed behavior. The first ablation is SPA imitation versus reliability-aware labeling. If the SPA-imitation network matches SPA, this supports the claim that the MLP can approximate the nonlinear check-node function. If the reliability-aware network improves the curve, this supports the additional claim that learned magnitude control can help under finite loopy decoding. These are two different claims and should not be merged.
+An ablation view clarifies which part of the method is responsible for the observed behavior. The first ablation is SPA imitation versus reliability-aware labeling. If the SPA-imitation network matches SPA, this supports the claim that the MLP can approximate the nonlinear check-node function. If the reliability-aware network improves the curve, this supports the additional claim that learned magnitude control can be beneficial under finite loopy decoding. These two claims should be evaluated separately.
 
-The second ablation is network size. A compact network is central to the engineering argument. If a larger network improves BER slightly but greatly increases cost, it may be less relevant to a receiver implementation. Therefore, the hidden-layer size should be interpreted as part of the design trade-off:
+The second ablation is network size. A compact network is central to the engineering argument. If a larger network improves BER slightly but greatly increases cost, it may be less relevant to a receiver implementation. Therefore, the hidden-layer size should be interpreted as a design variable in the performance-complexity trade-off:
 \begin{equation}
   \mathrm{Tradeoff}=
   \left(\mathrm{BER},\ \mathrm{FER},\ \bar{I},\ C_{\mathrm{op}},\ M_{\theta}\right),
@@ -48,17 +48,19 @@ The fourth ablation is node degree. A single MLP may be trained for one check-no
   g_\theta(\{|q_\ell|\})=
   \rho_\theta\left(\sum_{\ell}\psi_\theta(|q_\ell|)\right),
 \end{equation}
-where $\psi_\theta$ and $\rho_\theta$ are learnable functions. This form respects the fact that the check-node update should not depend on the arbitrary ordering of incoming edges.
+where $\psi_\theta$ and $\rho_\theta$ are learnable functions. This form respects the fact that the check-node update should not depend on the arbitrary order in which messages are listed.
 
 The fifth ablation is iteration dependence. A network can share the same parameters across all iterations or use iteration-specific parameters. Shared parameters reduce memory and are easier to justify. Iteration-specific parameters may improve performance but risk overfitting to a fixed iteration schedule. For a practical decoder, shared or lightly parameterized iteration dependence is preferable unless the gain is substantial.
 
 \section{Scientific Boundaries of the Decoder Study}
 The comparison between the ANN decoder and normalized Min-Sum should be interpreted through both performance and implementation criteria. Normalized Min-Sum is extremely simple and may be preferable when minimum complexity is the only goal. The ANN method is more relevant when the designer wants SPA-like behavior without explicit transcendental functions, or when reliability-aware damping provides a controlled advantage. The result is therefore a trade-off, not a universal replacement.
 
-The statistical reliability of the reported BER gain depends on simulation length and the number of observed errors. The available curves show a trend under the reported conditions, while lower-BER regions would require longer simulations and more error events for standard-level claims. This interpretation is consistent with a study whose main contribution is algorithmic analysis and feasibility evaluation.
+The statistical reliability of a BER gain depends on simulation length and the number of observed errors. Figure~\ref{fig:ann_ldpc_ber_comparison} shows a favorable trend under the stated QC-LDPC and BPSK/AWGN conditions, while standard-level claims in lower-BER regions would require longer simulations and explicit error-event logging at each SNR point. This interpretation is consistent with a study centered on algorithmic analysis and feasibility assessment.
+
+A complete reproduction table should include, for each SNR point, the number of transmitted frames, the number of transmitted information bits, the number of observed bit errors, the number of frame errors, and the stopping outcome if early termination is enabled. Without these fields, the BER curve remains useful for comparing trends among algorithms, but its low-BER tail should not be overinterpreted.
 
 The ANN does not remove the interpretability of LDPC decoding because the proposed method preserves the Tanner graph and changes only a local update function. The parity-check matrix, syndrome test, variable-node update, and iterative schedule remain interpretable. The MLP acts as a learned approximation or correction for the nonlinear check-node operation. This is very different from replacing the decoder by a neural classifier that directly maps channel samples to messages.
 
 The method is compatible with soft information from BIBCM-ID Demodulation at the message-interface level: the LDPC decoder consumes LLRs regardless of whether they originate from BPSK Demodulation or high-order BIBCM-ID Demodulation. However, the distribution of those LLRs may differ. BPSK-AWGN is therefore a controlled first evaluation, while BIBCM-ID soft input is the broader system context.
 
-These possible challenges are not defects if they are addressed explicitly. They define the boundary between a focused master's-level contribution and a full standard-ready receiver implementation. The revised text uses this boundary to keep the claims credible: ANN-assisted check-node processing is the central contribution; AutoEncoder Modulation is a supporting analysis of the soft-information source; broader multi-channel validation remains an engineering continuation.
+These possible challenges are not defects if they are addressed explicitly. They define the boundary between a focused master's-level contribution and a full standard-ready receiver implementation. The thesis uses this boundary to keep the claims credible: ANN-assisted check-node processing is the central contribution; AutoEncoder Modulation is a supporting analysis of the soft-information source; broader multi-channel validation remains an engineering continuation.

@@ -26,6 +26,9 @@
 \usepackage{enumitem}
 \usepackage{hyperref}
 \usepackage{xcolor}
+\usepackage{tikz}
+\usepackage[final]{microtype}
+\usetikzlibrary{arrows.meta,positioning,calc}
 
 \geometry{
   top=3.5cm,
@@ -39,6 +42,15 @@
 \onehalfspacing
 \setlength{\parindent}{1.25cm}
 \setlength{\parskip}{0pt}
+\emergencystretch=2.5em
+\clubpenalty=10000
+\widowpenalty=10000
+\displaywidowpenalty=10000
+\brokenpenalty=10000
+\finalhyphendemerits=10000
+\hyphenpenalty=10000
+\exhyphenpenalty=10000
+\raggedbottom
 \setcounter{secnumdepth}{3}
 \setcounter{tocdepth}{3}
 \graphicspath{{figures/}}
@@ -347,6 +359,11 @@ $x[n]$ & Complex transmitted sample at discrete time $n$\\
 $y[n]$ & Complex received sample at discrete time $n$\\
 $N_0$ & Noise power spectral density\\
 $L(b_i)$ & Log-likelihood ratio of bit $i$\\
+$L_{\mathrm{ch}}$ & Channel log-likelihood ratio used to initialize LDPC decoding\\
+$I_{\max}$ & Maximum number of decoding iterations\\
+$\mathbf{q}$ & Local incoming-message vector used by the ANN check-node model\\
+$\eta_n$ & Reliability factor used in offline label construction\\
+$\mathbf{H}$ & LDPC parity-check matrix\\
 $\mathcal{N}(\cdot)$ & Gaussian distribution\\
 $\theta$ & Parameter set of the neural network\\
 $\mathcal{L}$ & Loss function used during training\\

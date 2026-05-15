@@ -54,6 +54,7 @@ then the neural approximation is
   =
   f_\theta(\mathbf{q}_{i,j}^{(t)}).
 \end{equation}
+For the compact 49-parameter configuration emphasized in the reported decoder experiment, this corresponds to a degree-five local update, so $d_c-1=4$ and $\mathbf{q}_{i,j}^{(t)}\in\mathbb{R}^4$. The model should therefore not be described as a universal fixed-size replacement for arbitrary LDPC check nodes. For other degrees, the implementation must either train degree-specific networks, use a clearly defined padding or feature-selection rule, or adopt a permutation-invariant architecture.
 However, the check-node function has useful symmetries. The output sign is determined by the product of input signs, while the magnitude is determined by the input magnitudes. Therefore, a more structured implementation can compute
 \begin{equation}
   \hat{L}_{i\rightarrow j}^{(t)}
@@ -61,7 +62,7 @@ However, the check-node function has useful symmetries. The output sign is deter
   \left(\prod_{\ell}\mathrm{sign}(q_\ell)\right)
   g_\theta(|q_1|,\ldots,|q_{d_c-1}|).
 \end{equation}
-This structure reduces the burden on the neural network because the network does not need to learn sign symmetry from data. It only learns the magnitude correction. Even when a compact MLP is used directly for the update function, this symmetry-based interpretation is important for future hardware-oriented refinement.
+This structure reduces the burden on the neural network because the network does not need to learn sign symmetry from data. It only learns the magnitude correction. Even when a compact MLP is used directly for the update function, this symmetry-based interpretation is important for later hardware-oriented design refinement.
 
 \section{Training Data, Label Design, and Validation Logic}
 The quality of an ANN-assisted decoder depends strongly on how training labels are constructed. In the SPA-approximation scenario, the target label is the exact or high-precision SPA check-node output:
@@ -74,7 +75,7 @@ In the reliability-aware scenario, the target is modified:
 \begin{equation}
   r^{\mathrm{target}}=\rho(\mathbf{q},s,\mathrm{SNR})F_{\mathrm{SPA}}(\mathbf{q}),
 \end{equation}
-where $\rho$ is a reliability factor. In a simple form, $\rho<1$ when a message is suspected to be unreliable and $\rho\approx 1$ otherwise. This strategy is related to damping:
+where $\rho$ is a reliability factor. In a simple form, $\rho<1$ when a message is suspected to be unreliable and $\rho\approx 1$ otherwise. This strategy is related to the following damping rule:
 \begin{equation}
   L^{(t)}_{\mathrm{damped}}
   =
@@ -82,7 +83,9 @@ where $\rho$ is a reliability factor. In a simple form, $\rho<1$ when a message 
 \end{equation}
 but it is more flexible because the attenuation can depend on the local message pattern rather than on a fixed global scalar.
 
-The label design must be treated carefully. If the reliability-aware label is generated using information that would not be available in a real decoder, then the trained model may implicitly learn from an unrealistic oracle. This does not invalidate the study, but it changes the interpretation. The result should be described as evidence that message-magnitude control can improve finite-length loopy decoding, not as a universal proof that the same trained model will always outperform SPA. This is why the thesis uses restrained language when discussing the reported 0.2 to 0.4 dB gain.
+The label design must be treated carefully. If the reliability-aware label is generated using information that would not be available in a real decoder, then the trained model may implicitly learn from an unrealistic oracle. This does not invalidate the study, but it changes the interpretation. The result should be described as evidence that message-magnitude control can improve finite-length loopy decoding under selected conditions, not as a universal guarantee of superiority over SPA. This is why the thesis uses restrained language when discussing the approximate $0.2$--$0.4$ dB trend-level gain observed in Figure~\ref{fig:ann_ldpc_ber_comparison}.
+
+The same distinction applies to reference messages used during label construction. A reference message can be generated offline from a cleaner SPA computation, a known transmitted codeword, or another teacher rule. Such information is used only to construct targets for training. During inference, the deployed ANN receives the local incoming-message vector $\mathbf{q}_{i,j}^{(t)}$ and does not receive the transmitted bits, a clean-channel message, or an explicit oracle flag. If the target construction uses information unavailable online, the result should be interpreted as a feasibility study of learned damping and reliability control.
 
 A robust validation procedure should separate training, validation, and testing SNR ranges. If training uses only one SNR, the network may learn a narrow message distribution. For example, at high SNR most LLR magnitudes are large and signs are reliable; at low SNR magnitudes are small and sign errors are frequent. A neural correction trained only at high SNR may overtrust messages at low SNR. A neural correction trained only at low SNR may unnecessarily damp messages at high SNR. Therefore, training over a range of SNR values is more appropriate for a decoder intended to operate across channel conditions.
 
@@ -112,18 +115,18 @@ For LLR messages, the best loss is not always obvious. A small absolute error ne
   \frac{1}{N}\sum_{n=1}^{N}
   \mathbf{1}\{\mathrm{sign}(\hat{r}_n)\ne\mathrm{sign}(r_n)\}.
 \end{equation}
-This thesis does not require such a loss to justify the current results, but discussing it clarifies the connection between regression accuracy and decoding performance.
+This thesis does not require such a loss to justify the current results, but discussing it clarifies the connection between regression accuracy and decoding~performance.
 
 \section{Complexity Accounting for ANN-Assisted LDPC Decoding}
 A precise complexity assessment requires more than the statement that the neural network is small. The number of parameters is one part of the argument, but the number of operations per iteration and the memory-access pattern are also important. Consider a one-hidden-layer MLP with input dimension $d_{\mathrm{in}}$, hidden dimension $d_h$, and output dimension $d_{\mathrm{out}}=1$. The number of weights and biases is
 \begin{equation}
-  N_\theta=d_{\mathrm{in}}d_h+d_h+d_h+d_{\mathrm{out}},
+  N_\theta=d_{\mathrm{in}}d_h+d_h+d_h d_{\mathrm{out}}+d_{\mathrm{out}},
 \end{equation}
 where the first two terms belong to the hidden layer and the last two terms belong to the output layer. The number of multiply-accumulate operations per inference is approximately
 \begin{equation}
   C_{\mathrm{MLP}}\approx d_{\mathrm{in}}d_h+d_h d_{\mathrm{out}}.
 \end{equation}
-For $d_{\mathrm{in}}=5$, $d_h=8$, and $d_{\mathrm{out}}=1$, this is about 48 multiplications and additions per outgoing message, plus ReLU comparisons. Whether this is cheaper than SPA depends on the hardware cost assigned to tanh, inverse tanh, or lookup-table access. In digital hardware, a multiply-add may be cheaper and easier to pipeline than a high-precision transcendental operation, especially when weights are quantized.
+For the representative 49-parameter configuration used in this thesis, $d_{\mathrm{in}}=4$, $d_h=8$, and $d_{\mathrm{out}}=1$. The inference cost is therefore about $4\times 8+8\times 1=40$ multiply-accumulate operations per outgoing message, plus ReLU comparisons. Whether this is cheaper than SPA depends on the hardware cost assigned to tanh, inverse tanh, or lookup-table access. In digital hardware, a multiply-add may be cheaper and easier to pipeline than a high-precision transcendental operation, especially when weights are quantized.
 
 If a Tanner graph has $E$ edges and the decoder runs $I_{\max}$ iterations, a local check-node update is evaluated on the order of $E I_{\max}$ times. The total ANN operation count is therefore approximately
 \begin{equation}
@@ -143,8 +146,8 @@ Quantization can be incorporated into the neural model. A fixed-point network co
 \end{equation}
 where $Q_i$, $Q_\theta$, and $Q_o$ are quantizers for input messages, weights, and output messages. Quantization-aware training can simulate these quantizers during training so that the network learns parameters robust to finite precision. This would be an important continuation of the current work because LDPC decoders are usually implemented with fixed-point messages.
 
-\section{Scientific Interpretation of the Reported Gains}
-The reported gain of the enhanced ANN scenario should be presented as a conditional result. In communication research, a BER improvement is meaningful only when the code, block length, modulation, channel model, decoder schedule, iteration count, and simulation length are known. A curve obtained for one QC-LDPC code over AWGN cannot be generalized to all LDPC codes or all BIBCM-ID configurations. The thesis therefore interprets the gain as evidence that learned reliability control can be beneficial in a specific finite-length loopy decoder.
+\section{Scientific Interpretation of the Observed Gains}
+The gain of the enhanced ANN scenario should be presented as a conditional result. In communication research, a BER improvement is meaningful only when the code, block length, modulation, channel model, decoder schedule, iteration count, and simulation length are known. A curve obtained for one QC-LDPC code over AWGN cannot be generalized to all LDPC codes or all BIBCM-ID configurations. The thesis therefore interprets the gain as evidence that learned reliability control can improve a specific finite-length loopy decoder.
 
 This interpretation is scientifically stronger than an exaggerated claim. SPA is optimal for tree-like factor graphs under correct probability models, but practical LDPC graphs contain cycles. In a loopy graph, messages can become correlated. When correlated messages are repeatedly combined, the decoder may become overconfident. Reliability-aware attenuation can reduce this effect. The ANN method is thus not contradicting the theory of SPA; it is exploiting the difference between the ideal assumptions behind SPA and the finite-length conditions of practical decoding.
 
@@ -152,4 +155,4 @@ The decoder-side result is also relevant to BIBCM-ID because the Demodulation bl
 
 The complexity benefit depends on the implementation baseline. Compared with Min-Sum, the ANN may be more complex. Compared with exact SPA using tanh and inverse tanh, the ANN may be more hardware-friendly. Therefore, the fair statement is not that the ANN is always the lowest-complexity decoder, but that it offers a trade-off between SPA-like performance and implementable nonlinear approximation.
 
-Generalization remains an engineering requirement and can be tested through multiple parity-check matrices, multiple node degrees, multiple SNR ranges, quantized messages, and mismatched channel conditions. This does not weaken the current contribution; it places it at the correct level of evidence. The study demonstrates a focused method and interprets it with appropriate technical boundaries.
+Generalization remains an engineering requirement and can be tested through multiple parity-check matrices, multiple node degrees, multiple SNR ranges, quantized messages, and mismatched channel conditions. This does not weaken the current contribution; it places it at the correct level of evidence. The study demonstrates a focused method and interprets it with appropriate technical~boundaries.

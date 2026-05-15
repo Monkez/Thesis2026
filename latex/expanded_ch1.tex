@@ -46,7 +46,7 @@ The extrinsic output of the Demodulation block is obtained by removing the a pri
 \begin{equation}
   L_E^{\mathrm{dem}}(b_k)=L_{\mathrm{APP}}(b_k|y_t)-L_A(b_k).
 \end{equation}
-This subtraction is not a cosmetic detail. It prevents the same evidence from being counted repeatedly in the iterative loop. If the receiver repeatedly feeds back a message that includes its own previous information, the iterative process can become artificially confident and may converge to an incorrect codeword.
+This subtraction is not a cosmetic detail. It prevents the same evidence from being counted repeatedly in the iterative loop. If the receiver repeatedly feeds back a message that includes its own previous information, the iterative process can become artificially confident and may converge to a codeword that violates parity constraints.
 
 The computational burden of exact LLR evaluation grows with the constellation size because the demodulator sums over subsets of $\mathcal{X}$. For large $M$, the max-log approximation is often used:
 \begin{equation}
@@ -102,7 +102,11 @@ The BIBCM-ID iteration can be summarized by two coupled transformations:
 Here $\mathcal{M}$ denotes soft Demodulation and $\mathcal{D}$ denotes channel decoding. The LDPC decoder is therefore not an isolated block. It is one component in a feedback loop whose behavior depends on message quality, message independence, and message scaling. This observation is used throughout the thesis to justify why the ANN-assisted LDPC study should be evaluated in terms of both BER and message-processing complexity.
 
 \section{Practical Receiver Issues Relevant to the Thesis}
-Several practical receiver issues are important for interpreting the simulation results. First, the LLR sign convention must be used consistently. Some references define $L=\log P(b=0|y)/P(b=1|y)$, while others define the reverse. A sign mismatch between Demodulation and decoding would make the decoder reinforce the wrong hypothesis. The equations in this thesis use one convention consistently within each derivation, and the discussion focuses on relative reliability rather than on a universal sign convention.
+Several practical receiver issues are important for interpreting the simulation results. First, the LLR sign convention must be used consistently. This thesis uses
+\begin{equation}
+  L(b|y)=\log\frac{P(b=1|y)}{P(b=0|y)},
+\end{equation}
+so a positive LLR favors bit value one. Some references define the opposite sign. A sign mismatch between Demodulation and decoding would make the decoder reinforce the wrong hypothesis. Therefore, whenever a different BPSK mapping or reference convention is used, the sign must be converted before the hard decision and before the LLR is passed to the LDPC decoder.
 
 Second, SNR normalization affects both Demodulation and decoding. For coded modulation, the relationship between symbol energy and bit energy is
 \begin{equation}
@@ -118,12 +122,12 @@ so that
 \end{equation}
 If this conversion is not handled carefully, curves for different coding rates or modulation orders may be compared unfairly. This is one reason why the thesis avoids making broad superiority claims from a single BER curve.
 
-Third, fixed-point implementation changes message behavior. A floating-point simulation can represent very small probability differences and very large LLR magnitudes. A hardware decoder normally uses quantized messages:
+Third, fixed-point implementation changes message behavior. A floating-point simulation can represent very small probability differences and very large LLR magnitudes. A hardware decoder normally uses quantized message values:
 \begin{equation}
   L_Q=Q_{\Delta,L_{\max}}(L),
 \end{equation}
 where $Q_{\Delta,L_{\max}}(\cdot)$ denotes a quantizer with step size $\Delta$ and clipping limit $L_{\max}$. Quantization can degrade SPA more than Min-Sum in some settings because precise nonlinear corrections are lost. This observation strengthens the motivation for a compact ANN approximation: a learned function can be trained or fine-tuned under quantization constraints instead of being derived only for ideal real-valued arithmetic.
 
-Fourth, the number of iterations is part of the system design. More iterations usually improve BER up to a point, but they increase latency and power consumption. Let $I_{\max}$ be the maximum number of decoding iterations and $E$ be the number of edges in the Tanner graph. A message-passing decoder has a computational load that scales approximately with $I_{\max}E$. If an ANN check-node update reduces the cost per edge but requires more iterations to converge, the net benefit may be small. Therefore, the thesis interprets ANN assistance through both convergence behavior and per-update complexity.
+Fourth, the number of iterations is part of the system design. More iterations usually improve BER up to a point, but they increase latency and power consumption. Let $I_{\max}$ be the maximum number of decoding iterations and $E$ be the number of edges in the Tanner graph. A message-passing decoder has a computational load that scales approximately with $I_{\max}E$. If an ANN check-node update reduces the cost per edge but requires more iterations to converge, the net benefit may be small. Therefore, the thesis interprets ANN assistance through convergence behavior and the computational cost of each update.
 
 Finally, the receiver must remain robust to model mismatch. The Demodulation formula derived for AWGN does not fully describe PA nonlinearity, CFO, or multipath fading. Similarly, an ANN trained on one distribution of messages may not generalize to another distribution. The most credible engineering interpretation is therefore not that neural networks automatically outperform classical methods, but that they provide trainable approximations for specific nonlinear or mismatched operations when the training and validation conditions are carefully defined.

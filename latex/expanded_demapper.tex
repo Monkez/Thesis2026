@@ -18,7 +18,7 @@ The probability must be clipped away from zero and one in implementation to avoi
 \end{equation}
 This simple numerical detail matters because one overconfident wrong LLR can dominate several iterations of LDPC decoding.
 
-A soft-output neural Demodulator can be trained with bit-wise binary cross-entropy:
+A soft-output neural Demodulator can be trained with the following bit-wise binary cross-entropy objective:
 \begin{equation}
   \mathcal{L}_{\mathrm{BCE}}=
   -\frac{1}{m}\sum_{k=1}^{m}
@@ -38,7 +38,7 @@ The extrinsic output is then
 \begin{equation}
   \mathbf{L}_E^{(t)}=\mathbf{\hat{L}}^{(t)}-\mathbf{L}_A^{(t)}.
 \end{equation}
-This equation is the neural analogue of classical iterative Demodulation. It shows how AutoEncoder ideas can be connected to BIBCM-ID without overstating the current results. The present thesis uses AutoEncoder Modulation as a supporting study, but the mathematical interface for future soft-output Demodulation is already clear.
+This equation is the neural analogue of classical iterative Demodulation. It shows how AutoEncoder ideas can be connected to BIBCM-ID without overstating the results. AutoEncoder Modulation is used here as a supporting study, but the mathematical interface for future soft-output Demodulation is already clear.
 
 \section{Learned Demapper Architectures and Engineering Trade-Offs}
 Several neural architectures can be used for learned Demodulation. A memoryless multilayer perceptron can process the real and imaginary parts of one received symbol:
@@ -70,16 +70,16 @@ The learned Demodulator must also respect signal normalization. If the transmitt
 \end{equation}
 This channel-estimation error can be added during training so that the learned receiver does not depend unrealistically on perfect channel knowledge.
 
-\section{Why Chapter 3 Strengthens Rather Than Dilutes the Thesis}
-The title emphasizes ANN utilization in LDPC decoding for BIBCM-ID systems. A narrow interpretation would include only the channel decoder. However, BIBCM-ID is an iterative receiver architecture, and the LDPC decoder is driven by soft information produced by Demodulation. Therefore, a technically mature treatment explains not only the decoder update but also the nature of the input messages that the decoder receives. Chapter 3 serves this purpose.
+\section{Relevance to LDPC Decoder Input Reliability}
+The title emphasizes ANN utilization in LDPC decoding for BIBCM-ID systems. A narrow interpretation would include only the channel decoder. However, BIBCM-ID is an iterative receiver architecture, and the LDPC decoder is driven by soft information produced by Demodulation. Therefore, a technically complete treatment should explain not only the decoder update but also the nature of the input messages that the decoder receives. Chapter 3 serves this purpose.
 
-The chapter does not change the main contribution. The direct contribution remains the ANN-assisted check-node update in LDPC decoding. The AutoEncoder material supports the system context by analyzing how learned Modulation and Demodulation can affect the reliability of the decoder input. This framing is stronger than presenting AutoEncoder Modulation as an unrelated second topic. It connects both research directions through one technical theme: the generation, transformation, and use of soft information.
+The direct contribution remains the ANN-assisted check-node update in LDPC decoding. The AutoEncoder material supports the system context by analyzing how learned Modulation and Demodulation can affect the reliability of the decoder input. This framing connects both research directions through one technical theme: the generation, transformation, and use of soft~information.
 
-If Chapter 3 were written as a general deep-learning communication chapter, it would appear misaligned with the title. The revised structure instead explains that learned Modulation is relevant because it changes the distribution and calibration of LLRs. The LDPC decoder is then understood as the downstream component whose performance depends on those LLRs. The discussion is therefore system-aware while keeping the LDPC decoder as the center of the thesis.
+The role of Chapter 3 is limited to the soft-information interface between learned Demodulation and LDPC decoding. Learned Modulation is relevant because it changes the distribution and calibration of LLRs. The LDPC decoder is then understood as the downstream component whose performance depends on those LLRs. The discussion is therefore system-aware while keeping the LDPC decoder as the center of the thesis.
 
 The correct level of conclusion is also important. AutoEncoder Modulation is presented as evidence and analysis for channel-aware signal mapping under non-ideal conditions, not as a finished solution to BIBCM-ID receiver design. The next technical step would be a soft-output neural Demodulator that produces calibrated bit LLRs and can exchange extrinsic information with an LDPC decoder. This is a natural continuation of the current contribution.
 
-\section{Recommended Validation Extension}
+\section{Validation Path for Soft-Information Integration}
 For a stronger continuation of the work, the following validation path is technically coherent. First, evaluate the ANN-assisted LDPC decoder using BPSK-AWGN input to isolate the check-node approximation. Second, evaluate the same decoder using LLRs produced by conventional high-order Demodulation under BIBCM-ID-like interleaving. Third, evaluate a learned Demodulator that outputs calibrated bit LLRs under PA and CFO impairments. Fourth, compare the LDPC decoder with and without the ANN check-node update under the same Demodulation input.
 
 This staged validation has a clear reason. It separates the decoder contribution from the Modulation/Demodulation contribution. If performance changes after replacing the check-node update, the effect can be attributed to the decoder. If performance changes after replacing the Demodulator, the effect can be attributed to the soft-information source. If both are changed simultaneously, interpretation becomes more difficult.
@@ -97,10 +97,10 @@ The staged path can be expressed as four receiver configurations:
 \begin{equation}
   \mathcal{R}_4=(\mathrm{Learned\ Demodulation},\mathrm{ANN\ LDPC}).
 \end{equation}
-The current thesis provides the strongest evidence for $\mathcal{R}_2$ and supporting analysis for the learned-Demodulation side. This statement is precise, defensible, and aligned with the available materials.
+The present results provide the strongest evidence for $\mathcal{R}_2$ and supporting analysis for the learned-Demodulation side. This statement is precise, defensible, and aligned with the evaluated simulations.
 
-\section{Consistency Check of the Three-Chapter Structure}
-From an examination viewpoint, the three chapters should form one argument rather than three separate reports. Chapter 1 defines the BIBCM-ID context and explains why Modulation, Demodulation, interleaving, and channel decoding are coupled through soft information. Chapter 2 then focuses on the main contribution: ANN-assisted LDPC decoding through local check-node message approximation. Chapter 3 supports the same system context by analyzing how learned Modulation and Demodulation can affect the reliability values supplied to the LDPC decoder. This ordering keeps the thesis title credible because the decoder remains the central contribution, while the AutoEncoder material is used to explain the upstream source of decoder input quality.
+\section{Integrated Interpretation for BIBCM-ID-Oriented Receivers}
+From a system-level viewpoint, the three chapters form one argument rather than three separate reports. Chapter 1 defines the BIBCM-ID context and explains why Modulation, Demodulation, interleaving, and channel decoding are coupled through soft information. Chapter 2 then focuses on the main contribution: ANN-assisted LDPC decoding through local check-node message approximation. Chapter 3 supports the same system context by analyzing how learned Modulation and Demodulation can affect the reliability values supplied to the LDPC decoder. This ordering keeps the decoder as the central contribution, while the AutoEncoder material explains the upstream source of decoder input quality.
 
 The main scientific boundary is the level of claim. AutoEncoder Modulation is not used as evidence that the whole BIBCM-ID receiver has already been improved. The structure uses three levels of claim. The first level is established theory: LDPC decoding, BICM-ID/BIBCM-ID soft-information exchange, and classical Modulation/Demodulation. The second level is the implemented or directly analyzed contribution: ANN-assisted LDPC check-node processing. The third level is supporting investigation: learned Modulation under non-ideal channels and its relevance to soft-output Demodulation. These levels remain distinct throughout the thesis.
 
