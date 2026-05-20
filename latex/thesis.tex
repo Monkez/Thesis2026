@@ -52,7 +52,7 @@
 \exhyphenpenalty=10000
 \raggedbottom
 \setcounter{secnumdepth}{3}
-\setcounter{tocdepth}{1}
+\setcounter{tocdepth}{2}
 \graphicspath{{figures/}}
 
 \hypersetup{
@@ -100,7 +100,8 @@
 \captionsetup{
   font=normalsize,
   labelfont=bf,
-  justification=centering
+  justification=centering,
+  labelsep=period
 }
 
 % ===================== TABLE OF CONTENTS STYLE =====================
@@ -122,9 +123,9 @@
 \renewcommand{\cftchapaftersnum}{.}
 \setlength{\cftchapnumwidth}{2.45cm}
 \setlength{\cftsecindent}{0.65cm}
-\setlength{\cftsecnumwidth}{1.2cm}
-\setlength{\cftsubsecindent}{1.65cm}
-\setlength{\cftsubsecnumwidth}{1.55cm}
+\setlength{\cftsecnumwidth}{1.5cm}
+\setlength{\cftsubsecindent}{0.65cm}
+\setlength{\cftsubsecnumwidth}{1.5cm}
 \setlength{\cftfigindent}{0cm}
 \setlength{\cftfignumwidth}{1.15cm}
 \setlength{\cfttabindent}{0cm}
@@ -136,7 +137,6 @@
 }
 \newcommand{\customtableofcontents}{%
   \begingroup
-    \let\l@subsection\@gobbletwo
     \let\l@subsubsection\@gobbletwo
     \let\l@paragraph\@gobbletwo
     \let\l@subparagraph\@gobbletwo
@@ -297,8 +297,6 @@ I hereby declare that the research results presented in this thesis are truthful
 \end{flushright}
 
 \newpage
-\manualtocline{Supplementary title page}{}
-\manualtocline{Thesis correction confirmation}{}
 \manualtocline{Declaration}{i}
 \manualtocline{TABLE OF CONTENTS}{ii}
 {\singlespacing\customtableofcontents}

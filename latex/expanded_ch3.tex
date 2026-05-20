@@ -1,4 +1,4 @@
-\section{AutoEncoder Modulation as a Supporting Study}
+\subsection{AutoEncoder Modulation as a Supporting Study}
 AutoEncoder-based Modulation is included in the thesis because the LDPC decoder operates on the reliability information produced by the receiver front end. If the Modulation and Demodulation process produces biased LLRs, the LDPC decoder may not reach its expected performance even when the decoder algorithm is well designed. Therefore, a study of learned Modulation is relevant as a supporting analysis of the soft-information source in a BIBCM-ID-oriented receiver. The key point is that AutoEncoder Modulation is not presented as the main LDPC-decoding contribution. It is used to examine how a trainable signal mapping and a trainable receiver can adapt to channel impairments that weaken conventional Demodulation.
 
 In a communication AutoEncoder, the transmitter network maps a message or bit pattern to a channel input:
@@ -27,7 +27,7 @@ which enforces an average-power constraint. When comparing AutoEncoder Modulatio
 
 The channel layer determines what the AutoEncoder learns. Under AWGN only, a learned constellation may resemble a conventional constellation because Euclidean distance is the dominant design criterion. Under PA nonlinearity, the learned constellation may avoid high-amplitude regions that suffer compression. Under CFO, a sequence-based transmitter and receiver may learn a representation that is robust to phase rotation over time. Under fading and ISI, the receiver may learn equalization-like behavior. These observations explain why the AutoEncoder results are useful for discussing Modulation and Demodulation, even though they are not the central evidence for ANN-assisted LDPC decoding.
 
-\section{PA Nonlinearity and Learned Signal Geometry}
+\subsection{PA Nonlinearity and Learned Signal Geometry}
 Power-amplifier nonlinearity is one of the most important reasons for studying learned Modulation. Practical transmitters often operate power amplifiers near saturation to improve energy efficiency. Near saturation, the amplifier no longer behaves as a linear gain. A common memoryless model expresses the output as
 \begin{equation}
   z=A(r)e^{j(\angle x+\Phi(r))}, \qquad r=|x|,
@@ -55,7 +55,7 @@ This interpretation should be kept moderate. Learned Modulation does not automat
 \end{equation}
 This training strategy would encourage the transmitter and receiver to learn a representation that is not overly specialized to one amplifier condition. In the present work, it is treated as a design implication for future development rather than as a claim that the current simulations already cover all hardware variation.
 
-\section{Carrier-Frequency Offset and Sequence-Based Demodulation}
+\subsection{Carrier-Frequency Offset and Sequence-Based Demodulation}
 Carrier-frequency offset appears when transmitter and receiver oscillators are not perfectly aligned. In discrete time, the received sample can be modeled as
 \begin{equation}
   y[k]=x[k]e^{j(2\pi\epsilon k+\varphi_0)}+w[k],
@@ -76,7 +76,7 @@ For BIBCM-ID relevance, CFO affects the LLRs delivered to the LDPC decoder. If C
 \end{equation}
 where $L_{A,k}$ represents a priori information from the decoder. This equation is a design direction for learned soft Demodulation; it shows how AutoEncoder ideas can be made compatible with BIBCM-ID principles.
 
-\section{LLR Calibration for Neural Demodulation}
+\subsection{LLR Calibration for Neural Demodulation}
 The most important scientific bridge between AutoEncoder Modulation and LDPC decoding is LLR calibration. A neural receiver trained with cross-entropy may output probabilities that are useful for classification but not perfectly calibrated \cite{guo2017}. Calibration means that when a receiver outputs probability $0.9$, the event should be correct approximately 90 percent of the time over many samples with similar confidence. Poor calibration is harmful for iterative decoding because the LDPC decoder uses probability magnitudes as reliability weights.
 
 For bit $b_k$, a neural receiver may output $\hat{p}_k=P(b_k=1|\mathbf{y})$. The corresponding LLR is
@@ -97,7 +97,7 @@ or with reliability diagrams that compare predicted confidence with empirical ac
 
 This point is particularly important for the thesis title. The central object is LDPC decoding, and LDPC decoding depends on soft information. AutoEncoder Modulation is therefore defensible as a supporting topic only when it is linked to soft-output Demodulation and trainable receiver interfaces \cite{cammerer2020}. The thesis makes that link explicit: learned Modulation is not discussed as an isolated deep-learning demonstration, but as a way to study how channel-aware signal representation and neural receiver processing may improve the reliability information supplied to the decoder.
 
-\section{Quality Criteria for Interpreting AutoEncoder Results}
+\subsection{Quality Criteria for Interpreting AutoEncoder Results}
 AutoEncoder communication results should be interpreted using several criteria. The first criterion is the baseline. A learned constellation should be compared with a conventional scheme under the same power constraint, channel model, SNR definition, and receiver information. If the baseline receiver lacks channel-state information while the neural receiver implicitly learns it from training, the comparison may be unfair. Therefore, the presented figures are treated as evidence of feasibility and trend, not as a general performance claim.
 
 The second criterion is the training distribution. If the model is trained and tested on exactly the same impairment parameters, the result measures interpolation within a narrow condition. A stronger result would test random PA parameters, multiple CFO values, fading distributions not seen during training, and different SNR ranges. This does not invalidate the presented results; it defines their scope.
@@ -112,7 +112,7 @@ The fourth criterion is complexity. A neural receiver with a large number of lay
 
 The fifth criterion is interpretability. Classical Modulation designs can be explained through Euclidean distance, Gray labeling, PAPR, and likelihood functions. Learned Modulation should be analyzed using similar concepts where possible. For example, if the learned constellation moves points away from the PA saturation region, this can be explained through AM/AM distortion. If a sequence receiver improves under CFO, this can be explained through temporal phase structure. Such interpretation makes the AutoEncoder part more suitable for an engineering thesis.
 
-\section{Connection Between the Two Research Directions}
+\subsection{Connection Between the Two Research Directions}
 The two research directions in the thesis are connected by soft-information quality. The ANN-assisted LDPC decoder acts inside the channel decoder. It modifies the way reliability messages are combined under parity constraints. The AutoEncoder Modulation study acts before the decoder. It explores how the transmitted representation and receiver observation processing affect the reliability values that enter the decoder. Both directions therefore address the same system-level concern from complementary positions.
 
 This connection can be written compactly. Let $\mathbf{L}_{\mathrm{dem}}$ denote the LLR vector produced by the Demodulation block and let $\mathcal{D}_\theta$ denote an ANN-assisted LDPC decoder. The decoded estimate is

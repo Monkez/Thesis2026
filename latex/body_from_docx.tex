@@ -435,10 +435,11 @@ Scenario 2 studies a multiple-symbol AutoEncoder under CFO. Two CFO values are s
 
 Scenario 3 studies an AutoEncoder with a neural channel-coding feature. This scenario is best interpreted as a supporting experiment on the relationship between learned Modulation and redundancy, rather than as the central LDPC-decoding result of the thesis.
 
+\section{System Interpretation and Soft-Output Demodulation}
 \input{expanded_ch3.tex}
 \input{expanded_demapper.tex}
 
-\section{Interpretation and BIBCM-ID Relevance}
+\subsection{Interpretation and BIBCM-ID Relevance}
 The AutoEncoder results are interpreted as evidence that learned Modulation and Demodulation can adapt to selected channel impairments. They do not establish that learned constellations should replace standardized modulation in general-purpose systems. Conventional constellations provide interoperability, simple implementation, and predictable Demodulation rules. Learned modulation offers adaptability, but its benefit depends on the channel model, training distribution, power constraint, receiver structure, and calibration of soft outputs.
 
 The reason this topic is included in a thesis centered on ANN-assisted LDPC decoding is the soft-information interface. In BIBCM-ID, the LDPC decoder does not receive ideal bits; it receives reliability values produced by the Demodulation block after interleaving and channel observation. If PA distortion, CFO, fading, or ISI makes conventional LLRs biased, the LDPC decoder receives messages with reduced reliability. A study of learned Modulation/Demodulation is therefore relevant because it analyzes the upstream source of the information consumed by the LDPC decoder.
@@ -638,14 +639,15 @@ Equation (3.17) is the generic gradient-based parameter update. In the implement
 \end{equation}
 Equation (3.18) denotes the SNR variable used when generating AWGN training data across multiple channel conditions.
 
-\section{Interpretation of the Two Scenarios}
+\section{Result Interpretation and Implementation Discussion}
+\subsection{Interpretation of the Two Scenarios}
 The SPA-approximation scenario is conservative. It asks the ANN to behave like a known algorithm. If the ANN output is close to SPA and the BER curve is close to SPA, the model has successfully learned the nonlinear update. The value of this scenario lies in complexity reduction and hardware feasibility rather than in creating a new decoding principle.
 
 The enhanced-label scenario is more ambitious. It does not simply imitate SPA. It uses additional knowledge to reduce the magnitude of messages suspected to be wrong. This is relevant because iterative decoding can amplify incorrect information. A wrong message with a large magnitude can be more detrimental than a weak message because it can dominate later VN decisions.
 
 Short cycles in the Tanner graph make this issue more severe. Belief propagation assumes that incoming messages are approximately independent. Short cycles violate this assumption because information can return to a node through a short path. The ANN does not remove the short cycle, but it can learn to reduce overconfident messages that arise from correlated information.
 
-\section{Performance Discussion}
+\subsection{Performance Discussion}
 The BER comparison in Figure~\ref{fig:ann_ldpc_ber_comparison} shows that the ANN approximation can achieve BER performance close to SPA and better than Min-Sum in the waterfall region of the evaluated QC-LDPC code. This is a relevant outcome because it suggests that a compact neural model can preserve the main behavior of the nonlinear CN update. The result supports the interpretation that the network is learning a structured mathematical mapping rather than an arbitrary input-output association.
 
 \begin{figure}[H]
@@ -675,7 +677,7 @@ ANN update & Compact MLP with 49 parameters in the representative setting & Loca
 \end{tabularx}
 \end{table}
 
-\section{Complexity and Hardware Viewpoint}
+\subsection{Complexity and Hardware Viewpoint}
 The main complexity advantage of the ANN method is the removal of explicit tanh and logarithmic operations from the SPA check-node update. In hardware, these functions usually require lookup tables, CORDIC iterations, polynomial approximations, or other special units. A compact MLP replaces these operations with multiply-add computations and ReLU activations, which are easier to pipeline and quantize.
 
 The result should be interpreted through both BER and implementation complexity. In a practical LDPC decoder, preserving SPA-like performance while reducing the cost of nonlinear check-node computation is already meaningful. Therefore, the ANN check-node approximation offers a complexity-oriented design option, while the reliability-aware label strategy may provide additional performance improvement under selected graph, channel, and training conditions.
@@ -683,7 +685,8 @@ The result should be interpreted through both BER and implementation complexity.
 A fair comparison must include throughput, memory, quantization, and schedule compatibility. If ANN weights are shared across check nodes with the same degree, memory cost remains small. If the network is quantized, multipliers can be simplified. If the original LDPC schedule is retained, the method can be evaluated as a local replacement of the check-node function rather than as a fully neural decoder.
 
 The main technical risk is generalization. A network trained for one node degree, one parity-check matrix, or one quantization format may not directly transfer to another decoder configuration. This is why the thesis treats the ANN as a model-driven approximation whose value must be assessed together with code structure, SNR range, and implementation constraints.
-\section{Reliability-Aware Labeling and Short-Cycle Mitigation}
+
+\subsection{Reliability-Aware Labeling and Short-Cycle Mitigation}
 The enhanced-label strategy in ANN-assisted LDPC decoding deserves special attention because it is more than a numerical trick. In conventional supervised learning, the target label is often treated as ground truth. Here, however, the SPA message itself may be unreliable under noisy conditions and short-cycle effects. The training process therefore uses an adjusted label to teach the network a more cautious update behavior.
 
 A short cycle in a Tanner graph causes information to return to a node after only a few message-passing steps. This violates the independence assumption behind belief propagation. When messages are correlated, SPA can become overconfident. In practical decoders, damping is sometimes used to reduce this problem. The proposed ANN method can be interpreted as a learned local damping mechanism whose strength depends on message~consistency.
@@ -700,6 +703,7 @@ The enhanced-label ANN is therefore treated as a bounded contribution. It addres
 
 An important engineering advantage is that the method can be introduced locally. Existing LDPC decoding schedules can be retained. Only the CN update function changes. This reduces implementation risk and makes it easier to compare the proposed method with SPA, Min-Sum, and normalized Min-Sum under identical simulation conditions.
 
+\section{Detailed Validation and Scientific Boundaries}
 \input{expanded_ch2.tex}
 \input{expanded_validation.tex}
 
@@ -721,6 +725,7 @@ This thesis has studied the utilization of artificial neural networks in LDPC de
 \noindent\textbf{Recommendations.} Overall, the thesis supports a hybrid view of deep learning in communication systems. Neural networks are most defensible when they approximate difficult nonlinear operations, correct model mismatch, or improve the reliability of soft information while preserving the structure of established coding and modulation theory. Future work should focus on calibrated bit-level LLR output for neural Demodulation, broader validation over LDPC code structures and channel conditions, fixed-point and quantization-aware ANN decoder design, and complexity-throughput evaluation for practical receiver architectures. For the ANN-LDPC result specifically, a final simulation package should include the parity-check matrix, $I_{\max}$, stopping rule, random seeds, and per-SNR frame/error logs so that the reported BER trends can be reproduced and, where sufficient error counts are available, promoted to stronger statistical claims.
 \begin{thebibliography}{99}
 \addcontentsline{toc}{chapter}{\textbf{REFERENCES}}
+\item[]\textbf{English:}
 \bibitem{bishop2006} C. M. Bishop, Pattern Recognition and Machine Learning. Springer, 2006.
 \bibitem{lecun2015} Y. LeCun, Y. Bengio, and G. Hinton, ``Deep learning,'' Nature, vol. 521, pp. 436--444, 2015.
 \bibitem{goodfellow2016} I. Goodfellow, Y. Bengio, and A. Courville, Deep Learning. MIT Press, 2016.
@@ -765,3 +770,112 @@ This thesis has studied the utilization of artificial neural networks in LDPC de
 
 \item Lai Tien De, Pham Xuan Nghia, Tran Duc Trung, \textit{``Intelligent AutoEncoder-Based Modulation: Optimizing Transmission Performance over Non-Ideal Wireless Channels,''} in \textit{REV-JOURNAL}, May 2026.
 \end{enumerate}
+
+\clearpage
+\chapter*{CURRICULUM VITAE}
+\addcontentsline{toc}{chapter}{\textbf{CURRICULUM VITAE}}
+
+\noindent\textbf{Full name:} Lai Tien De
+
+\noindent\textbf{Date of birth:} \dotfill \hfill \textbf{Place of birth:} \dotfill
+
+\noindent\textbf{Contact address:} \dotfill
+
+\vspace{0.8cm}
+\noindent\textbf{Education:}
+
+\vspace{0.4cm}
+\noindent\dotfill
+
+\vspace{0.4cm}
+\noindent\dotfill
+
+\vspace{0.8cm}
+\noindent\textbf{Working history:}
+
+\vspace{0.4cm}
+\noindent\dotfill
+
+\vspace{0.4cm}
+\noindent\dotfill
+
+\clearpage
+\chapter*{CONFIRMATION OF THESIS ELIGIBILITY FOR DEFENSE}
+\addcontentsline{toc}{chapter}{\textbf{CONFIRMATION OF THESIS ELIGIBILITY FOR DEFENSE}}
+
+\noindent\textbf{Thesis author:} Lai Tien De
+
+\noindent\textbf{Thesis title:} Utilization of Artificial Neural Networks in LDPC Decoding for BIBCM-ID Systems
+
+\noindent\textbf{Field:} Telecommunications Engineering
+
+\noindent\textbf{Major:} Telecommunications Engineering
+
+\noindent\textbf{Code:} \dotfill
+
+\noindent\textbf{Scientific supervisors:} Dr. Pham Xuan Nghia; Dr. Hoang Van Dung
+
+\vspace{0.5cm}
+\noindent The thesis is confirmed to be eligible for defense before the Master's Thesis Evaluation Council.
+
+\vspace{1.6cm}
+\noindent\begin{tabularx}{\textwidth}{>{\centering\arraybackslash}X>{\centering\arraybackslash}X}
+\textbf{SCIENTIFIC SUPERVISOR} & \textbf{THESIS AUTHOR}\\[1.8cm]
+(Signature and full name) & (Signature and full name)
+\end{tabularx}
+
+\vspace{1.6cm}
+\noindent\begin{tabularx}{\textwidth}{>{\centering\arraybackslash}X>{\centering\arraybackslash}X}
+\textbf{DEPARTMENT/FACULTY HEAD} & \textbf{PROGRAM MANAGEMENT OFFICER}\\[1.8cm]
+(Signature and full name) & (Signature and full name)
+\end{tabularx}
+
+\clearpage
+\chapter*{THESIS REVISION CONFIRMATION (IF ANY)}
+\addcontentsline{toc}{chapter}{\textbf{THESIS REVISION CONFIRMATION (IF ANY)}}
+\enlargethispage{1.5cm}
+
+\begin{center}
+\textbf{SOCIALIST REPUBLIC OF VIETNAM}\\
+\textbf{Independence -- Freedom -- Happiness}
+\end{center}
+
+\vspace{0.4cm}
+\noindent\textbf{Thesis author:} Lai Tien De
+
+\noindent\textbf{Thesis title:} Utilization of Artificial Neural Networks in LDPC Decoding for BIBCM-ID Systems
+
+\noindent\textbf{Field:} Telecommunications Engineering
+
+\noindent\textbf{Major:} Telecommunications Engineering
+
+\noindent\textbf{Code:} \dotfill
+
+\noindent\textbf{Scientific supervisors:} Dr. Pham Xuan Nghia; Dr. Hoang Van Dung
+
+\vspace{0.25cm}
+\noindent The thesis author and scientific supervisors confirm that the thesis has been revised according to the Evaluation Council meeting minutes dated \dotfill, with the following contents:
+
+\vspace{0.25cm}
+\noindent\dotfill
+
+\vspace{0.25cm}
+\noindent\dotfill
+
+\vspace{0.25cm}
+\noindent\dotfill
+
+\vspace{0.45cm}
+\noindent Date \dotfill\ Month \dotfill\ Year \dotfill
+
+\vspace{0.55cm}
+\noindent\begin{tabularx}{\textwidth}{>{\centering\arraybackslash}X>{\centering\arraybackslash}X}
+\textbf{SCIENTIFIC SUPERVISOR} & \textbf{THESIS AUTHOR}\\[1.6cm]
+(Signature and full name) & (Signature and full name)
+\end{tabularx}
+
+\vspace{0.65cm}
+\begin{center}
+\textbf{COUNCIL CHAIRPERSON OR SECRETARY}\\[1.1cm]
+(Signature and full name)
+\end{center}

@@ -1,4 +1,4 @@
-\section{Evaluation Protocol for ANN-Assisted Decoding}
+\subsection{Evaluation Protocol for ANN-Assisted Decoding}
 A technically convincing decoder study requires an evaluation protocol that separates algorithmic effect from simulation artifact. The BER curve is the most visible result, but it is not the only evidence. A fair comparison requires the baseline algorithms to use the same code, modulation, channel model, iteration limit, stopping rule, and LLR scaling. If any of these conditions differ, the comparison may reflect an implementation difference rather than a true decoding advantage.
 
 The first requirement is a consistent code configuration. For an LDPC code with block length $n$, information length $k$, and rate $R_c=k/n$, every compared decoder should operate on the same parity-check matrix $\mathbf{H}$. If the ANN is trained for a QC-LDPC matrix, the test should clearly state whether the same matrix is used or whether a different matrix is used for generalization. A decoder that performs well on one structured matrix may not automatically transfer to another because the distribution of node degrees, short cycles, and trapping sets changes.
@@ -27,7 +27,7 @@ The fifth requirement is to include frame error rate when possible. BER measures
 \end{equation}
 In coded systems, FER is often important because many applications treat a frame with one error as unusable. An ANN check-node update that reduces BER but leaves FER unchanged may still be useful, but the distinction should be understood.
 
-\section{Ablation View of the ANN Decoder}
+\subsection{Ablation View of the ANN Decoder}
 An ablation view clarifies which part of the method is responsible for the observed behavior. The first ablation is SPA imitation versus reliability-aware labeling. If the SPA-imitation network matches SPA, this supports the claim that the MLP can approximate the nonlinear check-node function. If the reliability-aware network improves the curve, this supports the additional claim that learned magnitude control can be beneficial under finite loopy decoding. These two claims should be evaluated separately.
 
 The second ablation is network size. A compact network is central to the engineering argument. If a larger network improves BER slightly but greatly increases cost, it may be less relevant to a receiver implementation. Therefore, the hidden-layer size should be interpreted as a design variable in the performance-complexity trade-off:
@@ -52,7 +52,7 @@ where $\psi_\theta$ and $\rho_\theta$ are learnable functions. This form respect
 
 The fifth ablation is iteration dependence. A network can share the same parameters across all iterations or use iteration-specific parameters. Shared parameters reduce memory and are easier to justify. Iteration-specific parameters may improve performance but risk overfitting to a fixed iteration schedule. For a practical decoder, shared or lightly parameterized iteration dependence is preferable unless the gain is substantial.
 
-\section{Scientific Boundaries of the Decoder Study}
+\subsection{Scientific Boundaries of the Decoder Study}
 The comparison between the ANN decoder and normalized Min-Sum should be interpreted through both performance and implementation criteria. Normalized Min-Sum is extremely simple and may be preferable when minimum complexity is the only goal. The ANN method is more relevant when the designer wants SPA-like behavior without explicit transcendental functions, or when reliability-aware damping provides a controlled advantage. The result is therefore a trade-off, not a universal replacement.
 
 The statistical reliability of a BER gain depends on simulation length and the number of observed errors. Figure~\ref{fig:ann_ldpc_ber_comparison} shows a favorable trend under the stated QC-LDPC and BPSK/AWGN conditions, while standard-level claims in lower-BER regions would require longer simulations and explicit error-event logging at each SNR point. This interpretation is consistent with a study centered on algorithmic analysis and feasibility assessment.

@@ -1,4 +1,4 @@
-\section{From SPA to Neural Check-Node Approximation}
+\subsection{From SPA to Neural Check-Node Approximation}
 The LDPC part of the thesis is strongest when it is interpreted as a model-driven neural approximation rather than a generic black-box application of deep learning. The Tanner graph already provides a precise computational structure. Each variable node represents a coded bit, each check node represents a parity constraint, and each edge carries a soft message. The neural network is introduced only at the check-node update, which is both nonlinear and repeatedly evaluated. This local formulation is important because it preserves the LDPC code constraints and avoids replacing the entire decoder by an opaque classifier.
 
 For a parity check involving the set of variable nodes $\mathcal{N}(i)$, the constraint is
@@ -64,7 +64,7 @@ However, the check-node function has useful symmetries. The output sign is deter
 \end{equation}
 This structure reduces the burden on the neural network because the network does not need to learn sign symmetry from data. It only learns the magnitude correction. Even when a compact MLP is used directly for the update function, this symmetry-based interpretation is important for later hardware-oriented design refinement.
 
-\section{Training Data, Label Design, and Validation Logic}
+\subsection{Training Data, Label Design, and Validation Logic}
 The quality of an ANN-assisted decoder depends strongly on how training labels are constructed. In the SPA-approximation scenario, the target label is the exact or high-precision SPA check-node output:
 \begin{equation}
   r^{\mathrm{target}}=F_{\mathrm{SPA}}(\mathbf{q}).
@@ -117,7 +117,7 @@ For LLR messages, the best loss is not always obvious. A small absolute error ne
 \end{equation}
 This thesis does not require such a loss to justify the current results, but discussing it clarifies the connection between regression accuracy and decoding~performance.
 
-\section{Complexity Accounting for ANN-Assisted LDPC Decoding}
+\subsection{Complexity Accounting for ANN-Assisted LDPC Decoding}
 A precise complexity assessment requires more than the statement that the neural network is small. The number of parameters is one part of the argument, but the number of operations per iteration and the memory-access pattern are also important. Consider a one-hidden-layer MLP with input dimension $d_{\mathrm{in}}$, hidden dimension $d_h$, and output dimension $d_{\mathrm{out}}=1$. The number of weights and biases is
 \begin{equation}
   N_\theta=d_{\mathrm{in}}d_h+d_h+d_h d_{\mathrm{out}}+d_{\mathrm{out}},
@@ -146,7 +146,7 @@ Quantization can be incorporated into the neural model. A fixed-point network co
 \end{equation}
 where $Q_i$, $Q_\theta$, and $Q_o$ are quantizers for input messages, weights, and output messages. Quantization-aware training can simulate these quantizers during training so that the network learns parameters robust to finite precision. This would be an important continuation of the current work because LDPC decoders are usually implemented with fixed-point messages.
 
-\section{Scientific Interpretation of the Observed Gains}
+\subsection{Scientific Interpretation of the Observed Gains}
 The gain of the enhanced ANN scenario should be presented as a conditional result. In communication research, a BER improvement is meaningful only when the code, block length, modulation, channel model, decoder schedule, iteration count, and simulation length are known. A curve obtained for one QC-LDPC code over AWGN cannot be generalized to all LDPC codes or all BIBCM-ID configurations. The thesis therefore interprets the gain as evidence that learned reliability control can improve a specific finite-length loopy decoder.
 
 This interpretation is scientifically stronger than an exaggerated claim. SPA is optimal for tree-like factor graphs under correct probability models, but practical LDPC graphs contain cycles. In a loopy graph, messages can become correlated. When correlated messages are repeatedly combined, the decoder may become overconfident. Reliability-aware attenuation can reduce this effect. The ANN method is thus not contradicting the theory of SPA; it is exploiting the difference between the ideal assumptions behind SPA and the finite-length conditions of practical decoding.
