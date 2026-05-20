@@ -1,0 +1,17 @@
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {1.1}{\ignorespaces Cấu trúc cơ bản của hệ thống truyền thông số.}}{6}{figure.caption.2}%
+\contentsline {figure}{\numberline {1.2}{\ignorespaces Cấu trúc bộ phát, bộ xen, kênh và bộ thu lặp BIBCM-ID.}}{7}{figure.caption.3}%
+\contentsline {figure}{\numberline {1.3}{\ignorespaces Trao đổi thông tin mềm giữa Giải điều chế và giải mã kênh trong BIBCM-ID.}}{9}{figure.caption.4}%
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {2.1}{\ignorespaces Ảnh hưởng của tính phi tuyến PA đến hình dạng tín hiệu 16-QAM.}}{33}{figure.caption.7}%
+\contentsline {figure}{\numberline {2.2}{\ignorespaces Mô hình điều chế và giải điều chế đã học dựa trên AutoEncode.}}{33}{figure.caption.8}%
+\contentsline {figure}{\numberline {2.3}{\ignorespaces Tính phi tuyến của bộ khuếch đại công suất loại Rapp được sử dụng trong mô hình kênh.}}{35}{figure.caption.9}%
+\contentsline {figure}{\numberline {2.4}{\ignorespaces Sự quay của chòm sao do độ lệch tần số sóng mang gây ra.}}{36}{figure.caption.10}%
+\contentsline {figure}{\numberline {2.5}{\ignorespaces BER của Điều chế đã học theo tính phi tuyến PA và pha đinh Rayleigh.}}{40}{figure.caption.13}%
+\contentsline {figure}{\numberline {2.6}{\ignorespaces BER của Điều chế AutoEncode đa ký hiệu với CFO = 0,005.}}{40}{figure.caption.14}%
+\contentsline {figure}{\numberline {2.7}{\ignorespaces BER của Điều chế AutoEncode đa ký hiệu với CFO = 0,01.}}{41}{figure.caption.15}%
+\contentsline {figure}{\numberline {2.8}{\ignorespaces BER của Điều chế AutoEncoding với dự phòng thần kinh.}}{41}{figure.caption.16}%
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {3.1}{\ignorespaces MLP nhỏ gọn gần đúng với bản cập nhật nút kiểm tra LDPC.}}{63}{figure.caption.17}%
+\contentsline {figure}{\numberline {3.2}{\ignorespaces Mất đào tạo mô hình nút kiểm tra ANN nhỏ gọn.}}{66}{figure.caption.19}%
+\contentsline {figure}{\numberline {3.3}{\ignorespaces So sánh BER cho các thuật toán giải mã QC-LDPC.}}{69}{figure.caption.20}%

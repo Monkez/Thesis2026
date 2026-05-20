@@ -1,0 +1,81 @@
+\section{Machine Learning and Deep Learning Foundations}
+Machine learning is a family of computational methods in which a model improves its behavior from data rather than from a completely hand-written rule set \cite{bishop2006}. In communication engineering, this viewpoint is useful because many receiver functions are derived from idealized mathematical assumptions. A demodulator may assume additive Gaussian noise, a decoder may assume independent messages, and a synchronizer may assume a known impairment model. Practical wireless channels often violate these assumptions. Machine learning provides a way to learn corrections, approximations, or decision rules from measured or simulated examples while still retaining the structure of the communication system.
+
+A supervised learning problem can be written as the minimization of an empirical risk:
+\begin{equation}
+\label{eq:ml_empirical_risk}
+\theta^\star=\arg\min_{\theta}\frac{1}{N}\sum_{n=1}^{N}
+\ell\!\left(f_{\theta}(\mathbf{x}_n),\mathbf{t}_n\right)
++\lambda\Omega(\theta),
+\end{equation}
+where $\mathbf{x}_n$ is the input sample, $\mathbf{t}_n$ is the desired target, $f_{\theta}(\cdot)$ is the model, $\ell(\cdot)$ is the loss function, and $\Omega(\theta)$ is a regularization term. In a physical-layer receiver, $\mathbf{x}_n$ may be a vector of received samples, LLRs, channel estimates, or Tanner-graph messages. The target $\mathbf{t}_n$ may be a transmitted bit, an SPA message, a channel state, or a calibrated probability. Equation~\eqref{eq:ml_empirical_risk} is general, but the engineering meaning of the target is critical. A model trained for hard classification is not automatically suitable for iterative decoding, because BIBCM-ID requires reliable soft information rather than only final bit decisions.
+
+Deep learning is a subset of machine learning based on multi-layer parameterized models \cite{lecun2015,goodfellow2016}. A feed-forward neural network layer can be expressed as
+\begin{equation}
+\label{eq:nn_layer_ch1}
+\mathbf{z}^{(\ell)}=\sigma\!\left(\mathbf{W}^{(\ell)}\mathbf{z}^{(\ell-1)}+\mathbf{b}^{(\ell)}\right),
+\end{equation}
+where $\mathbf{W}^{(\ell)}$ and $\mathbf{b}^{(\ell)}$ are trainable parameters and $\sigma(\cdot)$ is a nonlinear activation function. Multiple layers allow the network to represent nonlinear mappings that would otherwise require complicated analytical approximations. This property is relevant for LDPC decoding because the SPA check-node update contains nonlinear operations, and it is relevant for learned Modulation because the optimal signal geometry under PA nonlinearity, CFO, fading, and noise is not always captured by a fixed QAM constellation.
+
+Training is usually performed by gradient-based optimization. For a mini-batch $\mathcal{B}$, a generic update is
+\begin{equation}
+\label{eq:gradient_update_ch1}
+\theta_{r+1}=\theta_r-\eta\nabla_{\theta}
+\left[\frac{1}{|\mathcal{B}|}\sum_{n\in\mathcal{B}}
+\ell\!\left(f_{\theta_r}(\mathbf{x}_n),\mathbf{t}_n\right)\right],
+\end{equation}
+where $\eta$ is the learning rate. Modern optimizers such as Adam modify the effective step size using first- and second-order moment estimates, but the principle remains the same: the parameters are adjusted so that model outputs become closer to the targets. For communication systems, the training distribution must be treated carefully. If the model is trained only at one SNR, one channel realization, or one hardware impairment level, it may not generalize to the operating range of a real receiver.
+
+\begin{table}[H]
+\centering
+\caption{Learning paradigms relevant to communication receiver design.}
+\label{tab:learning_paradigms}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{0.25\textwidth}>{\raggedright\arraybackslash}p{0.33\textwidth}>{\raggedright\arraybackslash}X}
+\toprule
+Paradigm & Typical target & Communication example\\
+\midrule
+Supervised learning & Known labels or reference outputs & Bit classification, SPA-message imitation, channel estimation from pilots\\
+Unsupervised learning & Structure in unlabeled data & Clustering received constellations, blind impairment detection\\
+Reinforcement learning & Long-term reward from interaction & Adaptive resource allocation, link adaptation, scheduling\\
+Model-driven learning & Parameters embedded in known algorithms & Neural BP, learned Min-Sum correction, trainable Demodulation metrics\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Table~\ref{tab:learning_paradigms} summarizes several learning paradigms that appear in communication research. The most relevant paradigm for this thesis is model-driven learning. Instead of replacing the receiver by a fully black-box network, model-driven learning keeps a known algorithmic structure and introduces trainable components at selected points. This is the reason the LDPC part of the thesis focuses on a local neural approximation of the check-node update, and the Modulation part focuses on a learned signal representation under specified channel impairments.
+
+\section{Deep Learning Applications in Telecommunications}
+Deep learning has been investigated in many parts of modern telecommunications, from the physical layer to network management \cite{oshea2017,cammerer2020}. At the physical layer, the main motivation is the difficulty of modeling all impairments exactly. Real receivers face nonlinear power amplifiers, oscillator mismatch, imperfect channel estimation, quantized front-end samples, phase noise, interference, and fading. Classical signal processing remains essential because it gives interpretable models and stability guarantees, but learning-based methods can complement it when the analytical model is incomplete or too costly for direct implementation.
+
+In channel estimation, neural networks can learn mappings from pilot observations to channel coefficients. This is useful when the channel has spatial, temporal, or frequency-domain structure that is not fully exploited by a simple least-squares estimator. In signal detection, neural receivers can learn decision boundaries in nonlinear or mismatched channels. In synchronization, sequence models can exploit temporal dependencies caused by CFO or phase noise. In channel decoding, neural belief propagation, trainable Min-Sum variants, and local message-update networks aim to improve or simplify iterative decoding. In resource allocation, reinforcement learning can adapt scheduling, power control, and beam selection when the environment changes over time.
+
+\begin{table}[H]
+\centering
+\caption{Deep-learning applications related to telecommunications systems.}
+\label{tab:dl_telecom_applications}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{0.24\textwidth}>{\raggedright\arraybackslash}p{0.34\textwidth}>{\raggedright\arraybackslash}X}
+\toprule
+Area & Learning task & Relevance to this thesis\\
+\midrule
+Modulation and Demodulation & Learned constellation, detector, or LLR estimator & Directly related to the AutoEncoder Modulation study\\
+Channel coding & Neural BP, learned Min-Sum, decoder approximation & Directly related to ANN-assisted LDPC decoding\\
+Channel estimation & Pilot-based or data-aided estimation & Affects the likelihood used for soft Demodulation\\
+Synchronization & CFO and phase-noise tracking & Motivates sequence-based neural Demodulation\\
+Hardware impairment mitigation & PA, IQ imbalance, quantization correction & Supports the non-ideal channel analysis\\
+Network control & Link adaptation, scheduling, beam management & Related at system level but outside the thesis scope\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Table~\ref{tab:dl_telecom_applications} places the thesis within the wider telecommunications literature. The table also clarifies the boundary of the research. The thesis does not study network-layer optimization, scheduling, or beam management. It concentrates on two physical-layer interfaces: the Modulation/Demodulation interface that produces bit-level reliability and the LDPC decoder that processes reliability through parity constraints.
+
+For BIBCM-ID, the most important point is that learning should respect the soft-information interface. A neural classifier that outputs only hard bits is not sufficient for iterative decoding. The receiver needs probability-like outputs or LLR-like values that can be exchanged between the Demodulator and the LDPC decoder. If a neural model produces overconfident probabilities, the iterative loop can become unstable or converge to a wrong codeword. Therefore, calibration is a central requirement. One common form of calibration introduces a temperature parameter $T$:
+\begin{equation}
+\label{eq:temperature_scaling_ch1}
+\hat{p}_T(c|\mathbf{x})=
+\frac{\exp(a_c/T)}
+{\sum_{c'}\exp(a_{c'}/T)},
+\end{equation}
+where $a_c$ is the logit for class $c$. Larger $T$ softens the distribution, while smaller $T$ makes it more confident. For learned Demodulation, such calibration affects the LLR magnitude delivered to the LDPC decoder. This connection explains why Chapter~2 studies learned Modulation/Demodulation before Chapter~3 analyzes the ANN-assisted LDPC decoder in detail.
+
+The use of deep learning in this thesis is therefore deliberately conservative. Classical communication blocks define the signal chain, equations, and evaluation metrics. Neural networks are introduced only where they have a clear technical role: learning a channel-aware signal representation, approximating nonlinear message updates, and improving or regulating reliability values. This hybrid position is more suitable for an engineering thesis than a purely black-box interpretation, because it preserves interpretability and allows fair comparison with SPA, Min-Sum, QAM, and conventional likelihood-based Demodulation.

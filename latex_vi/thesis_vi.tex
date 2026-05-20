@@ -1,0 +1,399 @@
+\documentclass[a4paper,14pt]{extreport}
+
+% ============================================================
+%  LUAN VAN THAC SI - LATEX CLEAN VERSION
+%  Build with: xelatex thesis.tex
+% ============================================================
+
+\usepackage{fontspec}
+\setmainfont{Times New Roman}
+\usepackage{amsmath,amssymb,amsfonts,mathtools}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{multirow}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{geometry}
+\usepackage{setspace}
+\usepackage{indentfirst}
+\usepackage{titlesec}
+\usepackage{tocloft}
+\usepackage{fancyhdr}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage[final]{microtype}
+\usetikzlibrary{arrows.meta,positioning,calc}
+
+\geometry{
+  top=3.5cm,
+  bottom=3cm,
+  left=3.5cm,
+  right=2cm,
+  includehead=false,
+  headheight=18pt
+}
+
+\onehalfspacing
+\setlength{\parindent}{1.25cm}
+\setlength{\parskip}{0pt}
+\emergencystretch=2.5em
+\clubpenalty=10000
+\widowpenalty=10000
+\displaywidowpenalty=10000
+\brokenpenalty=10000
+\finalhyphendemerits=10000
+\hyphenpenalty=10000
+\exhyphenpenalty=10000
+\raggedbottom
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{1}
+\graphicspath{{figures/}}
+
+\hypersetup{
+  colorlinks=false,
+  pdfborder={0 0 0},
+  pdftitle={Sử dụng Mạng thần kinh nhân tạo trong Giải mã LDPC cho Hệ thống BIBCM-ID},
+  pdfauthor={Lại Tiến}
+}
+
+% English-style names without relying on babel.
+\renewcommand{\contentsname}{MỤC LỤC}
+\renewcommand{\listfigurename}{DANH MỤC HÌNH VẼ}
+\renewcommand{\listtablename}{DANH MỤC BẢNG}
+\renewcommand{\bibname}{TÀI LIỆU THAM KHẢO}
+\renewcommand{\figurename}{Hình}
+\renewcommand{\tablename}{Bảng}
+\renewcommand{\chaptername}{Chương}
+
+\titleformat{\chapter}[display]
+  {\normalfont\bfseries\centering}
+  {\chaptername\ \thechapter.}
+  {0.2cm}
+  {\MakeUppercase}
+\titlespacing*{\chapter}{0pt}{0pt}{1.0cm}
+
+\titleformat{\section}
+  {\normalfont\bfseries}
+  {\thesection.}
+  {0.5em}
+  {}
+\titleformat{\subsection}
+  {\normalfont\bfseries}
+  {\thesubsection.}
+  {0.5em}
+  {}
+\titleformat{\subsubsection}
+  {\normalfont\itshape}
+  {\thesubsubsection.}
+  {0.5em}
+  {}
+
+\captionsetup{
+  font=normalsize,
+  labelfont=bf,
+  justification=centering
+}
+
+% ===================== MỤC LỤC STYLE =====================
+% The academy sample uses a compact centered TOC title and dotted leaders.
+\renewcommand{\cfttoctitlefont}{\hfill\normalsize\bfseries}
+\renewcommand{\cftaftertoctitle}{\hfill\mbox{}\par\vspace{0.35cm}}
+\setlength{\cftbeforetoctitleskip}{0pt}
+\setlength{\cftaftertoctitleskip}{0.25cm}
+\renewcommand{\cftchapfont}{\bfseries}
+\renewcommand{\cftchappagefont}{\normalfont}
+\renewcommand{\cftchapleader}{\cftdotfill{\cftdotsep}}
+\renewcommand{\cftsecfont}{\normalfont}
+\renewcommand{\cftsecpagefont}{\normalfont}
+\renewcommand{\cftsubsecfont}{\normalfont}
+\renewcommand{\cftsubsecpagefont}{\normalfont}
+\setlength{\cftbeforechapskip}{0.12cm}
+\setlength{\cftbeforesecskip}{0.02cm}
+\renewcommand{\cftchappresnum}{Chương\ }
+\renewcommand{\cftchapaftersnum}{.}
+\setlength{\cftchapnumwidth}{2.45cm}
+\setlength{\cftsecindent}{0.65cm}
+\setlength{\cftsecnumwidth}{1.2cm}
+\setlength{\cftsubsecindent}{1.65cm}
+\setlength{\cftsubsecnumwidth}{1.55cm}
+\setlength{\cftfigindent}{0cm}
+\setlength{\cftfignumwidth}{1.15cm}
+\setlength{\cfttabindent}{0cm}
+\setlength{\cfttabnumwidth}{1.15cm}
+
+\makeatletter
+\newcommand{\manualtocline}[2]{%
+  \addtocontents{toc}{\protect\contentsline{chapter}{#1}{#2}{manual.#1}\protected@file@percent}%
+}
+\newcommand{\customtableofcontents}{%
+  \begingroup
+    \let\l@subsection\@gobbletwo
+    \let\l@subsubsection\@gobbletwo
+    \let\l@paragraph\@gobbletwo
+    \let\l@subparagraph\@gobbletwo
+    \begin{center}
+      {\bfseries MỤC LỤC}
+    \end{center}
+    \vspace{0.25cm}
+    \@starttoc{toc}%
+  \endgroup
+}
+\newcommand{\customlistoftables}{%
+  \begin{center}
+    {\bfseries DANH SÁCH BẢNG}
+  \end{center}
+  \vspace{0.25cm}
+  \@starttoc{lot}%
+}
+\newcommand{\customlistoffigures}{%
+  \begin{center}
+    {\bfseries DANH SÁCH HÌNH}
+  \end{center}
+  \vspace{0.25cm}
+  \@starttoc{lof}%
+}
+\makeatother
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[C]{\thepage}
+\renewcommand{\headrulewidth}{0pt}
+\fancypagestyle{plain}{
+  \fancyhf{}
+  \fancyhead[C]{\thepage}
+  \renewcommand{\headrulewidth}{0pt}
+}
+
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newcommand{\thesisTitle}{ỨNG DỤNG MẠNG NƠ-RON NHÂN TẠO TRONG GIẢI MÃ LDPC CHO HỆ THỐNG BIBCM-ID}
+\newcommand{\thesisTitleEN}{UTILIZATION OF ARTIFICIAL NEURAL NETWORKS IN LDPC DECODING FOR BIBCM-ID SYSTEMS}
+\newcommand{\studentName}{LAI TIEN DE}
+\newcommand{\supervisorName}{Dr. PHAM XUAN NGHIA}
+\newcommand{\supervisorNameTwo}{Dr. HOANG VAN DUNG}
+\newcommand{\majorName}{Kỹ thuật viễn thông}
+\newcommand{\fieldName}{Kỹ thuật viễn thông}
+\newcommand{\academyName}{HỌC VIỆN KỸ THUẬT QUÂN SỰ}
+\newcommand{\coverHeader}{%
+  {\fontsize{12.2}{14.5}\selectfont
+  \makebox[\textwidth][c]{BỘ GIÁO DỤC VÀ ĐÀO TẠO\hspace{0.85cm}BỘ QUỐC PHÒNG}}\\[0.28cm]
+  {\fontsize{12.6}{15}\selectfont\bfseries \academyName}\\[-0.42cm]
+  \rule{2.45cm}{0.4pt}
+}
+
+\begin{document}
+\sloppy
+
+% ============================================================
+% COVER
+% ============================================================
+\thispagestyle{empty}
+\begin{center}
+  \vspace*{-0.55cm}
+  \coverHeader
+
+  \vspace{3.25cm}
+  {\bfseries\studentName}
+
+  \vspace{3.35cm}
+  \begin{minipage}{0.88\textwidth}
+    \centering
+    {\bfseries\MakeUppercase{\thesisTitle}}
+  \end{minipage}
+
+  \vspace{2.55cm}
+  {\bfseries LUẬN VĂN THẠC SĨ}\\[0.38cm]
+  \begin{tabular}{ll}
+    \textbf{Ngành:} & \textbf{\fieldName}\\
+    \textbf{Chuyên ngành:} & \textbf{\majorName}
+  \end{tabular}
+
+  \vfill
+  \textbf{Hà Nội -- 2026}
+\end{center}
+
+\newpage
+\thispagestyle{empty}
+\begin{center}
+  \vspace*{-0.55cm}
+  \coverHeader
+
+  \vspace{3.10cm}
+  {\bfseries\studentName}
+
+  \vspace{2.65cm}
+  \begin{minipage}{0.88\textwidth}
+    \centering
+    {\bfseries\MakeUppercase{\thesisTitle}}
+  \end{minipage}\\[0.55cm]
+
+  \begin{tabular}{ll}
+    \textbf{Ngành:} & \textbf{\fieldName}\\
+    \textbf{Chuyên ngành:} & \textbf{\majorName}\\
+    \textbf{Mã số:} & \textbf{\ldots\ldots\ldots}
+  \end{tabular}\\[1.45cm]
+
+  \textbf{NGƯỜI HƯỚNG DẪN KHOA HỌC}\\[0.4cm]
+  \textbf{Người hướng dẫn thứ nhất: \supervisorName}\\[0.25cm]
+  \textbf{Người hướng dẫn thứ hai: \supervisorNameTwo}
+
+  \vfill
+  \textbf{Hà Nội -- 2026}
+\end{center}
+
+\newpage
+\thispagestyle{empty}
+\begin{center}
+  \vspace*{0.1cm}
+  \textbf{LUẬN ÁN NÀY ĐƯỢC HOÀN THÀNH TẠI}\\[0.25cm]
+  \textbf{\academyName}\\[1.2cm]
+\end{center}
+
+\noindent Reviewer 1: \dotfill\\[-0.1cm]
+\begin{center}
+  \textit{(Chức danh, bằng cấp, họ tên đầy đủ)}
+\end{center}
+
+\vspace{0.3cm}
+\noindent Reviewer 2: \dotfill\\[-0.1cm]
+\begin{center}
+  \textit{(Chức danh, bằng cấp, họ tên đầy đủ)}
+\end{center}
+
+\vspace{1.0cm}
+\noindent The master's thesis is defended at:
+
+\vspace{0.6cm}
+\begin{center}
+  \textbf{HỘI ĐỒNG ĐÁNH GIÁ LUẬN ÁN}\\
+  \textbf{\academyName}\\[0.25cm]
+  Ngày \ldots\ Tháng \ldots\ Năm 2026
+\end{center}
+
+\newpage
+\pagenumbering{roman}
+\setcounter{page}{1}
+
+\begin{center}
+  \textbf{TUYÊN NGÔN}
+\end{center}
+
+Tôi xin cam đoan những kết quả nghiên cứu trình bày trong luận án này là trung thực và được thực hiện trong phạm vi đề tài luận án của tôi dưới sự hướng dẫn khoa học của người hướng dẫn tôi. Tài liệu tham khảo, kế thừa kết quả từ các công trình đã công bố, tài liệu chuyên ngành, mã nguồn mô phỏng được sử dụng phục vụ mục đích học thuật và được trích dẫn trong luận án. Tôi không sao chép tác phẩm của người khác và coi đó là của riêng mình. Tôi hoàn toàn chịu trách nhiệm về việc khai báo này theo đúng quy định của Học viện.
+
+\vspace{2.0cm}
+\begin{flushright}
+  \begin{tabular}{c}
+    \textbf{TÁC GIẢ LUẬN ÁN}\\[2.0cm]
+    \textbf{Lại Tiến Đế}
+  \end{tabular}
+\end{flushright}
+
+\newpage
+\manualtocline{Supplementary title page}{}
+\manualtocline{Thesis correction confirmation}{}
+\manualtocline{LỜI CAM ĐOAN}{i}
+\manualtocline{MỤC LỤC}{ii}
+{\singlespacing\customtableofcontents}
+
+\newpage
+\addcontentsline{toc}{chapter}{TÓM TẮT LUẬN VĂN THẠC SĨ}
+\begin{center}
+  {\bfseries TÓM TẮT LUẬN ÁN}
+\end{center}
+
+\noindent\textbf{Thesis title:} Utilization of Artificial Neural Networks in LDPC Decoding for BIBCM-ID Systems.
+
+\noindent\textbf{Author:} Lai Tien De.
+
+\noindent\textbf{Major, field:} Telecommunications Engineering.
+
+\noindent\textbf{Thesis defense date:} \ldots
+
+\noindent\textbf{Supervisors:} Dr. Pham Xuan Nghia; Dr. Hoang Van Dung. \textbf{Affiliation:} Faculty of Radio Electronics, Military Technical Academy.
+
+\noindent\textbf{Objectives and tasks:}
+Luận án này nghiên cứu việc sử dụng mạng nơ-ron nhân tạo trong các khối xử lý tín hiệu chọn lọc của hệ thống điều chế mã hóa xen kẽ bit xen kẽ khối với giải mã lặp (BIBCM-ID). Bắt đầu từ kiến ​​trúc cơ bản của BIBCM-ID, công việc nhấn mạnh ba thành phần thiết yếu: điều chế và ghi nhãn bit, mã hóa kênh và xen kẽ. Sau đó, nghiên cứu tập trung vào hai hướng còn lại có liên quan trực tiếp đến kết quả hiện tại của tác giả: hỗ trợ thần kinh cho việc giải mã LDPC và điều chế dựa trên AutoEncode dưới các kênh không dây không lý tưởng. Các nhiệm vụ bao gồm xây dựng mô hình thông tin mềm, xem xét giải mã lặp và xử lý tỷ lệ khả năng ghi nhật ký, phát triển các mô hình thần kinh để cập nhật thông báo nút kiểm tra LDPC và đánh giá điều chế dựa trên AutoEncode trong các kênh bị ảnh hưởng bởi tính phi tuyến của bộ khuếch đại công suất, độ lệch tần số sóng mang, độ mờ và nhiễu phụ.
+
+\noindent\textbf{Scientific contributions:}
+Luận án cung cấp đánh giá kỹ thuật tổng hợp về BIBCM-ID và phân tích cách thức học sâu có thể được đưa vào thiết kế máy thu lớp vật lý. Nó trình bày một cách tiếp cận thần kinh để hỗ trợ giải mã LDPC thông qua xấp xỉ thông báo nút kiểm tra nhỏ gọn và nghiên cứu Điều chế dựa trên AutoEncode như một phân tích bổ sung của giao diện Điều chế/Giải điều chế trong các điều kiện kênh không lý tưởng. Sự nhấn mạnh về mặt khoa học là chất lượng thông tin mềm, độ phức tạp của việc giải mã và việc giải thích có kiểm soát các bằng chứng mô phỏng.
+
+\newpage
+\addcontentsline{toc}{chapter}{DANH MỤC CHỮ VIẾT TẮT}
+\begin{center}
+  {\bfseries DANH SÁCH CHỮ VIẾT TẮT}
+\end{center}
+
+\begin{longtable}{>{\raggedright\arraybackslash}p{3cm}>{\raggedright\arraybackslash}p{11cm}}
+\toprule
+\textbf{Viết tắt} & \textbf{Nghĩa}\\
+\midrule
+Bộ mã hóa tự động AE &\\
+Mạng thần kinh nhân tạo ANN &\\
+Tiếng ồn Gaussian trắng phụ gia AWGN &\\
+Tỷ lệ lỗi bit BER &\\
+BICM & Điều chế mã hóa xen kẽ bit\\
+BICM-ID & Điều chế mã hóa xen kẽ bit với giải mã lặp\\
+BIBCM-ID & Điều chế mã hóa xen kẽ bit xen kẽ khối với giải mã lặp\\
+BP & Truyền bá niềm tin\\
+CFO & Độ lệch tần số sóng mang\\
+Sửa lỗi chuyển tiếp FEC &\\
+LDPC & Kiểm tra chẵn lẻ mật độ thấp\\
+Tỷ lệ khả năng ghi nhật ký LLR &\\
+BẢN ĐỒ & Tối đa và Posteriori\\
+Bộ khuếch đại công suất PA &\\
+QAM & Điều chế biên độ cầu phương\\
+SNR & Tỷ lệ tín hiệu trên tạp âm\\
+\bottomrule
+\end{longtable}
+
+\newpage
+\addcontentsline{toc}{chapter}{DANH MỤC KÝ HIỆU TOÁN HỌC}
+\begin{center}
+  {\bfseries DANH SÁCH KÝ HIỆU TOÁN HỌC}
+\end{center}
+
+\begin{longtable}{p{3cm}p{11cm}}
+\toprule
+\textbf{Biểu tượng} & \textbf{Nghĩa}\\
+\midrule
+$\mathbf{u}$ & Vectơ bit thông tin tại đầu vào bộ mã hóa kênh\\
+$\mathbf{c}$ & Từ mã sau khi mã hóa kênh\\
+$\pi(\cdot)$ & Hoạt động xen kẽ hoặc hoán vị bit\\
+$s_m$ & Điểm tín hiệu được liên kết với nhãn $m$ trong chòm sao điều chế\\
+$x[n]$ & Mẫu truyền phức tạp tại thời điểm rời rạc $n$\\
+$y[n]$ & Mẫu phức hợp nhận được tại thời điểm riêng biệt $n$\\
+$N_0$ & Mật độ phổ công suất nhiễu\\
+$L(b_i)$ & Tỷ lệ khả năng ghi nhật ký của bit $i$\\
+$L_{\mathrm{ch}}$ & Tỷ lệ khả năng ghi nhật ký kênh được sử dụng để khởi tạo giải mã LDPC\\
+$I_{\max}$ & Số lần lặp giải mã tối đa\\
+$\mathbf{q}$ & Vectơ tin nhắn đến cục bộ được sử dụng bởi mô hình nút kiểm tra ANN\\
+$\eta_n$ & Hệ số độ tin cậy được sử dụng trong xây dựng nhãn ngoại tuyến\\
+$\mathbf{H}$ & Ma trận kiểm tra chẵn lẻ LDPC\\
+$\mathcal{N}(\cdot)$ & Phân phối Gaussian\\
+$\theta$ & Bộ tham số của mạng nơ-ron\\
+$\mathcal{L}$ & Chức năng mất được sử dụng trong quá trình đào tạo\\
+\bottomrule
+\end{longtable}
+
+\newpage
+\addcontentsline{toc}{chapter}{DANH MỤC BẢNG}
+\customlistoftables
+
+\newpage
+\addcontentsline{toc}{chapter}{DANH MỤC HÌNH VẼ}
+\customlistoffigures
+
+\clearpage
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+% ============================================================
+% MAIN CONTENT GENERATED FROM DOCX
+% ============================================================
+\input{body_from_docx_vi.tex}
+\end{document}

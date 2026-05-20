@@ -1,0 +1,66 @@
+\section{Giao thức đánh giá cho giải mã được hỗ trợ bởi ANN}
+Nghiên cứu bộ giải mã thuyết phục về mặt kỹ thuật đòi hỏi một giao thức đánh giá tách biệt hiệu ứng thuật toán khỏi tạo phẩm mô phỏng. Đường cong BER là kết quả dễ thấy nhất nhưng nó không phải là bằng chứng duy nhất. Để so sánh công bằng, các thuật toán cơ sở phải sử dụng cùng mã, điều chế, mô hình kênh, giới hạn lặp, quy tắc dừng và chia tỷ lệ LLR. Nếu bất kỳ điều kiện nào trong số này khác nhau thì việc so sánh có thể phản ánh sự khác biệt trong việc triển khai hơn là lợi thế giải mã thực sự.
+
+Yêu cầu đầu tiên là cấu hình mã nhất quán. Đối với mã LDPC có độ dài khối $n$, độ dài thông tin $k$ và tốc độ $R_c=k/n$, mọi bộ giải mã so sánh phải hoạt động trên cùng một ma trận kiểm tra chẵn lẻ $\mathbf{H}$. Nếu ANN được huấn luyện cho ma trận QC-LDPC, bài kiểm tra phải nêu rõ liệu ma trận tương tự được sử dụng hay ma trận khác được sử dụng để khái quát hóa. Bộ giải mã hoạt động tốt trên một ma trận có cấu trúc có thể không tự động chuyển sang ma trận khác do sự phân bố cấp độ nút, chu kỳ ngắn và bộ bẫy thay đổi.
+
+Yêu cầu thứ hai là cài đặt kênh và điều chế nhất quán. Nếu dữ liệu huấn luyện được tạo từ BPSK qua AWGN thì lần xác thực đầu tiên sẽ sử dụng cài đặt tương tự để tách biệt phép tính gần đúng của nút kiểm tra. Chỉ sau đó, phương pháp này mới được thử nghiệm với Điều chế bậc cao hơn hoặc với đầu vào Giải điều chế mềm kiểu BIBCM-ID. Đánh giá theo giai đoạn này là quan trọng. Nó ngăn không cho một thử nghiệm kết hợp quá nhiều hiệu ứng: kênh không khớp, giải điều chế không khớp, hành vi đồ thị LDPC và lỗi xấp xỉ thần kinh.
+
+Yêu cầu thứ ba là đủ số lượng bit mô phỏng. Ở mức BER thấp, một số lượng nhỏ sai số sẽ tạo ra ước tính nhiễu. Nếu quan sát thấy lỗi $N_{\mathrm{err}}$ trên các bit được truyền $N_{\mathrm{bit}}$ thì ước tính BER là
+\begin{equation}
+  \widehat{\mathrm{BER}}=\frac{N_{\mathrm{err}}}{N_{\mathrm{bit}}}.
+\end{equation}
+Đối với các lỗi hiếm gặp, độ không đảm bảo tương đối lớn khi $N_{\mathrm{err}}$ nhỏ. Một quy tắc đơn giản trong mô phỏng giao tiếp là thu thập số lượng sự kiện lỗi tối thiểu trước khi tin cậy một điểm trên đường cong BER. Do đó, điểm BER thấp dựa trên quá ít lỗi chỉ được hiểu là xu hướng biểu thị chứ không phải là bằng chứng mạnh mẽ về tính ưu việt.
+
+Yêu cầu thứ tư là báo cáo giới hạn lặp và quy tắc dừng. Quy tắc dừng dựa trên hội chứng kết thúc việc giải mã khi
+\begin{equation}
+  \mathbf{H}\hat{\mathbf{c}}^T=\mathbf{0}.
+\end{equation}
+Đối với kết quả ANN-LDPC, so sánh được hiểu là đánh giá cùng một giao thức, nhưng tài liệu được trích xuất không cung cấp bản ghi $I_{\max}$, trạng thái quy tắc dừng và số lần lặp trung bình trên mỗi SNR hoàn chỉnh. Số lượng này phải được đưa vào kho lưu trữ mô phỏng cuối cùng trước khi đưa ra các tuyên bố mạnh mẽ ở cấp độ triển khai. Nếu một bộ giải mã đạt đến điều kiện hội chứng sớm hơn bộ giải mã khác, nó có thể giảm độ phức tạp trung bình ngay cả khi giới hạn lặp tối đa là như nhau. Do đó, số lần lặp trung bình là một thước đo đồng hành hữu ích:
+\begin{equation}
+  \bar{I}=\frac{1}{N_f}\sum_{r=1}^{N_f}I_r,
+\end{equation}
+trong đó $N_f$ là số khung mô phỏng và $I_r$ là số lần lặp được sử dụng cho khung $r$. Bộ giải mã bảo toàn BER trong khi giảm $\bar{I}$ có thể hấp dẫn ngay cả khi chi phí mỗi lần lặp của nó cao hơn một chút.
+
+Yêu cầu thứ năm là bao gồm tỷ lệ lỗi khung khi có thể. BER đo tỷ lệ bit sai, trong khi FER đo xem toàn bộ khung có được giải mã chính xác hay không:
+\begin{equation}
+  \mathrm{FER}=\frac{N_{\mathrm{frame,err}}}{N_{\mathrm{frame}}}.
+\end{equation}
+Trong các hệ thống được mã hóa, FER thường rất quan trọng vì nhiều ứng dụng coi khung có một lỗi là không thể sử dụng được. Bản cập nhật nút kiểm tra ANN làm giảm BER nhưng giữ nguyên FER vẫn có thể hữu ích, nhưng cần hiểu rõ sự khác biệt.
+
+\section{Chế độ xem Ablation của bộ giải mã ANN}
+Chế độ xem cắt bỏ làm rõ phần nào của phương pháp chịu trách nhiệm về hành vi được quan sát. Sự cắt bỏ đầu tiên là bắt chước SPA so với ghi nhãn nhận biết độ tin cậy. Nếu mạng giả SPA khớp với SPA, điều này hỗ trợ cho tuyên bố rằng MLP có thể gần đúng với chức năng nút kiểm tra phi tuyến. Nếu mạng nhận biết độ tin cậy cải thiện đường cong, điều này hỗ trợ cho khẳng định bổ sung rằng việc kiểm soát cường độ đã học có thể có lợi khi giải mã vòng lặp hữu hạn. Hai tuyên bố này nên được đánh giá riêng biệt.
+
+Sự cắt bỏ thứ hai là kích thước mạng. Một mạng nhỏ gọn là trung tâm của lập luận kỹ thuật. Nếu mạng lớn hơn cải thiện BER một chút nhưng chi phí lại tăng lên đáng kể thì nó có thể ít liên quan hơn đến việc triển khai máy thu. Do đó, kích thước lớp ẩn phải được hiểu là một biến thiết kế trong sự cân bằng giữa hiệu suất và độ phức tạp:
+\begin{equation}
+  \mathrm{Tradeoff}=
+  \left(\mathrm{BER},\ \mathrm{FER},\ \bar{I},\ C_{\mathrm{op}},\ M_{\theta}\right),
+\end{equation}
+trong đó $C_{\mathrm{op}}$ biểu thị các hoạt động tính toán và $M_{\theta}$ biểu thị bộ nhớ mô hình. Chế độ xem vectơ này mang lại nhiều thông tin hơn một số BER đơn lẻ.
+
+Sự cắt bỏ thứ ba là cắt tin nhắn. Bộ giải mã LDPC thường cắt LLR thành một phạm vi hữu hạn. Nếu ANN được huấn luyện trên các tin nhắn SPA dấu phẩy động chưa được cắt bớt nhưng được kiểm tra trong bộ giải mã được cắt bớt thì hiệu suất có thể thay đổi. Một bài kiểm tra công bằng nên huấn luyện và kiểm tra trong cùng một phạm vi cắt hoặc phân tích rõ ràng sự không khớp. Phạm vi cắt có thể được viết là
+\begin{equation}
+  L_{\mathrm{clip}}=\max(-L_{\max},\min(L,L_{\max})).
+\end{equation}
+Giá trị của $L_{\max}$ ảnh hưởng đến cả độ ổn định số và độ tin cậy giải mã.
+
+Sự cắt bỏ thứ tư là mức độ nút. Một MLP duy nhất có thể được đào tạo cho một cấp độ nút kiểm tra. Nếu ma trận LDPC có nhiều cấp độ nút kiểm tra, bộ giải mã có thể sử dụng các mạng riêng biệt cho từng cấp độ, đệm đầu vào theo một chiều chung hoặc thiết kế kiến ​​trúc bất biến hoán vị. Mạng riêng biệt tăng bộ nhớ. Đệm có thể lãng phí tính toán. Một kiến ​​trúc bất biến hoán vị có thể được viết là
+\begin{equation}
+  g_\theta(\{|q_\ell|\})=
+  \rho_\theta\left(\sum_{\ell}\psi_\theta(|q_\ell|)\right),
+\end{equation}
+trong đó $\psi_\theta$ và $\rho_\theta$ là các hàm có thể học được. Biểu mẫu này tôn trọng thực tế là việc cập nhật nút kiểm tra không nên phụ thuộc vào thứ tự tùy ý trong đó các thông báo được liệt kê.
+
+Sự cắt bỏ thứ năm là sự phụ thuộc lặp lại. Mạng có thể chia sẻ các tham số giống nhau trên tất cả các lần lặp hoặc sử dụng các tham số dành riêng cho từng lần lặp. Các tham số được chia sẻ làm giảm bộ nhớ và dễ dàng điều chỉnh hơn. Các tham số dành riêng cho lần lặp có thể cải thiện hiệu suất nhưng có nguy cơ phù hợp quá mức với lịch trình lặp cố định. Đối với một bộ giải mã thực tế, sự phụ thuộc lặp được chia sẻ hoặc tham số hóa nhẹ là thích hợp hơn trừ khi mức tăng là đáng kể.
+
+\section{Ranh giới khoa học của nghiên cứu bộ giải mã}
+Việc so sánh giữa bộ giải mã ANN và Min-Sum chuẩn hóa phải được diễn giải thông qua cả tiêu chí hiệu suất và triển khai. Tổng tối thiểu được chuẩn hóa cực kỳ đơn giản và có thể thích hợp hơn khi độ phức tạp tối thiểu là mục tiêu duy nhất. Phương pháp ANN phù hợp hơn khi người thiết kế muốn hành vi giống như SPA mà không có chức năng siêu việt rõ ràng hoặc khi việc giảm chấn nhận biết độ tin cậy mang lại lợi thế được kiểm soát. Do đó, kết quả là một sự đánh đổi chứ không phải là một sự thay thế phổ biến.
+
+Độ tin cậy thống kê của mức tăng BER phụ thuộc vào độ dài mô phỏng và số lượng lỗi quan sát được. Hình~\ref{fig:ann_ldpc_ber_comparison} cho thấy xu hướng thuận lợi trong các điều kiện QC-LDPC và BPSK/AWGN đã nêu, trong khi các yêu cầu ở mức tiêu chuẩn ở các vùng BER thấp hơn sẽ yêu cầu mô phỏng dài hơn và ghi nhật ký sự kiện lỗi rõ ràng tại mỗi điểm SNR. Cách giải thích này phù hợp với một nghiên cứu tập trung vào phân tích thuật toán và đánh giá tính khả thi.
+
+Một bảng tái tạo hoàn chỉnh phải bao gồm, đối với mỗi điểm SNR, số khung được truyền, số bit thông tin được truyền, số lỗi bit quan sát được, số lỗi khung và kết quả dừng nếu kích hoạt tính năng kết thúc sớm. Nếu không có các trường này, đường cong BER vẫn hữu ích trong việc so sánh xu hướng giữa các thuật toán, nhưng phần đuôi BER thấp của nó sẽ không bị diễn giải quá mức.
+
+ANN không loại bỏ khả năng diễn giải của giải mã LDPC vì phương pháp được đề xuất giữ nguyên biểu đồ Tanner và chỉ thay đổi chức năng cập nhật cục bộ. Ma trận kiểm tra chẵn lẻ, kiểm tra hội chứng, cập nhật nút biến và lịch trình lặp lại vẫn có thể hiểu được. MLP hoạt động như một phép tính gần đúng hoặc hiệu chỉnh đã học cho hoạt động của nút kiểm tra phi tuyến. Điều này rất khác với việc thay thế bộ giải mã bằng một bộ phân loại thần kinh ánh xạ trực tiếp các mẫu kênh tới các tin nhắn.
+
+Phương pháp này tương thích với thông tin mềm từ Giải điều chế BIBCM-ID ở cấp độ giao diện thông báo: bộ giải mã LDPC sử dụng LLR bất kể chúng có nguồn gốc từ Giải điều chế BPSK hay Giải điều chế BIBCM-ID bậc cao. Tuy nhiên, việc phân phối các LLR đó có thể khác nhau. Do đó, BPSK-AWGN là đánh giá đầu tiên được kiểm soát, trong khi đầu vào mềm BIBCM-ID là bối cảnh hệ thống rộng hơn.
+
+Những thách thức có thể xảy ra này không phải là khiếm khuyết nếu chúng được giải quyết một cách rõ ràng. Họ xác định ranh giới giữa sự đóng góp tập trung ở cấp độ thạc sĩ và việc triển khai bộ thu sẵn sàng theo tiêu chuẩn đầy đủ. Luận án sử dụng ranh giới này để giữ cho các tuyên bố trở nên đáng tin cậy: việc xử lý nút kiểm tra được ANN hỗ trợ là đóng góp chính; Điều chế AutoEncode là một phân tích hỗ trợ nguồn thông tin phần mềm; xác nhận đa kênh rộng hơn vẫn là một sự tiếp tục về mặt kỹ thuật.

@@ -1,0 +1,133 @@
+\subsection{Mô hình thông tin mềm chi tiết của BIBCM-ID}
+Đối tượng kỹ thuật trung tâm trong BIBCM-ID là thông báo độ tin cậy được đính kèm với mỗi bit được mã hóa. Một máy thu thông thường có thể được mô tả như một chuỗi các quyết định khó khăn, nhưng cách mô tả như vậy che giấu ưu điểm chính của điều chế mã hóa lặp. Trong BIBCM-ID, khối Giải điều chế và bộ giải mã kênh trao đổi thông tin mềm. Bộ giải mã kênh không chỉ quyết định một bit là 0 hay 1; nó đánh giá mức độ tin cậy của quyết định đó. Khối Giải điều chế không chỉ chọn điểm chòm sao gần nhất; nó đánh giá xác suất của từng bit nhãn sau khi quan sát mẫu kênh nhiễu. Sự khác biệt này rất cần thiết vì việc xử lý lặp đi lặp lại chỉ có thể cải thiện bộ thu khi thông tin mềm được trao đổi mang ý nghĩa xác suất.
+
+Đặt $\mathbf{b}_t=[b_{t,1},\ldots,b_{t,m}]$ biểu thị nhãn bit được liên kết với ký hiệu được truyền tại thời điểm $t$, trong đó $m=\log_2 M$ dành cho chòm sao $M$-ary. Hàm điều biến ánh xạ nhãn này tới một ký hiệu phức tạp
+\begin{equation}
+  x_t=\mu(\mathbf{b}_t), \qquad \mu:\{0,1\}^{m}\rightarrow\mathcal{X}.
+\end{equation}
+Để thu được mạch lạc trên một kênh Fading phẳng, việc quan sát là
+\begin{equation}
+  y_t=h_t x_t+w_t,
+\end{equation}
+trong đó $h_t$ là hệ số kênh và $w_t\sim\mathcal{CN}(0,N_0)$ là nhiễu Gaussian phức tạp. Khi đó khả năng được sử dụng bởi khối Giải điều chế mềm là
+\begin{equation}
+  p(y_t|x,h_t)=\frac{1}{\pi N_0}\exp\left(-\frac{|y_t-h_t x|^2}{N_0}\right).
+\end{equation}
+Khả năng này là cầu nối giữa mẫu nhận được tương tự và bộ giải mã LDPC kỹ thuật số. Nếu khả năng được mô hình hóa chính xác thì giá trị LLR thu được sẽ có ý nghĩa thống kê. Nếu khả năng xảy ra không khớp, bộ giải mã sẽ nhận được các thông báo có độ tin cậy sai lệch ngay cả khi tỷ lệ lỗi ký hiệu quyết định cứng có vẻ chấp nhận được.
+
+Đối với bit thứ $k$ của nhãn ký hiệu, hãy xác định hai tập hợp con
+\begin{equation}
+  \mathcal{X}_{k}^{(b)}=\{x\in\mathcal{X}: b_k(x)=b\}, \qquad b\in\{0,1\}.
+\end{equation}
+Khi không có thông tin tiên nghiệm từ bộ giải mã, LLR của bộ giải điều chế có thể được viết là
+\begin{equation}
+  L_{\mathrm{dem}}(b_k|y_t)
+  =\log\frac{\sum_{x\in\mathcal{X}_{k}^{(1)}}p(y_t|x,h_t)}
+  {\sum_{x\in\mathcal{X}_{k}^{(0)}}p(y_t|x,h_t)}.
+\end{equation}
+Tuy nhiên, ở các lần lặp sau, khối Giải điều chế sẽ nhận được thông tin bit tiên nghiệm từ bộ giải mã. Trong trường hợp đó, ký hiệu trước không còn thống nhất. Nếu LLR tiên nghiệm của bit nhãn $b_i$ là $L_A(b_i)$ thì xác suất trước của nhãn ứng cử viên có thể được biểu thị bằng
+\begin{equation}
+  P_A(\mathbf{b}(x))=
+  \prod_{i=1}^{m}
+  \frac{\exp(b_i(x)L_A(b_i))}
+  {1+\exp(L_A(b_i))}.
+\end{equation}
+LLR giải điều chế hậu thế được cập nhật trở thành
+\begin{equation}
+  L_{\mathrm{APP}}(b_k|y_t)
+  =
+  \log
+  \frac{\sum_{x\in\mathcal{X}_{k}^{(1)}}p(y_t|x,h_t)
+  \prod_{i\ne k} P_A(b_i(x))}
+  {\sum_{x\in\mathcal{X}_{k}^{(0)}}p(y_t|x,h_t)
+  \prod_{i\ne k} P_A(b_i(x))}.
+\end{equation}
+Đầu ra bên ngoài của khối Giải điều chế có được bằng cách loại bỏ phần đóng góp tiên nghiệm của cùng một bit:
+\begin{equation}
+  L_E^{\mathrm{dem}}(b_k)=L_{\mathrm{APP}}(b_k|y_t)-L_A(b_k).
+\end{equation}
+Phép trừ này không phải là một chi tiết thẩm mỹ. Nó ngăn cản việc đếm đi đếm lại cùng một bằng chứng trong vòng lặp. Nếu người nhận liên tục phản hồi lại một thông báo bao gồm thông tin trước đó của chính nó, quá trình lặp có thể trở nên đáng tin cậy một cách giả tạo và có thể hội tụ về một từ mã vi phạm các ràng buộc chẵn lẻ.
+
+Gánh nặng tính toán của việc đánh giá LLR chính xác tăng theo kích thước chòm sao vì bộ giải điều chế tính tổng trên các tập hợp con của $\mathcal{X}$. Đối với $M$ lớn, phép tính gần đúng log tối đa thường được sử dụng:
+\begin{equation}
+  L_{\mathrm{dem}}(b_k|y_t)
+  \approx
+  \frac{1}{N_0}
+  \left[
+  \min_{x\in\mathcal{X}_{k}^{(0)}}|y_t-h_t x|^2
+  -
+  \min_{x\in\mathcal{X}_{k}^{(1)}}|y_t-h_t x|^2
+  \right].
+\end{equation}
+Biểu thức này hấp dẫn vì nó thay thế tổng số mũ bằng cách so sánh khoảng cách. Tuy nhiên, phép tính gần đúng sẽ làm thay đổi độ lớn của LLR. Trong máy thu một lần, sai số cường độ có thể có ảnh hưởng hạn chế nếu dấu đúng. Trong máy thu lặp, sai số cường độ sẽ thay đổi ảnh hưởng của thông báo đến các lần lặp giải mã tiếp theo. Do đó, việc chia tỷ lệ, cắt bớt và hiệu chỉnh LLR không phải là chi tiết triển khai thứ yếu; chúng ảnh hưởng trực tiếp đến sự hội tụ BIBCM-ID.
+
+Một máy thu thực tế thường cắt LLR thành một khoảng hữu hạn:
+\begin{equation}
+  \tilde{L}=\mathrm{clip}(L,L_{\min},L_{\max}).
+\end{equation}
+Việc cắt bớt sẽ bảo vệ bộ giải mã khỏi tràn số và giảm độ rộng bộ nhớ trong phần cứng điểm cố định. Tuy nhiên, việc cắt quá mạnh sẽ loại bỏ thông tin đáng tin cậy, trong khi việc cắt không đủ sẽ cho phép các giá trị quá tự tin hiếm có chiếm ưu thế trong bộ giải mã. Vấn đề này liên quan chặt chẽ đến phần LDPC được ANN hỗ trợ trong luận án. Bản cập nhật nút kiểm tra thần kinh có thể được hiểu là một phép biến đổi phi tuyến đã học được của các thông báo độ tin cậy; giá trị của nó không chỉ phụ thuộc vào quyết định khó khăn cuối cùng mà còn phụ thuộc vào cách nó định hình lại cường độ thông điệp trong quá trình lặp lại.
+
+\subsection{Vai trò của việc ghi nhãn, xen kẽ và tăng lặp}
+Ánh xạ giữa nhãn bit và các điểm chòm sao ảnh hưởng đến cấu hình độ tin cậy của đầu ra Giải điều chế. Trong BICM không lặp lại thông thường, việc ghi nhãn màu xám thường được ưa thích hơn vì các điểm chòm sao liền kề khác nhau một bit, làm giảm số lượng lỗi bit do lỗi ký hiệu gây ra. Trong BICM-ID và BIBCM-ID, việc ghi nhãn tốt nhất có thể khác nhau do khối Giải điều chế có thể khai thác thông tin tiên nghiệm từ bộ giải mã kênh. Các nhãn phân vùng tập hợp, nhãn chống Gray và các ánh xạ khác có thể mang lại mức tăng lặp lại mạnh hơn trong các điều kiện nhất định vì chúng tạo ra các đặc tính truyền thông tin bên ngoài khác nhau.
+
+Điểm này làm rõ tại sao Điều chế lại có liên quan ngay cả khi tiêu đề luận án nhấn mạnh đến việc giải mã LDPC. Bộ giải mã LDPC nhận các giá trị LLR có phân bố được xác định một phần bởi quy tắc ghi nhãn và hình học chòm sao. Cải tiến phía bộ giải mã không thể bù đắp hoàn toàn cho khối Giải điều chế luôn tạo ra LLR được hiệu chỉnh kém hoặc yếu. Ngược lại, thiết kế Điều chế/Giải điều chế tạo ra các thông báo có độ tin cậy có thể phân tách tốt hơn và được hiệu chỉnh tốt hơn có thể làm cho bộ giải mã LDPC hiệu quả hơn mà không cần thay đổi ma trận kiểm tra chẵn lẻ.
+
+Đối với bit nhãn $b_k$, xác định mật độ LLR có điều kiện $p(L|b_k)$. Một thiết kế Giải điều chế tốt không chỉ dịch chuyển giá trị trung bình của mật độ này ra khỏi 0; nó cũng sẽ làm giảm sự chồng chéo có hại giữa mật độ được quy định trên $b_k=0$ và $b_k=1$. Thông tin lẫn nhau giữa một bit và LLR của nó thường được sử dụng để tóm tắt hành vi này:
+\begin{equation}
+  I(B;L)=
+  \sum_{b\in\{0,1\}}\int p(b,L)
+  \log_2\frac{p(b,L)}{p(b)p(L)}\,dL.
+\end{equation}
+Trong phân tích biểu đồ EXIT, khối Giải điều chế và bộ giải mã kênh được xem như hai thành phần chuyển đổi thông tin lẫn nhau đầu vào thành thông tin lẫn nhau đầu ra. Mặc dù luận án này không xây dựng biểu đồ EXIT đầy đủ nhưng ý tưởng cơ bản rất quan trọng: độ lợi lặp xuất hiện khi đường cong truyền của khối Giải điều chế và đường cong truyền của bộ giải mã rời khỏi đường hầm hội tụ mở. Nếu đầu ra Giải điều chế bão hòa quá sớm hoặc bộ giải mã không thể khai thác thông tin tiên nghiệm thì việc lặp lại bổ sung sẽ mang lại rất ít lợi ích.
+
+Bộ chèn khối thay đổi mối quan hệ thống kê giữa các bit được mã hóa lân cận và các vị trí điều chế lân cận. Giả sử đầu ra bộ mã hóa là $\mathbf{c}=[c_1,\ldots,c_N]$ và bộ xen kẽ là hoán vị $\pi$ trên $\{1,\ldots,N\}$. Trình tự xen kẽ là
+\begin{equation}
+  v_i=c_{\pi(i)}.
+\end{equation}
+Đối với một bộ xen kẽ ngẫu nhiên lý tưởng, các bit ở gần trong biểu đồ mã có thể được phân tách theo các vị trí ký hiệu khác nhau. Bộ chèn khối áp đặt một hoán vị có cấu trúc hơn, điều này có thể có lợi cho việc triển khai và truy cập bộ nhớ. Mục tiêu thiết kế là giảm mối tương quan có hại trong khi hỗ trợ các hạn chế phần cứng thực tế như truy cập đọc/ghi song song và địa chỉ xác định.
+
+Từ quan điểm của bộ giải mã, việc xen kẽ cũng ảnh hưởng đến các sự kiện lỗi. Nếu một số quan sát kênh không đáng tin cậy được ánh xạ tới các bit mã tham gia kiểm tra tính chẵn lẻ có liên quan chặt chẽ, bộ giải mã có thể nhận thấy sự thiếu hụt độ tin cậy tập trung. Một bộ xen kẽ tốt sẽ trải rộng các bit không đáng tin cậy sao cho các ràng buộc chẵn lẻ có thể bù đắp cho chúng. Đây là lý do tại sao thiết kế bộ xen kẽ có nền tảng vững chắc của riêng nó. Luận án coi nó như một phần hoàn thiện và thiết yếu của khung BIBCM-ID, đồng thời tập trung đóng góp kỹ thuật vào phép tính gần đúng ANN phía bộ giải mã và nghiên cứu Điều chế/Giải điều chế hỗ trợ.
+
+Phép lặp BIBCM-ID có thể được tóm tắt bằng hai phép biến đổi ghép đôi:
+\begin{equation}
+  \mathbf{L}_{E,\mathrm{dem}}^{(t)}
+  =
+  \mathcal{M}\left(\mathbf{y},\Pi\mathbf{L}_{E,\mathrm{dec}}^{(t-1)}\right),
+\end{equation}
+\begin{equation}
+  \mathbf{L}_{E,\mathrm{dec}}^{(t)}
+  =
+  \mathcal{D}\left(\Pi^{-1}\mathbf{L}_{E,\mathrm{dem}}^{(t)}\right).
+\end{equation}
+Ở đây $\mathcal{M}$ biểu thị Giải điều chế mềm và $\mathcal{D}$ biểu thị giải mã kênh. Do đó, bộ giải mã LDPC không phải là một khối biệt lập. Nó là một thành phần trong vòng phản hồi có hành vi phụ thuộc vào chất lượng tin nhắn, tính độc lập của tin nhắn và tỷ lệ tin nhắn. Quan sát này được sử dụng trong suốt luận án để giải thích lý do tại sao nghiên cứu LDPC được ANN hỗ trợ nên được đánh giá theo cả BER và độ phức tạp trong xử lý thông báo.
+
+\subsection{Vấn đề nhận thực tế}
+Một số vấn đề thực tế về máy thu rất quan trọng trong việc diễn giải kết quả mô phỏng. Đầu tiên, quy ước ký hiệu LLR phải được sử dụng một cách nhất quán. Luận án này sử dụng
+\begin{equation}
+  L(b|y)=\log\frac{P(b=1|y)}{P(b=0|y)},
+\end{equation}
+vì vậy LLR dương thiên về giá trị bit một. Một số tài liệu tham khảo xác định dấu hiệu ngược lại. Sự không khớp dấu giữa Giải điều chế và giải mã sẽ khiến bộ giải mã củng cố giả thuyết sai. Do đó, bất cứ khi nào sử dụng quy ước tham chiếu hoặc ánh xạ BPSK khác, dấu hiệu phải được chuyển đổi trước quyết định cứng rắn và trước khi LLR được chuyển tới bộ giải mã LDPC.
+
+Thứ hai, chuẩn hóa SNR ảnh hưởng đến cả Giải điều chế và giải mã. Đối với điều chế mã hóa, năng lượng ký hiệu và năng lượng bit có liên quan bởi
+\begin{equation}
+  E_b=\frac{E_s}{R_c\log_2 M},
+\end{equation}
+để có thể
+\begin{equation}
+  \left(\frac{E_b}{N_0}\right)_{\mathrm{dB}}
+  =
+  \left(\frac{E_s}{N_0}\right)_{\mathrm{dB}}
+  -
+  10\log_{10}(R_c\log_2 M).
+\end{equation}
+Nếu việc chuyển đổi này không được xử lý cẩn thận, các đường cong cho các tốc độ mã hóa hoặc thứ tự điều chế khác nhau có thể được so sánh một cách không công bằng. Đây là một lý do tại sao luận án tránh đưa ra những tuyên bố về tính ưu việt trên diện rộng chỉ từ một đường cong BER duy nhất.
+
+Thứ ba, việc triển khai điểm cố định sẽ thay đổi hành vi của thông báo. Mô phỏng dấu phẩy động có thể biểu thị sự khác biệt xác suất rất nhỏ và cường độ LLR rất lớn. Bộ giải mã phần cứng thường sử dụng các giá trị thông báo được lượng tử hóa:
+\begin{equation}
+  L_Q=Q_{\Delta,L_{\max}}(L),
+\end{equation}
+trong đó $Q_{\Delta,L_{\max}}(\cdot)$ biểu thị bộ lượng tử hóa có kích thước bước $\Delta$ và giới hạn cắt $L_{\max}$. Lượng tử hóa có thể làm suy giảm SPA nhiều hơn Min-Sum trong một số cài đặt do mất các hiệu chỉnh phi tuyến chính xác. Quan sát này củng cố động lực cho phép tính gần đúng ANN nhỏ gọn: một hàm đã học có thể được huấn luyện hoặc tinh chỉnh dưới các ràng buộc lượng tử hóa thay vì chỉ được rút ra cho số học có giá trị thực lý tưởng.
+
+Thứ tư, số lần lặp lại là một phần của thiết kế hệ thống. Lặp lại nhiều lần hơn thường cải thiện BER tới một điểm, nhưng chúng làm tăng độ trễ và mức tiêu thụ điện năng. Đặt $I_{\max}$ là số lần lặp giải mã tối đa và $E$ là số cạnh trong đồ thị Tanner. Bộ giải mã truyền tin nhắn có tải tính toán xấp xỉ $I_{\max}E$. Nếu cập nhật nút kiểm tra ANN giúp giảm chi phí trên mỗi cạnh nhưng yêu cầu nhiều lần lặp hơn để hội tụ thì lợi ích ròng có thể nhỏ. Vì vậy, luận án diễn giải sự hỗ trợ của ANN thông qua hành vi hội tụ và chi phí tính toán của mỗi lần cập nhật.
+
+Cuối cùng, máy thu phải duy trì hoạt động ổn định để mô hình không khớp. Công thức giải điều chế rút ra từ AWGN không mô tả đầy đủ tính phi tuyến PA, CFO hoặc pha đinh đa đường. Tương tự, ANN được đào tạo về một lần phân phối tin nhắn có thể không khái quát hóa cho một lần phân phối khác. Do đó, cách giải thích kỹ thuật đáng tin cậy nhất không phải là mạng lưới thần kinh tự động hoạt động tốt hơn các phương pháp cổ điển mà là chúng cung cấp các giá trị gần đúng có thể huấn luyện được cho các hoạt động phi tuyến tính hoặc không khớp cụ thể khi các điều kiện huấn luyện và xác nhận được xác định cẩn thận.

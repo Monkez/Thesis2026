@@ -1,0 +1,158 @@
+\section{Từ SPA đến xấp xỉ nút kiểm tra thần kinh}
+Phần LDPC của luận án mạnh nhất khi nó được hiểu là một phép tính gần đúng thần kinh dựa trên mô hình chứ không phải là một ứng dụng hộp đen chung chung của học sâu. Đồ thị Tanner đã cung cấp một cấu trúc tính toán chính xác. Mỗi nút biến đại diện cho một bit được mã hóa, mỗi nút kiểm tra đại diện cho một ràng buộc chẵn lẻ và mỗi cạnh mang một thông điệp mềm. Mạng nơ-ron chỉ được giới thiệu khi cập nhật nút kiểm tra, mạng này vừa phi tuyến vừa được đánh giá nhiều lần. Công thức cục bộ này rất quan trọng vì nó bảo toàn các ràng buộc mã LDPC và tránh thay thế toàn bộ bộ giải mã bằng một bộ phân loại mờ đục.
+
+Để kiểm tra tính chẵn lẻ liên quan đến tập hợp các nút biến $\mathcal{N}(i)$, ràng buộc là
+\begin{equation}
+  \bigoplus_{j\in\mathcal{N}(i)} c_j=0.
+\end{equation}
+Trong quá trình truyền bá niềm tin, thông báo từ nút kiểm tra $i$ đến nút biến $j$ phụ thuộc vào tất cả các thông báo đến từ các nút biến khác được kết nối với cùng một kiểm tra:
+\begin{equation}
+  L_{i\rightarrow j}=F_{\mathrm{CN}}\left(\{L_{j'\rightarrow i}:j'\in\mathcal{N}(i)\setminus j\}\right).
+\end{equation}
+Hàm SPA chính xác trong miền LLR là
+\begin{equation}
+  F_{\mathrm{CN}}(\mathbf{q})=
+  2\tanh^{-1}\left(\prod_{\ell}\tanh\frac{q_\ell}{2}\right).
+\end{equation}
+Hàm này có ý nghĩa xác suất rõ ràng. Nó kết hợp các dấu hiệu của tin nhắn đến để xác định tính nhất quán chẵn lẻ và kết hợp độ lớn của chúng để xác định độ tin cậy. Phần dấu hiệu rất đơn giản:
+\begin{equation}
+  \mathrm{sign}\left(F_{\mathrm{CN}}(\mathbf{q})\right)
+  =
+  \prod_{\ell}\mathrm{sign}(q_\ell).
+\end{equation}
+Phần khó khăn là độ lớn. Độ lớn phụ thuộc vào tất cả độ tin cậy đến thông qua các hàm hyperbol phi tuyến. Phép tính gần đúng Min-Sum chỉ giữ lại độ tin cậy yếu nhất:
+\begin{equation}
+  |F_{\mathrm{MS}}(\mathbf{q})|=\min_{\ell}|q_\ell|.
+\end{equation}
+Phép tính gần đúng này có hiệu quả về mặt tính toán nhưng đánh giá quá cao một cách có hệ thống cường độ SPA trong nhiều trường hợp. Tổng tối thiểu được chuẩn hóa và Tổng tối thiểu bù đắp điều chỉnh xu hướng này bằng cách áp dụng hệ số tỷ lệ hoặc độ lệch biên độ. Cách tiếp cận ANN khái quát hóa ý tưởng này. Thay vì sử dụng một quy tắc hiệu chỉnh cố định, mạng nơron học cách ánh xạ phi tuyến từ vectơ cường độ đầu vào đến cường độ đầu ra mục tiêu.
+
+Bản cập nhật nút kiểm tra cũng có thể được viết thông qua toán tử box-plus:
+\begin{equation}
+  a\boxplus b
+  =
+  2\tanh^{-1}\left(\tanh\frac{a}{2}\tanh\frac{b}{2}\right).
+\end{equation}
+Sử dụng logarit Jacobian, phép toán này có dạng tương đương
+\begin{equation}
+  a\boxplus b
+  =
+  \mathrm{sign}(ab)\min(|a|,|b|)
+  +\log\left(1+e^{-|a+b|}\right)
+  -\log\left(1+e^{-|a-b|}\right).
+\end{equation}
+Thuật ngữ đầu tiên là phần Min-Sum. Hai số hạng logarit là hệ số hiệu chỉnh. Phương trình này giải thích tại sao Min-Sum hoạt động khá tốt và cũng tại sao nó không chính xác. Nó cũng cung cấp cách giải thích lý thuyết về mô hình thần kinh: MLP có thể được coi là học cách hiệu chỉnh phụ thuộc vào dữ liệu đối với cường độ Min-Sum mà không tính toán rõ ràng các thuật ngữ logarit.
+
+Đối với nút kiểm tra cấp $d_c$, đầu vào ANN cho một cạnh đi có kích thước $d_c-1$. Nếu bộ giải mã sử dụng các tin nhắn đến thô
+\begin{equation}
+  \mathbf{q}_{i,j}^{(t)}
+  =
+  [L_{j_1\rightarrow i}^{(t)},\ldots,L_{j_{d_c-1}\rightarrow i}^{(t)}]^T,
+\end{equation}
+thì xấp xỉ thần kinh là
+\begin{equation}
+  \hat{L}_{i\rightarrow j}^{(t)}
+  =
+  f_\theta(\mathbf{q}_{i,j}^{(t)}).
+\end{equation}
+Đối với cấu hình 49 tham số nhỏ gọn được nhấn mạnh trong thử nghiệm bộ giải mã được báo cáo, điều này tương ứng với bản cập nhật cục bộ cấp 5, do đó $d_c-1=4$ và $\mathbf{q}_{i,j}^{(t)}\in\mathbb{R}^4$. Do đó, mô hình này không nên được mô tả như một sự thay thế có kích thước cố định phổ quát cho các nút kiểm tra LDPC tùy ý. Đối với các mức độ khác, việc triển khai phải đào tạo các mạng theo mức độ cụ thể, sử dụng quy tắc chọn tính năng hoặc phần đệm được xác định rõ ràng hoặc áp dụng kiến ​​trúc bất biến hoán vị.
+Tuy nhiên, chức năng nút kiểm tra có tính đối xứng hữu ích. Dấu đầu ra được xác định bằng tích của các dấu đầu vào, trong khi cường độ được xác định bởi cường độ đầu vào. Do đó, việc triển khai có cấu trúc hơn có thể tính toán
+\begin{equation}
+  \hat{L}_{i\rightarrow j}^{(t)}
+  =
+  \left(\prod_{\ell}\mathrm{sign}(q_\ell)\right)
+  g_\theta(|q_1|,\ldots,|q_{d_c-1}|).
+\end{equation}
+Cấu trúc này làm giảm gánh nặng cho mạng nơ-ron vì mạng không cần học tính đối xứng dấu hiệu từ dữ liệu. Nó chỉ học cách điều chỉnh cường độ. Ngay cả khi MLP nhỏ gọn được sử dụng trực tiếp cho chức năng cập nhật, việc diễn giải dựa trên tính đối xứng này rất quan trọng đối với việc sàng lọc thiết kế theo định hướng phần cứng sau này.
+
+\section{Dữ liệu đào tạo, thiết kế nhãn và logic xác thực}
+Chất lượng của bộ giải mã được hỗ trợ ANN phụ thuộc rất nhiều vào cách xây dựng nhãn huấn luyện. Trong kịch bản gần đúng SPA, nhãn mục tiêu là đầu ra nút kiểm tra SPA chính xác hoặc có độ chính xác cao:
+\begin{equation}
+  r^{\mathrm{target}}=F_{\mathrm{SPA}}(\mathbf{q}).
+\end{equation}
+Kịch bản này kiểm tra xem MLP có thể học hàm phi tuyến xác định hay không. Nếu mạng gần đúng với SPA trên phạm vi tin nhắn được sử dụng trong quá trình giải mã thì BER dự kiến ​​sẽ gần với SPA. Lợi ích sau đó là giảm độ phức tạp, đặc biệt nếu hàm thần kinh dễ lượng tử hóa hoặc đường dẫn hơn so với hàm phi tuyến ban đầu.
+
+Trong kịch bản nhận biết độ tin cậy, mục tiêu được sửa đổi:
+\begin{equation}
+  r^{\mathrm{target}}=\rho(\mathbf{q},s,\mathrm{SNR})F_{\mathrm{SPA}}(\mathbf{q}),
+\end{equation}
+trong đó $\rho$ là hệ số tin cậy. Ở dạng đơn giản, $\rho<1$ khi tin nhắn bị nghi ngờ là không đáng tin cậy và $\rho\approx 1$ khi ngược lại. Chiến lược này liên quan đến quy tắc giảm xóc sau:
+\begin{equation}
+  L^{(t)}_{\mathrm{damped}}
+  =
+  \delta L^{(t)}+(1-\delta)L^{(t-1)},
+\end{equation}
+nhưng nó linh hoạt hơn vì độ suy giảm có thể phụ thuộc vào mẫu thông báo cục bộ hơn là vào một đại lượng vô hướng toàn cục cố định.
+
+Thiết kế nhãn phải được xử lý cẩn thận. Nếu nhãn nhận biết độ tin cậy được tạo bằng cách sử dụng thông tin không có sẵn trong bộ giải mã thực, thì mô hình được đào tạo có thể ngầm học từ một nhà tiên tri không thực tế. Điều này không làm mất hiệu lực nghiên cứu nhưng nó làm thay đổi cách giải thích. Kết quả phải được mô tả là bằng chứng cho thấy việc kiểm soát cường độ thông điệp có thể cải thiện việc giải mã vòng lặp có độ dài hữu hạn trong các điều kiện đã chọn, chứ không phải là sự đảm bảo chung về tính ưu việt so với SPA. Đây là lý do tại sao luận án sử dụng ngôn ngữ hạn chế khi thảo luận về mức tăng xu hướng dB $0.2$--$0.4$ dB gần đúng được quan sát thấy trong Hình~\ref{fig:ann_ldpc_ber_comparison}.
+
+Sự khác biệt tương tự cũng áp dụng cho các thông điệp tham chiếu được sử dụng trong quá trình xây dựng nhãn. Thông báo tham chiếu có thể được tạo ngoại tuyến từ tính toán SPA sạch hơn, từ mã được truyền đã biết hoặc quy tắc giáo viên khác. Những thông tin như vậy chỉ được sử dụng để xây dựng mục tiêu đào tạo. Trong quá trình suy luận, ANN đã triển khai nhận được vectơ tin nhắn đến cục bộ $\mathbf{q}_{i,j}^{(t)}$ và không nhận được các bit được truyền, tin nhắn kênh sạch hoặc cờ oracle rõ ràng. Nếu công trình mục tiêu sử dụng thông tin không có sẵn trên mạng thì kết quả sẽ được hiểu là nghiên cứu khả thi về khả năng giảm chấn đã học và kiểm soát độ tin cậy.
+
+Một quy trình xác nhận mạnh mẽ sẽ tách biệt các phạm vi SNR đào tạo, xác nhận và kiểm tra. Nếu việc huấn luyện chỉ sử dụng một SNR thì mạng có thể học cách phân phối thông điệp hẹp. Ví dụ, ở mức SNR cao, hầu hết cường độ LLR đều lớn và dấu hiệu đáng tin cậy; ở cường độ SNR thấp là nhỏ và lỗi dấu xảy ra thường xuyên. Hiệu chỉnh thần kinh chỉ được huấn luyện ở SNR cao có thể vượt quá mức độ tin cậy của các tin nhắn ở SNR thấp. Việc điều chỉnh thần kinh chỉ được huấn luyện ở SNR thấp có thể làm giảm các thông điệp ở SNR cao một cách không cần thiết. Do đó, việc huấn luyện trên một phạm vi giá trị SNR phù hợp hơn với bộ giải mã được thiết kế để hoạt động trên các điều kiện kênh.
+
+Đặt $\mathcal{S}_{\mathrm{train}}$ là tập hợp các giá trị SNR được sử dụng trong huấn luyện và $\mathcal{S}_{\mathrm{test}}$ là tập hợp được sử dụng trong thử nghiệm. Đánh giá mang tính thông tin nhất bao gồm cả phép nội suy và phép ngoại suy:
+\begin{equation}
+  \mathcal{S}_{\mathrm{test}}
+  =
+  \mathcal{S}_{\mathrm{interp}}\cup\mathcal{S}_{\mathrm{extra}},
+\end{equation}
+trong đó $\mathcal{S}_{\mathrm{interp}}$ nằm trong phạm vi huấn luyện và $\mathcal{S}_{\mathrm{extra}}$ nằm ngoài phạm vi huấn luyện. Một mô hình chỉ hoạt động ở dạng nội suy vẫn có thể hữu ích nhưng phạm vi hoạt động phải được nêu rõ ràng.
+
+Hàm mất mát cũng ảnh hưởng đến hành vi đã học. MAE phạt lỗi tin nhắn tuyệt đối:
+\begin{equation}
+  \mathcal{L}_{\mathrm{MAE}}=\frac{1}{N}\sum_{n=1}^{N}|\hat{r}_n-r_n|.
+\end{equation}
+Sai số bình phương trung bình sẽ xử phạt các lỗi lớn mạnh hơn:
+\begin{equation}
+  \mathcal{L}_{\mathrm{MSE}}=\frac{1}{N}\sum_{n=1}^{N}(\hat{r}_n-r_n)^2.
+\end{equation}
+Đối với các bản tin LLR, tổn thất tốt nhất không phải lúc nào cũng rõ ràng. Một sai số tuyệt đối nhỏ gần bằng 0 có thể làm thay đổi dấu quyết định cứng và có thể gây hại nhiều hơn một sai số có độ lớn lớn hơn khi dấu đã đáng tin cậy. Việc mất mát do nhận biết được dấu hiệu có thể bao gồm một hình phạt bổ sung:
+\begin{equation}
+  \mathcal{L}_{\mathrm{sign}}
+  =
+  \mathcal{L}_{\mathrm{MAE}}
+  +
+  \lambda
+  \frac{1}{N}\sum_{n=1}^{N}
+  \mathbf{1}\{\mathrm{sign}(\hat{r}_n)\ne\mathrm{sign}(r_n)\}.
+\end{equation}
+Luận án này không yêu cầu sự mất mát như vậy để biện minh cho kết quả hiện tại, nhưng việc thảo luận về nó sẽ làm rõ mối liên hệ giữa độ chính xác hồi quy và hiệu suất giải mã~.
+
+\section{Tính toán độ phức tạp cho giải mã LDPC được ANN hỗ trợ}
+Đánh giá độ phức tạp chính xác đòi hỏi nhiều hơn tuyên bố rằng mạng lưới thần kinh nhỏ. Số lượng tham số là một phần của đối số, nhưng số lượng thao tác trên mỗi lần lặp và kiểu truy cập bộ nhớ cũng rất quan trọng. Hãy xem xét MLP một lớp ẩn với kích thước đầu vào $d_{\mathrm{in}}$, kích thước ẩn $d_h$ và kích thước đầu ra $d_{\mathrm{out}}=1$. Số lượng trọng số và độ lệch là
+\begin{equation}
+  N_\theta=d_{\mathrm{in}}d_h+d_h+d_h d_{\mathrm{out}}+d_{\mathrm{out}},
+\end{equation}
+trong đó hai thuật ngữ đầu tiên thuộc về lớp ẩn và hai thuật ngữ cuối cùng thuộc về lớp đầu ra. Số lượng phép toán tích lũy nhân trên mỗi suy luận là xấp xỉ
+\begin{equation}
+  C_{\mathrm{MLP}}\approx d_{\mathrm{in}}d_h+d_h d_{\mathrm{out}}.
+\end{equation}
+Đối với cấu hình 49 tham số đại diện được sử dụng trong luận án này, $d_{\mathrm{in}}=4$, $d_h=8$ và $d_{\mathrm{out}}=1$. Do đó, chi phí suy luận là khoảng $4\times 8+8\times 1=40$ hoạt động tích lũy nhân trên mỗi tin nhắn gửi đi, cộng với so sánh ReLU. Việc này có rẻ hơn SPA hay không phụ thuộc vào chi phí phần cứng được gán cho việc truy cập tanh, tanh nghịch đảo hoặc bảng tra cứu. Trong phần cứng kỹ thuật số, phép cộng nhân có thể rẻ hơn và dễ thực hiện hơn phép toán siêu việt có độ chính xác cao, đặc biệt khi trọng lượng được lượng tử hóa.
+
+Nếu đồ thị Tanner có các cạnh $E$ và bộ giải mã chạy các vòng lặp $I_{\max}$, thì bản cập nhật nút kiểm tra cục bộ được đánh giá theo thứ tự $E I_{\max}$ lần. Do đó, tổng số hoạt động ANN là khoảng
+\begin{equation}
+  C_{\mathrm{total}}\approx E I_{\max} C_{\mathrm{MLP}}.
+\end{equation}
+Biểu thức này cho thấy tại sao mạng phải luôn nhỏ gọn. Một mạng lưới thần kinh lớn có thể chấp nhận được đối với một lần cập nhật nút kiểm tra, nhưng chi phí sẽ được nhân lên bởi tất cả các cạnh và tất cả các lần lặp. Do đó, kiến ​​trúc MLP cục bộ là một thiết kế có tính bảo vệ cao hơn một bộ giải mã đầu cuối lớn.
+
+Chi phí bộ nhớ cũng có vấn đề. Nếu một tập hợp trọng số được chia sẻ trên tất cả các nút kiểm tra có cùng mức độ thì bộ nhớ tham số sẽ nhỏ:
+\begin{equation}
+  M_{\theta}=N_{\theta}Q_w,
+\end{equation}
+trong đó $Q_w$ là số bit trên mỗi trọng lượng. Với lượng tử hóa 8 bit và 49 tham số, bộ nhớ trọng lượng chỉ vài trăm bit. Nếu các trọng số riêng biệt được học cho mỗi nút hoặc mỗi lần lặp thì chi phí bộ nhớ sẽ tăng đáng kể. Do đó, luận án ủng hộ việc chia sẻ trọng số và cấu trúc hướng mô hình vì chúng phù hợp với bộ thu thực tế.
+
+Lượng tử hóa có thể được tích hợp vào mô hình thần kinh. Mạng điểm cố định tính toán
+\begin{equation}
+  \hat{r}=Q_o\left(f_{Q_\theta(\theta)}(Q_i(\mathbf{q}))\right),
+\end{equation}
+trong đó $Q_i$, $Q_\theta$ và $Q_o$ là các bộ lượng tử hóa cho thông báo đầu vào, trọng số và thông báo đầu ra. Đào tạo nhận biết lượng tử hóa có thể mô phỏng các bộ lượng tử hóa này trong quá trình đào tạo để mạng học các tham số mạnh mẽ đến độ chính xác hữu hạn. Đây sẽ là sự tiếp nối quan trọng của công việc hiện tại vì bộ giải mã LDPC thường được triển khai với các thông báo điểm cố định.
+
+\section{Giải thích khoa học về lợi ích quan sát được}
+Mức tăng của kịch bản ANN nâng cao phải được trình bày dưới dạng kết quả có điều kiện. Trong nghiên cứu truyền thông, cải tiến BER chỉ có ý nghĩa khi biết mã, độ dài khối, điều chế, mô hình kênh, lịch trình giải mã, số lần lặp và độ dài mô phỏng. Không thể khái quát đường cong thu được cho một mã QC-LDPC trên AWGN cho tất cả các mã LDPC hoặc tất cả cấu hình BIBCM-ID. Do đó, luận án giải thích mức tăng là bằng chứng cho thấy điều khiển độ tin cậy đã học có thể cải thiện bộ giải mã vòng lặp có độ dài hữu hạn cụ thể.
+
+Cách giải thích này mạnh mẽ hơn về mặt khoa học so với một tuyên bố phóng đại. SPA là tối ưu cho các biểu đồ nhân tố dạng cây theo mô hình xác suất chính xác, nhưng biểu đồ LDPC thực tế chứa các chu trình. Trong biểu đồ lặp, các thông điệp có thể trở nên tương quan. Khi các thông điệp tương quan được kết hợp nhiều lần, bộ giải mã có thể trở nên quá tự tin. Sự suy giảm nhận biết độ tin cậy có thể làm giảm hiệu ứng này. Do đó, phương pháp ANN không mâu thuẫn với lý thuyết về SPA; nó đang khai thác sự khác biệt giữa các giả định lý tưởng đằng sau SPA và các điều kiện có độ dài hữu hạn của việc giải mã thực tế.
+
+Kết quả phía bộ giải mã cũng liên quan đến BIBCM-ID vì khối Giải điều chế có thể cung cấp LLR không hoàn hảo. Nếu đầu ra Giải điều chế hơi sai lệch hoặc quá tự tin, bản cập nhật LDPC nhận biết độ tin cậy có thể ngăn bộ giải mã khuếch đại độ lệch đó quá nhanh. Đây là một lợi ích hợp lý ở cấp độ hệ thống ngay cả trước khi xem xét việc tối ưu hóa chung Điều chế và giải mã. Do đó, bộ giải mã ANN được coi là một sửa đổi có kiểm soát bên trong bộ giải mã kênh, trong khi Điều chế bộ mã hóa tự động được coi là một cuộc điều tra bổ sung về nguồn thông tin mềm.
+
+Lợi ích phức tạp phụ thuộc vào đường cơ sở thực hiện. So với Min-Sum, ANN có thể phức tạp hơn. So với SPA chính xác sử dụng tanh và nghịch đảo tanh, ANN có thể thân thiện với phần cứng hơn. Do đó, tuyên bố công bằng không phải là ANN luôn là bộ giải mã có độ phức tạp thấp nhất mà nó mang lại sự cân bằng giữa hiệu suất giống như SPA và phép tính gần đúng phi tuyến có thể thực hiện được.
+
+Khái quát hóa vẫn là một yêu cầu kỹ thuật và có thể được kiểm tra thông qua nhiều ma trận kiểm tra chẵn lẻ, nhiều cấp độ nút, nhiều phạm vi SNR, thông báo lượng tử hóa và các điều kiện kênh không khớp. Điều này không làm suy yếu sự đóng góp hiện tại; nó đặt nó ở mức độ bằng chứng chính xác. Nghiên cứu này trình bày một phương pháp tập trung và diễn giải nó với các ranh giới kỹ thuật~ thích hợp.

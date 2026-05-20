@@ -52,7 +52,7 @@
 \exhyphenpenalty=10000
 \raggedbottom
 \setcounter{secnumdepth}{3}
-\setcounter{tocdepth}{3}
+\setcounter{tocdepth}{1}
 \graphicspath{{figures/}}
 
 \hypersetup{
@@ -83,16 +83,19 @@
   {\thesection.}
   {0.5em}
   {}
+\titlespacing*{\section}{\parindent}{1.0\baselineskip}{0.55\baselineskip}
 \titleformat{\subsection}
-  {\normalfont\bfseries}
+  {\normalfont}
   {\thesubsection.}
   {0.5em}
   {}
+\titlespacing*{\subsection}{\parindent}{0.85\baselineskip}{0.45\baselineskip}
 \titleformat{\subsubsection}
-  {\normalfont\itshape}
+  {\normalfont}
   {\thesubsubsection.}
   {0.5em}
   {}
+\titlespacing*{\subsubsection}{\parindent}{0.75\baselineskip}{0.35\baselineskip}
 
 \captionsetup{
   font=normalsize,
@@ -122,17 +125,27 @@
 \setlength{\cftsecnumwidth}{1.2cm}
 \setlength{\cftsubsecindent}{1.65cm}
 \setlength{\cftsubsecnumwidth}{1.55cm}
+\setlength{\cftfigindent}{0cm}
+\setlength{\cftfignumwidth}{1.15cm}
+\setlength{\cfttabindent}{0cm}
+\setlength{\cfttabnumwidth}{1.15cm}
 
 \makeatletter
 \newcommand{\manualtocline}[2]{%
   \addtocontents{toc}{\protect\contentsline{chapter}{#1}{#2}{manual.#1}\protected@file@percent}%
 }
 \newcommand{\customtableofcontents}{%
-  \begin{center}
-    {\bfseries TABLE OF CONTENTS}
-  \end{center}
-  \vspace{0.25cm}
-  \@starttoc{toc}%
+  \begingroup
+    \let\l@subsection\@gobbletwo
+    \let\l@subsubsection\@gobbletwo
+    \let\l@paragraph\@gobbletwo
+    \let\l@subparagraph\@gobbletwo
+    \begin{center}
+      {\bfseries TABLE OF CONTENTS}
+    \end{center}
+    \vspace{0.25cm}
+    \@starttoc{toc}%
+  \endgroup
 }
 \newcommand{\customlistoftables}{%
   \begin{center}
@@ -163,12 +176,18 @@
 \newcolumntype{Y}{>{\raggedright\arraybackslash}X}
 \newcommand{\thesisTitle}{UTILIZATION OF ARTIFICIAL NEURAL NETWORKS IN LDPC DECODING FOR BIBCM-ID SYSTEMS}
 \newcommand{\thesisTitleEN}{UTILIZATION OF ARTIFICIAL NEURAL NETWORKS IN LDPC DECODING FOR BIBCM-ID SYSTEMS}
-\newcommand{\studentName}{LẠI TIẾN ĐỆ}
-\newcommand{\supervisorName}{TS. PHẠM XUÂN NGHĨA}
-\newcommand{\supervisorNameTwo}{TS. HOÀNG VĂN DŨNG}
-\newcommand{\majorName}{Kỹ thuật viễn thông}
-\newcommand{\fieldName}{Kỹ thuật viễn thông}
-\newcommand{\academyName}{HỌC VIỆN KỸ THUẬT QUÂN SỰ}
+\newcommand{\studentName}{LAI TIEN DE}
+\newcommand{\supervisorName}{Dr. PHAM XUAN NGHIA}
+\newcommand{\supervisorNameTwo}{Dr. HOANG VAN DUNG}
+\newcommand{\majorName}{Telecommunications Engineering}
+\newcommand{\fieldName}{Telecommunications Engineering}
+\newcommand{\academyName}{MILITARY TECHNICAL ACADEMY}
+\newcommand{\coverHeader}{%
+  {\fontsize{12.2}{14.5}\selectfont
+  \makebox[\textwidth][c]{MINISTRY OF EDUCATION AND TRAINING\hspace{0.85cm}MINISTRY OF DEFENCE}}\\[0.28cm]
+  {\fontsize{12.6}{15}\selectfont\bfseries \academyName}\\[-0.42cm]
+  \rule{2.45cm}{0.4pt}
+}
 
 \begin{document}
 \sloppy
@@ -178,78 +197,94 @@
 % ============================================================
 \thispagestyle{empty}
 \begin{center}
-  \textbf{BỘ GIÁO DỤC VÀ ĐÀO TẠO \hfill BỘ QUỐC PHÒNG}\\[0.5cm]
-  \textbf{\academyName}\\[2.4cm]
+  \vspace*{-0.55cm}
+  \coverHeader
 
-  {\bfseries\studentName}\\[2.0cm]
+  \vspace{3.25cm}
+  {\bfseries\studentName}
 
-  {\bfseries\MakeUppercase{\thesisTitle}}\\[2.2cm]
+  \vspace{3.35cm}
+  \begin{minipage}{0.88\textwidth}
+    \centering
+    {\bfseries\MakeUppercase{\thesisTitle}}
+  \end{minipage}
 
-  {\bfseries LUẬN VĂN THẠC SĨ}\\[0.5cm]
-  \textbf{Ngành: \majorName}\\
-  \textbf{Chuyên ngành: \fieldName}\\
+  \vspace{2.55cm}
+  {\bfseries MASTER'S THESIS}\\[0.38cm]
+  \begin{tabular}{ll}
+    \textbf{Field:} & \textbf{\fieldName}\\
+    \textbf{Major:} & \textbf{\majorName}
+  \end{tabular}
 
   \vfill
-  \textbf{Hà Nội - Năm 2026}
+  \textbf{Hanoi -- 2026}
 \end{center}
 
 \newpage
 \thispagestyle{empty}
 \begin{center}
-  \textbf{BỘ GIÁO DỤC VÀ ĐÀO TẠO \hfill BỘ QUỐC PHÒNG}\\[0.5cm]
-  \textbf{\academyName}\\[2.2cm]
+  \vspace*{-0.55cm}
+  \coverHeader
 
-  {\bfseries\studentName}\\[1.8cm]
+  \vspace{3.10cm}
+  {\bfseries\studentName}
 
-  {\bfseries\MakeUppercase{\thesisTitle}}\\[1.4cm]
+  \vspace{2.65cm}
+  \begin{minipage}{0.88\textwidth}
+    \centering
+    {\bfseries\MakeUppercase{\thesisTitle}}
+  \end{minipage}\\[0.55cm]
 
   \begin{tabular}{ll}
-    \textbf{Ngành:} & \textbf{\majorName}\\
-    \textbf{Chuyên ngành:} & \textbf{\fieldName}\\
-    \textbf{Mã số:} & \textbf{\ldots\ldots\ldots}
-  \end{tabular}\\[1.6cm]
+    \textbf{Field:} & \textbf{\fieldName}\\
+    \textbf{Major:} & \textbf{\majorName}\\
+    \textbf{Code:} & \textbf{\ldots\ldots\ldots}
+  \end{tabular}\\[1.45cm]
 
-  \textbf{CÁN BỘ HƯỚNG DẪN KHOA HỌC}\\[0.4cm]
-  \textbf{Cán bộ hướng dẫn thứ nhất: \supervisorName}\\[0.25cm]
-  \textbf{Cán bộ hướng dẫn thứ hai: \supervisorNameTwo}
+  \textbf{SCIENTIFIC SUPERVISOR}\\[0.4cm]
+  \textbf{First supervisor: \supervisorName}\\[0.25cm]
+  \textbf{Second supervisor: \supervisorNameTwo}
 
   \vfill
-  \textbf{Hà Nội - Năm 2026}
+  \textbf{Hanoi -- 2026}
 \end{center}
 
 \newpage
 \thispagestyle{empty}
 \begin{center}
-  \textbf{CÔNG TRÌNH ĐƯỢC HOÀN THÀNH TẠI}\\[0.25cm]
+  \vspace*{0.1cm}
+  \textbf{THIS THESIS WAS COMPLETED AT}\\[0.25cm]
   \textbf{\academyName}\\[1.2cm]
 \end{center}
 
-\noindent Cán bộ chấm phản biện 1: \dotfill\\[-0.1cm]
+\noindent Reviewer 1: \dotfill\\[-0.1cm]
 \begin{center}
-  \textit{(Học hàm, học vị, họ và tên)}
+  \textit{(Academic title, degree, full name)}
 \end{center}
 
 \vspace{0.3cm}
-\noindent Cán bộ chấm phản biện 2: \dotfill\\[-0.1cm]
+\noindent Reviewer 2: \dotfill\\[-0.1cm]
 \begin{center}
-  \textit{(Học hàm, học vị, họ và tên)}
+  \textit{(Academic title, degree, full name)}
 \end{center}
 
 \vspace{1.0cm}
-\noindent Luận văn thạc sĩ được bảo vệ tại:
+\noindent The master's thesis is defended at:
 
 \vspace{0.6cm}
 \begin{center}
-  \textbf{HỘI ĐỒNG CHẤM LUẬN VĂN THẠC SĨ}\\
+  \textbf{MASTER'S THESIS EVALUATION COUNCIL}\\
   \textbf{\academyName}\\[0.25cm]
-  Ngày \ldots\ tháng \ldots\ năm 2026
+  Date \ldots\ Month \ldots\ Year 2026
 \end{center}
 
 \newpage
 \pagenumbering{roman}
 \setcounter{page}{1}
 
-\noindent\textbf{Declaration:}
+\begin{center}
+  \textbf{DECLARATION}
+\end{center}
 
 I hereby declare that the research results presented in this thesis are truthful and were carried out within the scope of my thesis topic under the scientific guidance of my supervisors. Referenced materials, inherited results from published works, specialized documents, and simulation source codes are used for academic purposes and are cited in the thesis. I do not copy the work of others and present it as my own. I take full responsibility for this declaration in accordance with the regulations of the Academy.
 
@@ -267,28 +302,6 @@ I hereby declare that the research results presented in this thesis are truthful
 \manualtocline{Declaration}{i}
 \manualtocline{TABLE OF CONTENTS}{ii}
 {\singlespacing\customtableofcontents}
-
-\newpage
-\addcontentsline{toc}{chapter}{TÓM TẮT LUẬN VĂN THẠC SĨ}
-\begin{center}
-  {\bfseries TÓM TẮT LUẬN VĂN THẠC SĨ}
-\end{center}
-
-\noindent\textbf{Tên luận văn:} Utilization of Artificial Neural Networks in LDPC Decoding for BIBCM-ID Systems.
-
-\noindent\textbf{Tác giả:} Lại Tiến Đệ.
-
-\noindent\textbf{Ngành, chuyên ngành:} Kỹ thuật viễn thông.
-
-\noindent\textbf{Ngày bảo vệ:} \ldots
-
-\noindent\textbf{Cán bộ hướng dẫn:} TS. Phạm Xuân Nghĩa; TS. Hoàng Văn Dũng. \textbf{Đơn vị:} Khoa Vô tuyến điện tử, Học viện Kỹ thuật Quân sự.
-
-\noindent\textbf{Mục đích và nhiệm vụ nghiên cứu:}
-Luận văn nghiên cứu khả năng ứng dụng mạng nơ-ron nhân tạo vào một số khối xử lý quan trọng trong hệ thống điều chế mã có hoán vị bit và giải mã lặp dạng BIBCM-ID. Trên cơ sở khảo sát cấu trúc BIBCM-ID gồm điều chế, mã kênh và hoán vị, luận văn tập trung vào hai hướng chính: hỗ trợ giải mã kênh LDPC bằng mô hình học sâu và đánh giá điều chế dựa trên AutoEncoder trong các điều kiện kênh không lý tưởng. Nhiệm vụ nghiên cứu bao gồm xây dựng mô hình hệ thống, biểu diễn thông tin mềm dạng LLR, phân tích cơ chế trao đổi thông tin ngoại lai trong giải mã lặp, khảo sát mô hình mạng nơ-ron cho cập nhật thông điệp trong giải mã LDPC, và đánh giá kết quả mô phỏng trên các kịch bản kênh có nhiễu, phi tuyến khuếch đại công suất và sai lệch tần số sóng mang.
-
-\noindent\textbf{Những đóng góp mới của luận văn:}
-Luận văn hệ thống hóa cơ sở lý thuyết của BIBCM-ID theo cách nhấn mạnh ba thành phần kỹ thuật: điều chế, mã kênh và bộ hoán vị. Trên nền tảng đó, luận văn phân tích cách dùng mạng nơ-ron để xấp xỉ hoặc hiệu chỉnh thông tin mềm trong giải mã LDPC, đặc biệt tại khâu cập nhật nút kiểm tra. Phần điều chế AutoEncoder được trình bày như một nghiên cứu bổ trợ cho giao diện điều chế/giải điều chế, nhằm làm rõ ảnh hưởng của kênh không lý tưởng tới chất lượng thông tin mềm đưa vào bộ giải mã LDPC.
 
 \newpage
 \addcontentsline{toc}{chapter}{MASTER THESIS SUMMARY}

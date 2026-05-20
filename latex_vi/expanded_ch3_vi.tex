@@ -1,0 +1,128 @@
+\section{Điều chế AutoEncode như một nghiên cứu hỗ trợ}
+Điều chế dựa trên AutoEncode được đưa vào luận án vì bộ giải mã LDPC hoạt động dựa trên thông tin độ tin cậy được tạo ra bởi giao diện người dùng của máy thu. Nếu quá trình Điều chế và Giải điều chế tạo ra LLR sai lệch, bộ giải mã LDPC có thể không đạt được hiệu suất như mong đợi ngay cả khi thuật toán giải mã được thiết kế tốt. Do đó, nghiên cứu về Điều chế đã học có liên quan như một phân tích hỗ trợ về nguồn thông tin mềm trong máy thu định hướng BIBCM-ID. Điểm mấu chốt là Điều chế AutoEncode không được trình bày dưới dạng đóng góp giải mã LDPC chính. Nó được sử dụng để kiểm tra cách ánh xạ tín hiệu có thể huấn luyện và máy thu có thể huấn luyện có thể thích ứng với sự suy giảm kênh làm suy yếu Giải điều chế thông thường.
+
+Trong Bộ mã hóa tự động truyền thông, mạng máy phát ánh xạ thông báo hoặc mẫu bit tới đầu vào kênh:
+\begin{equation}
+  \mathbf{x}=f_\theta(\mathbf{m}),
+\end{equation}
+kênh sản xuất
+\begin{equation}
+  \mathbf{y}=\mathcal{H}(\mathbf{x})+\mathbf{w},
+\end{equation}
+và mạng thu ước tính tin nhắn được truyền hoặc các bit được truyền:
+\begin{equation}
+  \hat{\mathbf{p}}=g_\phi(\mathbf{y}).
+\end{equation}
+Các tham số $\theta$ và $\phi$ được học bằng cách giảm thiểu tổn thất chẳng hạn như entropy chéo. Công thức này giống như một hệ thống truyền thông đầu cuối, nhưng việc diễn giải phải chính xác. Nếu người nhận chỉ xuất ra một lớp thông báo thì mô hình đó là một bộ phát hiện đã học. Nếu máy thu xuất ra các xác suất bit hoặc các giá trị giống LLR, thì nó sẽ trở nên phù hợp trực tiếp hơn với máy thu điều chế mã hóa lặp.
+
+Bình thường hóa năng lượng là trọng tâm của một so sánh công bằng. Không bị ràng buộc, mạng máy phát có thể giảm tỷ lệ lỗi bằng cách tăng năng lượng tín hiệu. Một sự chuẩn hóa điển hình là
+\begin{equation}
+  \mathbf{x}_{\mathrm{norm}}
+  =
+  \sqrt{P_0}
+  \frac{\mathbf{x}_{\mathrm{raw}}}
+  {\sqrt{\mathbb{E}\{\|\mathbf{x}_{\mathrm{raw}}\|^2\}}},
+\end{equation}
+thực thi một ràng buộc công suất trung bình. Khi so sánh Điều chế AutoEncode với 16-QAM hoặc đường cơ sở khác, phải sử dụng cùng một mức chuẩn hóa năng lượng hiệu quả. Mặt khác, cải tiến BER có thể phản ánh công suất phát cao hơn thay vì biểu thị tín hiệu tốt hơn.
+
+Lớp kênh xác định những gì Bộ mã hóa tự động học. Chỉ trong AWGN, một chòm sao đã học có thể giống với một chòm sao thông thường vì khoảng cách Euclide là tiêu chí thiết kế chủ đạo. Theo tính phi tuyến PA, chòm sao đã học có thể tránh được các vùng có biên độ cao chịu nén. Theo CFO, máy phát và máy thu dựa trên trình tự có thể học cách biểu diễn mạnh mẽ để xoay pha theo thời gian. Trong điều kiện Fading và ISI, máy thu có thể học được hành vi giống như cân bằng. Những quan sát này giải thích tại sao các kết quả của AutoEncode lại hữu ích khi thảo luận về Điều chế và Giải điều chế, mặc dù chúng không phải là bằng chứng trung tâm cho việc giải mã LDPC được ANN hỗ trợ.
+
+\section{Tính phi tuyến PA và hình học tín hiệu đã học}
+Tính phi tuyến của bộ khuếch đại công suất là một trong những lý do quan trọng nhất để nghiên cứu Điều chế đã học. Các máy phát thực tế thường vận hành các bộ khuếch đại công suất gần bão hòa để nâng cao hiệu quả sử dụng năng lượng. Gần bão hòa, bộ khuếch đại không còn hoạt động như một mức tăng tuyến tính nữa. Một mô hình không có bộ nhớ chung biểu thị đầu ra dưới dạng
+\begin{equation}
+  z=A(r)e^{j(\angle x+\Phi(r))}, \qquad r=|x|,
+\end{equation}
+trong đó $A(r)$ là chuyển đổi AM/AM và $\Phi(r)$ là chuyển đổi AM/PM. Đối với mô hình AM/AM loại Rapp,
+\begin{equation}
+  A(r)=\frac{r}{\left(1+\left(\frac{r}{A_{\mathrm{sat}}}\right)^{2p}\right)^{1/(2p)}}.
+\end{equation}
+Khi $r$ nhỏ, $A(r)\approx r$. Khi $r$ tiến đến vùng bão hòa, $A(r)$ tăng chậm và các điểm có biên độ cao bị nén. Đối với QAM vuông, các điểm chòm sao bên ngoài bị ảnh hưởng mạnh hơn các điểm bên trong. Các cụm nhận được không còn nằm ở các điểm được giả định bởi Bộ giải điều chế kênh tuyến tính.
+
+Ảnh hưởng đến LLR có thể nghiêm trọng. Bộ giải mã thông thường có thể tính toán
+\begin{equation}
+  p(y|x)\propto \exp\left(-\frac{|y-hx|^2}{N_0}\right),
+\end{equation}
+trong khi mẫu nhận được thực tế gần với
+\begin{equation}
+  y=hA(|x|)e^{j(\angle x+\Phi(|x|))}+w.
+\end{equation}
+Sự không phù hợp làm thay đổi cả khoảng cách và ranh giới quyết định. Sơ đồ điều chế đã học có thể phản hồi bằng cách định hình lại chòm sao trước bộ khuếch đại sao cho các điểm sau bộ khuếch đại có thể tách rời hơn. Ngoài ra, một máy thu thần kinh có thể học nghịch đảo phi tuyến hoặc quy tắc quyết định đúng.
+
+Cách giải thích này nên được giữ ở mức độ vừa phải. Điều chế đã học không tự động giải quyết biến dạng PA. Nó phụ thuộc vào độ chính xác của mô hình PA được sử dụng trong quá trình huấn luyện và vào việc bộ khuếch đại hoạt động có phù hợp với mô hình đó hay không. Nếu mạng được huấn luyện ở một mức bão hòa và được kiểm tra ở mức bão hòa khác thì hiệu suất có thể giảm. Do đó, đào tạo mạnh mẽ nên chọn ngẫu nhiên các tham số mô hình PA:
+\begin{equation}
+  A_{\mathrm{sat}}\sim\mathcal{U}(A_{\min},A_{\max}), \qquad
+  p\sim\mathcal{U}(p_{\min},p_{\max}).
+\end{equation}
+Chiến lược đào tạo này sẽ khuyến khích máy phát và máy thu tìm hiểu cách biểu diễn không quá chuyên biệt đối với một điều kiện khuếch đại. Trong nghiên cứu hiện tại, nó được coi là ý nghĩa thiết kế cho sự phát triển trong tương lai hơn là khẳng định rằng các mô phỏng hiện tại đã bao gồm tất cả các biến thể phần cứng.
+
+\section{Bù tần số sóng mang và giải điều chế dựa trên trình tự}
+Độ lệch tần số sóng mang xuất hiện khi bộ dao động của máy phát và máy thu không được căn chỉnh hoàn hảo. Trong thời gian rời rạc, mẫu nhận được có thể được mô hình hóa thành
+\begin{equation}
+  y[k]=x[k]e^{j(2\pi\epsilon k+\varphi_0)}+w[k],
+\end{equation}
+trong đó $\epsilon$ là CFO chuẩn hóa và $\varphi_0$ là giai đoạn ban đầu. Bộ giải mã không có bộ nhớ chỉ quan sát một biểu tượng được xoay tại một thời điểm. Nếu chưa biết pha, điểm có thể xuất hiện gần vùng quyết định sai hơn. Máy thu dựa trên trình tự quan sát nhiều mẫu:
+\begin{equation}
+  \mathbf{y}_{k:k+T-1}=[y[k],y[k+1],\ldots,y[k+T-1]],
+\end{equation}
+và có thể khai thác thực tế là quá trình quay pha tiến hóa một cách có hệ thống với $k$.
+
+Điều này giải thích tại sao kịch bản AutoEncoding đa ký hiệu lại có liên quan. Một máy thu đã học với đầu vào trình tự có thể ngầm ước tính hoặc bù đắp cho xu hướng quay. Lợi ích không chỉ đơn thuần là việc sử dụng mạng lưới thần kinh; lợi ích đến từ việc cung cấp bối cảnh thời gian cho người nhận. Trong các hệ thống truyền thông cổ điển, CFO thường được xử lý bằng các thuật toán đồng bộ hóa. Kết quả của AutoEncoding có thể được hiểu là bằng chứng cho thấy bộ thu thần kinh có thể tiếp nhận một phần gánh nặng đồng bộ hóa trong một kịch bản được kiểm soát.
+
+Sự đánh đổi phức tạp cũng phải được nêu rõ. Xử lý chuỗi làm tăng độ trễ và bộ nhớ vì bộ thu sử dụng một cửa sổ mẫu thay vì một ký hiệu đơn lẻ. Nếu độ dài chuỗi là $T$ và thứ nguyên ẩn là $d_h$ thì chi phí tính toán có thể tăng xấp xỉ với $T d_h$ để xử lý chuyển tiếp nguồn cấp dữ liệu đơn giản và hơn thế nữa cho các mô hình định kỳ hoặc dựa trên sự chú ý. Do đó, bộ thu thần kinh dựa trên trình tự chỉ hữu ích khi hiệu suất đạt được phù hợp với độ trễ và độ phức tạp tăng lên.
+
+Đối với mức độ liên quan của BIBCM-ID, CFO ảnh hưởng đến LLR được phân phối tới bộ giải mã LDPC. Nếu CFO không được sửa, khối Giải điều chế có thể tạo ra các thông báo có độ tin cậy thấp hoặc độ tin cậy sai. Một Bộ giải điều chế đã học mạnh mẽ đối với CFO có thể cung cấp thông tin mềm tốt hơn. Tuy nhiên, để hỗ trợ giải mã lặp, nó phải xuất ra các giá trị độ tin cậy ở mức bit thay vì chỉ đưa ra các quyết định về thông báo. Một giao diện có thể là
+\begin{equation}
+  \hat{L}_k=g_\phi(\mathbf{y}_{k:k+T-1},L_{A,k}),
+\end{equation}
+trong đó $L_{A,k}$ thể hiện thông tin tiên nghiệm từ bộ giải mã. Phương trình này là hướng thiết kế cho Giải điều chế mềm đã học; nó cho thấy các ý tưởng AutoEncoding có thể được thực hiện tương thích như thế nào với các nguyên tắc BIBCM-ID.
+
+\section{Hiệu chuẩn LLR cho giải điều chế thần kinh}
+Cầu nối khoa học quan trọng nhất giữa Điều chế AutoEncode và giải mã LDPC là hiệu chuẩn LLR. Bộ thu thần kinh được huấn luyện với entropy chéo có thể đưa ra các xác suất hữu ích cho việc phân loại nhưng không được hiệu chỉnh hoàn hảo \cite{guo2017}. Hiệu chuẩn có nghĩa là khi máy thu xuất ra xác suất $0.9$, sự kiện phải chính xác trong khoảng 90% thời gian trên nhiều mẫu có độ tin cậy tương tự. Hiệu chuẩn kém có hại cho việc giải mã lặp vì bộ giải mã LDPC sử dụng cường độ xác suất làm trọng số độ tin cậy.
+
+Đối với bit $b_k$, bộ thu thần kinh có thể xuất ra $\hat{p}_k=P(b_k=1|\mathbf{y})$. LLR tương ứng là
+\begin{equation}
+  \hat{L}_k=\log\frac{\hat{p}_k}{1-\hat{p}_k}.
+\end{equation}
+Nếu $\hat{p}_k$ quá tự tin thì $|\hat{L}_k|$ sẽ trở nên quá lớn. Nếu dấu hiệu sai, cường độ lớn có thể đánh lừa bộ giải mã LDPC. Một phương pháp hiệu chuẩn đơn giản là chia tỷ lệ nhiệt độ:
+\begin{equation}
+  \hat{p}_k(T)=\sigma\left(\frac{z_k}{T}\right),
+\end{equation}
+trong đó $z_k$ là logit thần kinh, $\sigma(\cdot)$ là hàm sigmoid và $T>0$ là nhiệt độ hiệu chuẩn. Nếu $T>1$, xác suất đầu ra trở nên kém tin cậy hơn. Nếu là $T<1$, chúng sẽ trở nên sắc nét hơn. Nhiệt độ có thể được chọn trên bộ xác thực bằng cách giảm thiểu khả năng ghi nhật ký âm.
+
+Hiệu chuẩn cũng có thể được đánh giá bằng điểm Brier:
+\begin{equation}
+  \mathrm{Brier}=\frac{1}{N}\sum_{n=1}^{N}(\hat{p}_n-b_n)^2,
+\end{equation}
+hoặc với các sơ đồ độ tin cậy so sánh độ tin cậy dự đoán với độ chính xác thực nghiệm. Các số liệu này không thay thế cho BER nhưng chúng giải thích liệu người nhận có tạo ra thông tin mềm có thể sử dụng được hay không. Đối với hệ thống điều chế mã lặp, máy thu có độ chính xác quyết định cứng kém hơn một chút nhưng LLR được hiệu chỉnh tốt hơn đôi khi có thể hỗ trợ giải mã tốt hơn so với bộ phân loại quá tự tin.
+
+Điểm này đặc biệt quan trọng đối với tiêu đề luận án. Đối tượng trung tâm là giải mã LDPC và giải mã LDPC phụ thuộc vào thông tin mềm. Do đó, Điều chế AutoEncode chỉ có thể được coi là một chủ đề hỗ trợ khi nó được liên kết với Giải điều chế đầu ra mềm và giao diện máy thu có thể đào tạo \cite{cammerer2020}. Luận án làm cho mối liên hệ đó trở nên rõ ràng: Điều chế đã học không được thảo luận như một minh họa học sâu riêng lẻ mà như một cách để nghiên cứu cách biểu diễn tín hiệu nhận biết kênh và xử lý máy thu thần kinh có thể cải thiện độ tin cậy của thông tin cung cấp cho bộ giải mã.
+
+\section{Tiêu chí chất lượng để diễn giải kết quả của bộ mã hóa tự động}
+Kết quả giao tiếp của AutoEncoding phải được diễn giải bằng một số tiêu chí. Tiêu chí đầu tiên là đường cơ sở. Chòm sao đã học nên được so sánh với sơ đồ thông thường trong cùng một ràng buộc công suất, mô hình kênh, định nghĩa SNR và thông tin máy thu. Nếu bộ thu cơ sở thiếu thông tin trạng thái kênh trong khi bộ thu thần kinh ngầm học thông tin đó từ quá trình đào tạo thì việc so sánh có thể không công bằng. Do đó, những số liệu được trình bày được coi là bằng chứng về tính khả thi và xu hướng chứ không phải là một tuyên bố về hiệu suất chung.
+
+Tiêu chí thứ hai là phân bổ đào tạo. Nếu mô hình được huấn luyện và kiểm tra trên các tham số suy giảm chính xác giống nhau, kết quả sẽ đo nội suy trong một điều kiện hẹp. Kết quả mạnh hơn sẽ kiểm tra các tham số PA ngẫu nhiên, nhiều giá trị CFO, phân phối mờ dần không thấy trong quá trình huấn luyện và các phạm vi SNR khác nhau. Điều này không làm mất hiệu lực các kết quả được trình bày; nó xác định phạm vi của họ.
+
+Tiêu chí thứ ba là giao diện đầu ra. Bộ mã hóa tự động phân loại tin nhắn rất hữu ích cho việc nghiên cứu hình học tín hiệu đã học. Bộ giải mã thần kinh tương thích BIBCM-ID phải tiến xa hơn và tạo ra thông tin mềm ở cấp độ bit:
+\begin{equation}
+  \mathbf{\hat{L}}=[\hat{L}_1,\ldots,\hat{L}_m].
+\end{equation}
+Nếu sử dụng phản hồi lặp, Bộ giải điều chế thần kinh cũng phải chấp nhận thông tin tiên nghiệm từ bộ giải mã. Không có giao diện này, máy thu vẫn là một máy dò đã học chứ không phải là thành phần Giải điều chế lặp.
+
+Tiêu chí thứ tư là sự phức tạp. Một máy thu thần kinh có số lượng lớn các lớp có thể cải thiện đường cong BER nhưng có thể không hấp dẫn đối với một máy thu thực tế. Độ phức tạp phải được đánh giá thông qua số lượng tham số, hoạt động tích lũy nhân, độ trễ, truy cập bộ nhớ và độ mạnh lượng tử hóa. Các tiêu chí này phản ánh cuộc thảo luận về LDPC được ANN hỗ trợ: phương pháp thần kinh có giá trị nhất khi nó cải thiện hoặc duy trì hiệu suất trong khi vẫn duy trì lộ trình triển khai thực tế.
+
+Tiêu chí thứ năm là khả năng diễn giải. Các thiết kế Điều chế cổ điển có thể được giải thích thông qua khoảng cách Euclide, ghi nhãn Gray, PAPR và các hàm khả năng. Điều chế đã học nên được phân tích bằng cách sử dụng các khái niệm tương tự nếu có thể. Ví dụ: nếu chòm sao đã học di chuyển các điểm ra khỏi vùng bão hòa PA, điều này có thể được giải thích thông qua hiện tượng méo AM/AM. Nếu bộ thu trình tự được cải thiện theo CFO, điều này có thể được giải thích thông qua cấu trúc pha thời gian. Cách giải thích như vậy làm cho phần AutoEncode phù hợp hơn với một luận án kỹ thuật.
+
+\section{Mối liên hệ giữa hai hướng nghiên cứu}
+Hai hướng nghiên cứu trong luận án được kết nối với nhau bằng chất lượng thông tin mềm. Bộ giải mã LDPC được ANN hỗ trợ hoạt động bên trong bộ giải mã kênh. Nó sửa đổi cách kết hợp các thông báo độ tin cậy dưới các ràng buộc chẵn lẻ. Nghiên cứu Điều chế AutoEncode hoạt động trước bộ giải mã. Nó khám phá cách xử lý biểu diễn được truyền và quan sát máy thu ảnh hưởng đến các giá trị độ tin cậy đi vào bộ giải mã. Do đó, cả hai hướng đều giải quyết mối quan tâm giống nhau ở cấp độ hệ thống từ các quan điểm bổ sung.
+
+Kết nối này có thể được viết gọn. Đặt $\mathbf{L}_{\mathrm{dem}}$ biểu thị vectơ LLR được tạo bởi khối Giải điều chế và đặt $\mathcal{D}_\theta$ biểu thị bộ giải mã LDPC được hỗ trợ ANN. Ước tính được giải mã là
+\begin{equation}
+  \hat{\mathbf{u}}=\mathcal{D}_\theta(\mathbf{L}_{\mathrm{dem}}).
+\end{equation}
+Hiệu suất của bộ giải mã phụ thuộc vào cả $\mathcal{D}_\theta$ và sự phân bố của $\mathbf{L}_{\mathrm{dem}}$. Điều chế AutoEncode thay đổi phân phối này bằng cách thay đổi ánh xạ tín hiệu hoặc xử lý máy thu:
+\begin{equation}
+  \mathbf{L}_{\mathrm{dem}}=g_\phi(\mathbf{y},\mathbf{L}_A).
+\end{equation}
+Do đó, nghiên cứu AutoEncoding có liên quan vì nó kiểm tra các điều kiện ngược dòng mà bộ giải mã LDPC được hỗ trợ ANN hoạt động.
+
+Kết nối này nên được giải thích mà không cường điệu. Phân tích hiện tại không yêu cầu khẳng định rằng cả hai thành phần thần kinh đã được tối ưu hóa chung. Việc chỉ ra rằng đóng góp của bộ giải mã LDPC là đủ và có tính khoa học hơn là đủ, trong khi phân tích Điều chế AutoEncode xác định hướng hỗ trợ tương thích. Khung này giải quyết sự không khớp rõ ràng giữa tiêu đề luận án và Chương 2. Chương 2 không phải là một đường vòng từ việc giải mã LDPC; nó nghiên cứu cách Điều chế và Giải điều chế ảnh hưởng đến thông tin mềm mà quá trình giải mã LDPC tiêu thụ.

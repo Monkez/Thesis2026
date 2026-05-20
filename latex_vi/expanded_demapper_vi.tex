@@ -1,0 +1,111 @@
+\section{Yêu cầu giải điều chế thần kinh đầu ra mềm}
+Khối Giải điều chế đã học chỉ có liên quan đến việc giải mã LDPC khi đầu ra của nó có thể được sử dụng làm đầu vào bộ giải mã. Bộ phân loại tạo ra chỉ mục thông báo là không đủ cho việc điều chế mã hóa lặp lại. Bộ giải mã LDPC yêu cầu độ tin cậy ở mức bit. Do đó, Bộ giải mã thần kinh sẽ xuất ra xác suất bit đã hiệu chỉnh hoặc xuất trực tiếp các giá trị LLR:
+\begin{equation}
+  \mathbf{\hat{L}}=
+  [\hat{L}_1,\hat{L}_2,\ldots,\hat{L}_m]^T.
+\end{equation}
+Nếu đầu ra của bộ thu thần kinh ghi lại $\mathbf{z}$, một chuyển đổi có thể xảy ra là
+\begin{equation}
+  \hat{L}_k=z_k,
+\end{equation}
+khi nhật ký được huấn luyện dưới dạng tỷ lệ log cho bit $k$. Nếu máy thu xuất ra các xác suất thì việc chuyển đổi sẽ là
+\begin{equation}
+  \hat{L}_k=\log\frac{\hat{p}_k}{1-\hat{p}_k}.
+\end{equation}
+Xác suất phải được cắt giảm từ 0 đến 1 trong quá trình triển khai để tránh LLR vô hạn:
+\begin{equation}
+  \hat{p}_{k,\epsilon}=\min(1-\epsilon,\max(\epsilon,\hat{p}_k)).
+\end{equation}
+Chi tiết số đơn giản này rất quan trọng vì một LLR sai quá tự tin có thể chiếm ưu thế trong nhiều lần lặp lại giải mã LDPC.
+
+Bộ giải mã thần kinh đầu ra mềm có thể được huấn luyện với mục tiêu entropy chéo nhị phân theo bit sau đây:
+\begin{equation}
+  \mathcal{L}_{\mathrm{BCE}}=
+  -\frac{1}{m}\sum_{k=1}^{m}
+  \left[
+  b_k\log\hat{p}_k+(1-b_k)\log(1-\hat{p}_k)
+  \right].
+\end{equation}
+Sự mất mát này gần với yêu cầu đầu vào LDPC hơn là entropy chéo cấp thông báo. Tuy nhiên, BCE vẫn không đảm bảo hiệu chuẩn hoàn hảo. Do đó, nên sử dụng bộ xác thực để đánh giá xem xác suất dự đoán có tương ứng với độ tin cậy thực nghiệm hay không. Hiệu chuẩn có thể được cải thiện bằng cách điều chỉnh nhiệt độ, hồi quy đẳng trương hoặc các mục tiêu đào tạo nhằm trừng phạt sự tự tin thái quá.
+
+Nếu phản hồi lặp lại được xem xét, Bộ giải điều chế cũng phải chấp nhận thông tin tiên nghiệm từ bộ giải mã:
+\begin{equation}
+  \mathbf{\hat{L}}^{(t)}
+  =
+  g_\phi(\mathbf{y},\mathbf{L}_A^{(t)}).
+\end{equation}
+Đầu ra bên ngoài sau đó là
+\begin{equation}
+  \mathbf{L}_E^{(t)}=\mathbf{\hat{L}}^{(t)}-\mathbf{L}_A^{(t)}.
+\end{equation}
+Phương trình này là sự tương tự thần kinh của Giải điều chế lặp cổ điển. Nó cho thấy cách các ý tưởng AutoEncoding có thể được kết nối với BIBCM-ID mà không phóng đại kết quả. Điều chế AutoEncode được sử dụng ở đây như một nghiên cứu hỗ trợ, nhưng giao diện toán học cho Giải điều chế đầu ra mềm trong tương lai đã rõ ràng.
+
+\section{Kiến trúc Demapper đã học và sự đánh đổi kỹ thuật}
+Một số kiến ​​trúc thần kinh có thể được sử dụng cho Giải điều chế đã học. Perceptron đa lớp không có bộ nhớ có thể xử lý phần thực và phần ảo của một ký hiệu nhận được:
+\begin{equation}
+  \mathbf{r}_t=[\Re(y_t),\Im(y_t),\Re(h_t),\Im(h_t),\sigma^2]^T.
+\end{equation}
+Kiến trúc này đơn giản và có độ trễ thấp nhưng không thể khai thác cấu trúc thời gian như tiến hóa CFO hoặc bộ nhớ ISI. Một mô hình trình tự có thể xử lý một cửa sổ mẫu:
+\begin{equation}
+  \mathbf{R}_t=[\mathbf{r}_{t-L},\ldots,\mathbf{r}_t,\ldots,\mathbf{r}_{t+L}],
+\end{equation}
+giúp cải thiện khả năng bù bộ nhớ và độ lệch pha với cái giá phải trả là độ trễ.
+
+Mạng nơ-ron tích chập có thể khai thác các mẫu thời gian cục bộ bằng các bộ lọc dùng chung. Mạng thần kinh tái phát có thể mô hình hóa sự phụ thuộc tuần tự nhưng có thể khó song song hóa hơn. Các mô hình dựa trên sự chú ý có thể học sự phụ thuộc tầm xa, nhưng chúng có thể quá đắt đối với bộ thu có độ trễ thấp trừ khi độ dài chuỗi nhỏ. Đối với luận văn thạc sĩ tập trung vào giải mã LDPC, không nhất thiết phải triển khai tất cả các kiến ​​trúc. Sẽ hữu ích hơn khi giải thích các thuộc tính kiến ​​trúc nào quan trọng: khả năng đầu ra mềm, hiệu chuẩn, độ trễ, số lượng tham số và khả năng tương thích với thông tin tiên nghiệm.
+
+Sự đánh đổi kỹ thuật có thể được tóm tắt là
+\begin{equation}
+  \mathcal{J}
+  =
+  \mathrm{BER}
+  +\lambda_1 C_{\mathrm{comp}}
+  +\lambda_2 T_{\mathrm{lat}}
+  +\lambda_3 M_{\mathrm{mem}},
+\end{equation}
+trong đó $C_{\mathrm{comp}}$ là chi phí tính toán, $T_{\mathrm{lat}}$ là độ trễ và $M_{\mathrm{mem}}$ là bộ nhớ. Trọng số $\lambda_1,\lambda_2,\lambda_3$ phụ thuộc vào máy thu mục tiêu. Biểu thức này không xác định mục tiêu chung nhưng nó làm rõ rằng chỉ riêng BER là không đủ để đánh giá kỹ thuật.
+
+Bộ giải mã đã học cũng phải tôn trọng việc chuẩn hóa tín hiệu. Nếu mạng máy phát thay đổi chòm sao thì máy thu sẽ biết cách chia tỷ lệ hiệu quả hoặc tìm hiểu nó một cách chính xác. Nếu độ lợi kênh thay đổi, máy thu có thể cần CSI hoặc cơ chế ước tính kênh tiềm ẩn. Nếu Bộ giải điều chế được huấn luyện với CSI hoàn hảo nhưng được triển khai với CSI không hoàn hảo thì LLR thu được có thể quá tự tin. Do đó, việc đào tạo phải bao gồm những điều không chắc chắn tương tự như dự kiến ​​khi triển khai:
+\begin{equation}
+  \hat{h}=h+e_h, \qquad e_h\sim\mathcal{CN}(0,\sigma_h^2).
+\end{equation}
+Lỗi ước tính kênh này có thể được thêm vào trong quá trình đào tạo để người nhận đã học không phụ thuộc một cách phi thực tế vào kiến ​​thức kênh hoàn hảo.
+
+\section{Sự liên quan đến độ tin cậy đầu vào của bộ giải mã LDPC}
+Tiêu đề nhấn mạnh việc sử dụng ANN trong giải mã LDPC cho hệ thống BIBCM-ID. Giải thích theo nghĩa hẹp sẽ chỉ bao gồm bộ giải mã kênh. Tuy nhiên, BIBCM-ID là một kiến ​​trúc máy thu lặp lại và bộ giải mã LDPC được điều khiển bởi thông tin mềm được tạo ra bởi Giải điều chế. Do đó, việc xử lý hoàn chỉnh về mặt kỹ thuật sẽ giải thích không chỉ bản cập nhật của bộ giải mã mà còn cả bản chất của các thông báo đầu vào mà bộ giải mã nhận được. Chương 2 phục vụ mục đích này.
+
+Đóng góp trực tiếp vẫn là cập nhật nút kiểm tra được ANN hỗ trợ trong giải mã LDPC. Tài liệu AutoEncode hỗ trợ bối cảnh hệ thống bằng cách phân tích cách Điều chế và Giải điều chế đã học có thể ảnh hưởng đến độ tin cậy của đầu vào bộ giải mã. Khung này kết nối cả hai hướng nghiên cứu thông qua một chủ đề kỹ thuật: tạo, chuyển đổi và sử dụng thông tin soft~.
+
+Vai trò của Chương 2 được giới hạn ở giao diện thông tin mềm giữa Giải điều chế đã học và giải mã LDPC. Điều chế đã học có liên quan vì nó thay đổi sự phân bố và hiệu chuẩn của LLR. Bộ giải mã LDPC khi đó được hiểu là thành phần hạ lưu có hiệu suất phụ thuộc vào các LLR đó. Do đó, cuộc thảo luận mang tính chất nhận thức về hệ thống trong khi vẫn giữ bộ giải mã LDPC làm trung tâm của luận án.
+
+Mức độ kết luận đúng cũng rất quan trọng. Điều chế AutoEncode được trình bày dưới dạng bằng chứng và phân tích để ánh xạ tín hiệu nhận biết kênh trong các điều kiện không lý tưởng, chứ không phải là giải pháp hoàn chỉnh cho thiết kế bộ thu BIBCM-ID. Bước kỹ thuật tiếp theo sẽ là Bộ giải mã thần kinh đầu ra mềm tạo ra các LLR bit đã hiệu chỉnh và có thể trao đổi thông tin bên ngoài với bộ giải mã LDPC. Đây là sự tiếp nối tự nhiên của sự đóng góp hiện tại.
+
+\section{Đường dẫn xác thực để tích hợp thông tin phần mềm}
+Để tiếp tục công việc một cách mạnh mẽ hơn, lộ trình xác nhận sau đây phải mạch lạc về mặt kỹ thuật. Trước tiên, hãy đánh giá bộ giải mã LDPC được ANN hỗ trợ bằng cách sử dụng đầu vào BPSK-AWGN để tách phép tính gần đúng của nút kiểm tra. Thứ hai, đánh giá bộ giải mã tương tự bằng cách sử dụng LLR được tạo ra bằng Giải điều chế bậc cao thông thường dưới sự xen kẽ giống BIBCM-ID. Thứ ba, đánh giá Bộ giải điều chế đã học tạo ra LLR bit đã hiệu chỉnh trong điều kiện suy giảm PA và CFO. Thứ tư, so sánh bộ giải mã LDPC có và không có cập nhật nút kiểm tra ANN trong cùng một đầu vào Giải điều chế.
+
+Việc xác nhận theo giai đoạn này có lý do rõ ràng. Nó tách phần đóng góp của bộ giải mã khỏi phần đóng góp Điều chế/Giải điều chế. Nếu hiệu suất thay đổi sau khi thay thế bản cập nhật nút kiểm tra, hiệu ứng có thể được quy cho bộ giải mã. Nếu hiệu suất thay đổi sau khi thay thế Bộ giải mã, hiệu ứng này có thể là do nguồn thông tin phần mềm. Nếu cả hai đều được thay đổi đồng thời thì việc diễn giải sẽ trở nên khó khăn hơn.
+
+Đường dẫn theo giai đoạn có thể được biểu diễn dưới dạng bốn cấu hình máy thu:
+\begin{equation}
+  \mathcal{R}_1=(\mathrm{Conventional\ Demodulation},\mathrm{SPA\ LDPC}),
+\end{equation}
+\begin{equation}
+  \mathcal{R}_2=(\mathrm{Conventional\ Demodulation},\mathrm{ANN\ LDPC}),
+\end{equation}
+\begin{equation}
+  \mathcal{R}_3=(\mathrm{Learned\ Demodulation},\mathrm{SPA\ LDPC}),
+\end{equation}
+\begin{equation}
+  \mathcal{R}_4=(\mathrm{Learned\ Demodulation},\mathrm{ANN\ LDPC}).
+\end{equation}
+Các kết quả hiện tại cung cấp bằng chứng mạnh mẽ nhất cho $\mathcal{R}_2$ và hỗ trợ phân tích cho phía Giải điều chế đã học. Tuyên bố này là chính xác, có thể bảo vệ được và phù hợp với các mô phỏng được đánh giá.
+
+\section{Giải thích tích hợp cho người nhận định hướng BIBCM-ID}
+Từ quan điểm cấp hệ thống, ba chương tạo thành một lập luận chứ không phải là ba báo cáo riêng biệt. Chương 1 xác định bối cảnh BIBCM-ID và giải thích lý do tại sao Điều chế, Giải điều chế, xen kẽ, giải mã kênh và học tập theo mô hình được kết hợp thông qua thông tin mềm. Chương 2 phân tích cách Điều chế và Giải điều chế đã học có thể ảnh hưởng đến các giá trị độ tin cậy được cung cấp cho bộ giải mã LDPC. Chương 3 sau đó tập trung vào đóng góp chính: Giải mã LDPC được ANN hỗ trợ thông qua xấp xỉ thông báo nút kiểm tra cục bộ. Thứ tự này trước tiên giải thích nguồn chất lượng đầu vào của bộ giải mã ngược dòng và sau đó kiểm tra chính khối bộ giải mã.
+
+Ranh giới khoa học chính là mức độ yêu cầu bồi thường. Điều chế AutoEncode không được sử dụng làm bằng chứng cho thấy toàn bộ bộ thu BIBCM-ID đã được cải tiến. Cấu trúc sử dụng ba cấp độ yêu cầu bồi thường. Cấp độ đầu tiên là lý thuyết đã được thiết lập: giải mã LDPC, trao đổi thông tin mềm BICM-ID/BIBCM-ID và Điều chế/Giải điều chế cổ điển. Cấp độ thứ hai là đóng góp được triển khai hoặc phân tích trực tiếp: xử lý nút kiểm tra LDPC được ANN hỗ trợ. Cấp độ thứ ba là hỗ trợ điều tra: Điều chế đã học theo các kênh không lý tưởng và mức độ liên quan của nó với Giải điều chế đầu ra mềm. Các cấp độ này vẫn khác biệt trong suốt luận án.
+
+Việc giảm độ phức tạp được xử lý thông qua các tiêu chí cụ thể: loại bỏ các hoạt động SPA phi tuyến, số lượng tham số, chia sẻ trọng số, lượng tử hóa, số lần lặp trung bình và độ trễ. Điều này làm cho lập luận trở nên vững chắc hơn. ANN được trình bày dưới dạng gần đúng thực tế của một bản cập nhật phi tuyến tốn kém với sự đánh đổi có thể đo lường được giữa hiệu suất và chi phí triển khai, thay vì là một bộ giải mã đơn giản hơn trên toàn cầu.
+
+Khung đánh giá cũng tránh việc chỉ dựa vào BER. Cuộc thảo luận mở rộng bao gồm FER, số lần lặp trung bình, độ dài mô phỏng, hiệu chuẩn LLR và xác thực trên phạm vi SNR. Các tiêu chí này làm giảm khả năng chỉ chọn số liệu phù hợp với phương pháp được đề xuất. Đối với luận án thạc sĩ kỹ thuật, khung đánh giá cân bằng này thường quan trọng như chính đường cong số.
+
+Yêu cầu nhất quán cuối cùng là thuật ngữ. Văn bản sử dụng Điều chế để ánh xạ phía máy phát, Giải điều chế để tính toán số liệu mềm phía máy thu, giải mã LDPC để truyền thông báo kiểm tra chẵn lẻ và Điều chế AutoEncode cho nghiên cứu ánh xạ tín hiệu đã học. Việc duy trì các thuật ngữ này một cách nhất quán sẽ làm giảm sự mơ hồ và giúp người đọc hiểu tại sao Chương 2 lại thuộc về luận án mà không làm thay đổi trọng tâm chính của việc giải mã LDPC.

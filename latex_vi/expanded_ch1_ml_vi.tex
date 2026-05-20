@@ -1,0 +1,81 @@
+\section{Nền tảng học máy và học sâu}
+Học máy là một nhóm các phương pháp tính toán trong đó một mô hình cải thiện hành vi của nó từ dữ liệu thay vì từ bộ quy tắc hoàn toàn viết tay \cite{bishop2006}. Trong kỹ thuật truyền thông, quan điểm này rất hữu ích vì nhiều hàm thu được bắt nguồn từ các giả định toán học lý tưởng hóa. Bộ giải điều chế có thể giả sử nhiễu Gaussian bổ sung, bộ giải mã có thể giả sử các thông báo độc lập và bộ đồng bộ hóa có thể giả sử một mô hình suy giảm đã biết. Các kênh không dây thực tế thường vi phạm những giả định này. Học máy cung cấp một cách để học các phép sửa, phép tính gần đúng hoặc quy tắc quyết định từ các ví dụ được đo hoặc mô phỏng trong khi vẫn giữ lại cấu trúc của hệ thống truyền thông.
+
+Một vấn đề học có giám sát có thể được viết dưới dạng giảm thiểu rủi ro thực nghiệm:
+\begin{equation}
+\label{eq:ml_empirical_risk}
+\theta^\star=\arg\min_{\theta}\frac{1}{N}\sum_{n=1}^{N}
+\ell\!\left(f_{\theta}(\mathbf{x}_n),\mathbf{t}_n\right)
++\lambda\Omega(\theta),
+\end{equation}
+trong đó $\mathbf{x}_n$ là mẫu đầu vào, $\mathbf{t}_n$ là mục tiêu mong muốn, $f_{\theta}(\cdot)$ là mô hình, $\ell(\cdot)$ là hàm mất mát và $\Omega(\theta)$ là thuật ngữ chính quy hóa. Trong bộ thu lớp vật lý, $\mathbf{x}_n$ có thể là vectơ của các mẫu đã nhận, LLR, ước tính kênh hoặc tin nhắn đồ thị Tanner. $\mathbf{t}_n$ đích có thể là bit được truyền, thông báo SPA, trạng thái kênh hoặc xác suất được hiệu chỉnh. Phương trình~\eqref{eq:ml_empirical_risk} là chung, nhưng ý nghĩa kỹ thuật của mục tiêu là rất quan trọng. Một mô hình được huấn luyện để phân loại cứng không tự động phù hợp cho việc giải mã lặp lại, vì BIBCM-ID yêu cầu thông tin mềm đáng tin cậy thay vì chỉ đưa ra các quyết định bit cuối cùng.
+
+Học sâu là một tập hợp con của học máy dựa trên các mô hình tham số hóa nhiều lớp \cite{lecun2015,goodfellow2016}. Một lớp mạng nơ-ron chuyển tiếp nguồn cấp dữ liệu có thể được biểu thị dưới dạng
+\begin{equation}
+\label{eq:nn_layer_ch1}
+\mathbf{z}^{(\ell)}=\sigma\!\left(\mathbf{W}^{(\ell)}\mathbf{z}^{(\ell-1)}+\mathbf{b}^{(\ell)}\right),
+\end{equation}
+trong đó $\mathbf{W}^{(\ell)}$ và $\mathbf{b}^{(\ell)}$ là các tham số có thể huấn luyện và $\sigma(\cdot)$ là hàm kích hoạt phi tuyến. Nhiều lớp cho phép mạng biểu diễn các ánh xạ phi tuyến mà nếu không sẽ yêu cầu các phép tính gần đúng phân tích phức tạp. Thuộc tính này phù hợp với việc giải mã LDPC vì bản cập nhật nút kiểm tra SPA chứa các hoạt động phi tuyến tính và nó phù hợp với Điều chế đã học vì hình dạng tín hiệu tối ưu theo tính phi tuyến PA, CFO, mờ dần và nhiễu không phải lúc nào cũng được nắm bắt bởi một chòm sao QAM cố định.
+
+Việc đào tạo thường được thực hiện bằng cách tối ưu hóa dựa trên độ dốc. Đối với $\mathcal{B}$ lô nhỏ, bản cập nhật chung là
+\begin{equation}
+\label{eq:gradient_update_ch1}
+\theta_{r+1}=\theta_r-\eta\nabla_{\theta}
+\left[\frac{1}{|\mathcal{B}|}\sum_{n\in\mathcal{B}}
+\ell\!\left(f_{\theta_r}(\mathbf{x}_n),\mathbf{t}_n\right)\right],
+\end{equation}
+trong đó $\eta$ là tốc độ học tập. Các trình tối ưu hóa hiện đại như Adam sửa đổi kích thước bước hiệu quả bằng cách sử dụng ước tính mô men bậc một và bậc hai, nhưng nguyên tắc vẫn giữ nguyên: các tham số được điều chỉnh sao cho kết quả đầu ra của mô hình trở nên gần hơn với mục tiêu. Đối với các hệ thống truyền thông, việc phân phối đào tạo phải được xử lý cẩn thận. Nếu mô hình chỉ được huấn luyện ở một SNR, một mức hiện thực hóa kênh hoặc một mức suy giảm phần cứng, thì mô hình đó có thể không khái quát hóa được phạm vi hoạt động của máy thu thực.
+
+\begin{table}[H]
+\centering
+\caption{Mô hình học tập liên quan đến thiết kế máy thu truyền thông.}
+\label{tab:learning_paradigms}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{0.25\textwidth}>{\raggedright\arraybackslash}p{0.33\textwidth}>{\raggedright\arraybackslash}X}
+\toprule
+Mô hình & Mục tiêu điển hình & Ví dụ về truyền thông\\
+\midrule
+Học có giám sát & Các nhãn đã biết hoặc đầu ra tham chiếu & Phân loại bit, giả thông báo SPA, ước tính kênh từ phi công\\
+Học không giám sát & Cấu trúc trong dữ liệu không được gắn nhãn & Phân cụm các chòm sao nhận được, phát hiện điểm mù\\
+Học tăng cường & Phần thưởng dài hạn từ tương tác & Phân bổ tài nguyên thích ứng, thích ứng liên kết, lập kế hoạch\\
+Học tập dựa trên mô hình & Các tham số được nhúng trong các thuật toán đã biết & Huyết áp thần kinh, hiệu chỉnh Tổng tối thiểu đã học, số liệu Giải điều chế có thể huấn luyện\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Table~\ref{tab:learning_paradigms} tóm tắt một số mô hình học tập xuất hiện trong nghiên cứu giao tiếp. Mô hình phù hợp nhất cho luận điểm này là học tập theo mô hình. Thay vì thay thế bộ thu bằng mạng hộp đen hoàn toàn, học tập dựa trên mô hình sẽ giữ cấu trúc thuật toán đã biết và giới thiệu các thành phần có thể huấn luyện được tại các điểm đã chọn. Đây là lý do tại sao phần LDPC của luận án tập trung vào phép tính gần đúng thần kinh cục bộ của bản cập nhật nút kiểm tra và phần Điều chế tập trung vào biểu diễn tín hiệu đã học trong các suy giảm kênh được chỉ định.
+
+\section{Ứng dụng Deep Learning trong Viễn thông}
+Học sâu đã được nghiên cứu trong nhiều lĩnh vực của viễn thông hiện đại, từ lớp vật lý đến quản lý mạng \cite{oshea2017,cammerer2020}. Ở lớp vật lý, động lực chính là khó khăn trong việc mô hình hóa chính xác tất cả các khiếm khuyết. Máy thu thực phải đối mặt với các bộ khuếch đại công suất phi tuyến, bộ dao động không khớp, ước tính kênh không hoàn hảo, các mẫu mặt trước được lượng tử hóa, nhiễu pha, nhiễu và mờ dần. Xử lý tín hiệu cổ điển vẫn cần thiết vì nó mang lại các mô hình có thể hiểu được và đảm bảo độ ổn định, nhưng các phương pháp dựa trên học tập có thể bổ sung cho nó khi mô hình phân tích chưa đầy đủ hoặc quá tốn kém để thực hiện trực tiếp.
+
+Trong ước tính kênh, mạng nơ-ron có thể học ánh xạ từ các quan sát thí điểm đến hệ số kênh. Điều này hữu ích khi kênh có cấu trúc không gian, thời gian hoặc miền tần số không được khai thác đầy đủ bởi công cụ ước tính bình phương nhỏ nhất đơn giản. Khi phát hiện tín hiệu, bộ thu thần kinh có thể tìm hiểu ranh giới quyết định trong các kênh phi tuyến tính hoặc không khớp. Trong quá trình đồng bộ hóa, các mô hình trình tự có thể khai thác sự phụ thuộc theo thời gian do CFO hoặc nhiễu pha gây ra. Trong giải mã kênh, việc truyền bá niềm tin thần kinh, các biến thể Tổng tối thiểu có thể huấn luyện và mạng cập nhật thông báo cục bộ nhằm mục đích cải thiện hoặc đơn giản hóa việc giải mã lặp lại. Trong phân bổ nguồn lực, học tăng cường có thể điều chỉnh việc lập kế hoạch, kiểm soát công suất và lựa chọn chùm tia khi môi trường thay đổi theo thời gian.
+
+\begin{table}[H]
+\centering
+\caption{Các ứng dụng học sâu liên quan đến hệ thống viễn thông.}
+\label{tab:dl_telecom_applications}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{0.24\textwidth}>{\raggedright\arraybackslash}p{0.34\textwidth}>{\raggedright\arraybackslash}X}
+\toprule
+Lĩnh vực & Nhiệm vụ học tập & Sự liên quan đến luận án này\\
+\midrule
+Điều chế và Giải điều chế & Chòm sao, bộ phát hiện hoặc công cụ ước tính LLR đã học & Liên quan trực tiếp đến nghiên cứu Điều chế AutoEncoding\\
+Mã hóa kênh & BP thần kinh, Tổng tối thiểu đã học, xấp xỉ bộ giải mã & Liên quan trực tiếp đến giải mã LDPC được ANN hỗ trợ\\
+Ước tính kênh & Ước tính dựa trên thí điểm hoặc hỗ trợ dữ liệu & Ảnh hưởng đến khả năng được sử dụng cho Giải điều chế mềm\\
+Đồng bộ hóa & CFO và theo dõi tiếng ồn pha & Thúc đẩy Giải điều chế thần kinh dựa trên chuỗi\\
+Giảm thiểu suy giảm phần cứng & PA, mất cân bằng IQ, hiệu chỉnh lượng tử hóa & Hỗ trợ phân tích kênh không lý tưởng\\
+Điều khiển mạng & Thích ứng liên kết, lập lịch, quản lý chùm & Liên quan ở cấp hệ thống nhưng nằm ngoài phạm vi luận án\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Table~\ref{tab:dl_telecom_applications} đặt luận điểm trong tài liệu viễn thông rộng hơn. Bảng này cũng làm rõ ranh giới của nghiên cứu. Luận án không nghiên cứu tối ưu hóa lớp mạng, lập lịch hoặc quản lý chùm tia. Nó tập trung vào hai giao diện lớp vật lý: giao diện Điều chế/Giải điều chế tạo ra độ tin cậy ở mức bit và bộ giải mã LDPC xử lý độ tin cậy thông qua các ràng buộc chẵn lẻ.
+
+Đối với BIBCM-ID, điểm quan trọng nhất là việc học phải tôn trọng giao diện thông tin mềm. Một bộ phân loại thần kinh chỉ xuất ra các bit cứng là không đủ để giải mã lặp lại. Bộ thu cần các đầu ra giống xác suất hoặc các giá trị giống LLR có thể được trao đổi giữa Bộ giải điều chế và bộ giải mã LDPC. Nếu một mô hình thần kinh tạo ra xác suất quá tự tin, vòng lặp có thể trở nên không ổn định hoặc hội tụ đến một từ mã sai. Vì vậy, hiệu chuẩn là một yêu cầu trung tâm. Một hình thức hiệu chuẩn phổ biến giới thiệu tham số nhiệt độ $T$:
+\begin{equation}
+\label{eq:temperature_scaling_ch1}
+\hat{p}_T(c|\mathbf{x})=
+\frac{\exp(a_c/T)}
+{\sum_{c'}\exp(a_{c'}/T)},
+\end{equation}
+trong đó $a_c$ là logit của lớp $c$. $T$ lớn hơn giúp phân phối nhẹ nhàng hơn, trong khi $T$ nhỏ hơn giúp phân phối tự tin hơn. Đối với Giải điều chế đã học, việc hiệu chuẩn như vậy ảnh hưởng đến cường độ LLR được cung cấp tới bộ giải mã LDPC. Kết nối này giải thích lý do tại sao các nghiên cứu của Chapter~2 đã học Điều chế/Giải điều chế trước khi Chapter~3 phân tích chi tiết bộ giải mã LDPC được hỗ trợ bởi ANN.
+
+Do đó, việc sử dụng học sâu trong luận án này là có chủ ý thận trọng. Các khối giao tiếp cổ điển xác định chuỗi tín hiệu, phương trình và số liệu đánh giá. Mạng lưới thần kinh chỉ được giới thiệu khi chúng có vai trò kỹ thuật rõ ràng: tìm hiểu cách biểu diễn tín hiệu nhận biết kênh, cập nhật thông báo phi tuyến gần đúng và cải thiện hoặc điều chỉnh các giá trị độ tin cậy. Vị trí kết hợp này phù hợp cho một luận điểm kỹ thuật hơn là diễn giải hộp đen thuần túy, vì nó duy trì khả năng diễn giải và cho phép so sánh công bằng với SPA, Min-Sum, QAM và Giải điều chế dựa trên khả năng thông thường.

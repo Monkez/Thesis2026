@@ -29,5 +29,15 @@ latex/thesis_current.txt
 latex/thesis_check.txt
 latex/thesis_review_latest*.txt
 latex/layout_check.txt
+latex/*layout*.txt
 latex/review*_preview/
 latex/*.before_review*_fix.tex
+latex/*.before_*.tex
+latex/preview*.png
+latex/*170526.pdf
+latex_vi/*.log
+latex_vi/*.aux
+latex_vi/*.out
+latex_vi/*.toc
+latex_vi/preview*.png
+latex_vi/translation_cache*.json

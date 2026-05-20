@@ -18,25 +18,67 @@ From the above motivations, this thesis studies the utilization of artificial ne
 
 The research objective is to evaluate where artificial neural networks can be introduced into a BIBCM-ID-oriented receiver without abandoning established principles of coded modulation and iterative decoding. In the LDPC decoding part, the thesis analyzes the mathematical basis of belief propagation, the check-node update, Min-Sum approximation, and the use of a compact neural network to approximate or adjust the check-node message. In the Modulation part, the thesis analyzes AutoEncoder-based signal mapping under non-ideal channel conditions and clarifies how learned Modulation and Demodulation may affect the reliability of LLR values. The study is carried out through theoretical analysis, simulation results reported in this thesis, and a controlled discussion of computational complexity and soft-information~quality.
 
-The thesis consists of three main chapters. Chapter 1 presents the foundations of BIBCM-ID, including the coded-modulation chain, soft Demodulation, iterative exchange of extrinsic information, channel coding, and the role of interleaving. This chapter also defines the research scope and explains why the thesis focuses on LDPC decoding and Modulation/Demodulation rather than proposing a new interleaver design. Chapter 2 studies ANN-assisted LDPC decoding. It reviews LDPC message passing, SPA and Min-Sum check-node updates, the compact neural approximation of the check-node function, training-label strategies, complexity evaluation, and the interpretation of BER results. Chapter 3 analyzes deep learning for intelligent Modulation and Demodulation. It discusses AutoEncoder communication models, PA nonlinearity, CFO, fading, learned signal geometry, LLR calibration, and the connection between learned Demodulation and the LDPC decoder input.
+The thesis consists of three main chapters. Chapter 1 presents the foundations of BIBCM-ID, including the coded-modulation chain, soft Demodulation, iterative exchange of extrinsic information, channel coding, and the role of interleaving. This chapter also defines the research scope and explains why the thesis focuses on LDPC decoding and Modulation/Demodulation rather than proposing a new interleaver design. Chapter 2 analyzes deep learning for intelligent Modulation and Demodulation. It discusses AutoEncoder communication models, PA nonlinearity, CFO, fading, learned signal geometry, LLR calibration, and the connection between learned Demodulation and the LDPC decoder input. Chapter 3 studies ANN-assisted LDPC decoding. It reviews LDPC message passing, SPA and Min-Sum check-node updates, the compact neural approximation of the check-node function, training-label strategies, complexity evaluation, and the interpretation of BER results.
 
 With this orientation, the thesis aims to provide a systematic analysis of how neural-network techniques can support LDPC decoding and related soft-information processing in BIBCM-ID-oriented systems. The expected contribution is not a broad replacement of classical communication blocks by black-box neural networks, but a structured approach in which communication-theory models are retained and neural networks are used where they are technically justified: nonlinear check-node approximation, reliability control, and channel-aware Modulation/Demodulation analysis.
 
 During the completion of this master's thesis, the author received valuable support from lecturers and colleagues at the Faculty of Radio Electronics, Military Technical Academy. The author would like to express sincere gratitude to the scientific supervisors, Dr. Pham Xuan Nghia and Dr. Hoang Van Dung, for their guidance, comments, and support throughout the research process. The author also appreciates constructive feedback from teachers, colleagues, and fellow students, which helped improve the technical content and presentation of the thesis.
 
-\chapter[\textbf{FOUNDATIONS OF BIBCM-ID AND RESEARCH SCOPE}]{FOUNDATIONS OF BIBCM-ID AND RESEARCH SCOPE}
-\section{Motivation}
-Modern communication systems require high spectral efficiency and high reliability under imperfect hardware and time-varying propagation conditions. Conventional designs often separate modulation, channel coding, and demodulation into independent tasks, but this separation is not always sufficient when the receiver operates close to performance limits. Bit-interleaved coded modulation with iterative decoding (BIBCM-ID) is a relevant architecture because it connects modulation and channel coding through soft-information exchange.
+\chapter[\textbf{BIBCM-ID FOUNDATIONS AND RESEARCH SCOPE}]{BIBCM-ID FOUNDATIONS AND LEARNING-BASED RESEARCH SCOPE}
+\section{Digital Communication System Model}
+A digital communication system transfers an information sequence from a source to a destination through a physical channel. In a simplified baseband model, the source produces a bit sequence $\mathbf{u}$, the transmitter converts this sequence into a waveform or a sequence of channel symbols, and the receiver estimates the transmitted information from noisy observations. The main engineering objective is to reduce the probability of error while satisfying constraints on bandwidth, transmit power, latency, and implementation complexity.
 
-A BIBCM-ID receiver does not perform only one demodulation and one decoding step. Instead, the soft demodulator produces LLR values, the channel decoder refines these values according to code constraints, and extrinsic information is fed back to the demodulator. This exchange can improve reliability across iterations. A related implication is that the system becomes sensitive to the accuracy of every exchanged message. If the demodulator or decoder produces unreliable soft information, iterative processing may amplify the error rather than correct it.
+The basic signal chain is illustrated in Figure~\ref{fig:digital_comm_system}. Channel coding adds redundancy to protect information bits, Modulation maps bits to physical signal points, and Demodulation converts received samples into bit decisions or reliability values. Soft-output reception therefore provides both a bit estimate and a reliability value for subsequent decoding.
 
-The thesis begins from the observation that BIBCM-ID is built on three main components: modulation, channel coding, and interleaving. Modulation defines the signal representation, channel coding defines the redundancy and decoding graph, and interleaving defines how coded bits are distributed before modulation. These three components influence one another, but they have different research maturity and different suitability for neural methods.
+\begin{figure}[H]
+\centering
+\resizebox{0.96\textwidth}{!}{%
+\begin{tikzpicture}[
+  block/.style={draw, align=center, minimum height=0.90cm, text width=1.85cm, font=\footnotesize},
+  terminal/.style={draw, rounded corners=0.38cm, align=center, minimum height=0.62cm, text width=1.38cm, font=\footnotesize},
+  line/.style={-{Latex[length=2mm]}, thick},
+  note/.style={font=\scriptsize, align=center}
+]
+\node[terminal] (source) at (0,0) {Source};
+\node[block] (senc) at (2.35,0) {Source\\Encoder};
+\node[block] (cenc) at (5.85,0) {Channel\\Encoder};
+\node[block] (mod) at (9.45,0) {Modulator};
+\node[block] (channel) at (10.95,-1.45) {Channel};
+\node[block] (demod) at (9.45,-2.90) {Demodulator};
+\node[block] (cdec) at (5.85,-2.90) {Channel\\Decoder};
+\node[block] (sdec) at (2.35,-2.90) {Source\\Decoder};
+\node[terminal] (recv) at (0,-2.90) {Receiver};
 
-\section{BIBCM-ID System Model}
+\draw[line] (source) -- (senc);
+\draw[line] (senc) -- (cenc);
+\draw[line] (cenc) -- node[note, above] {$X$} (mod);
+\draw[line] (mod.east) -- ++(0.60,0) |- (channel.north);
+\draw[line] (channel.south) |- (demod.east);
+\draw[line] (demod) -- node[note, above] {$Y$} (cdec);
+\draw[line] (cdec) -- (sdec);
+\draw[line] (sdec) -- (recv);
+
+\draw[densely dotted, thick] (7.75,0.80) rectangle (12.30,-3.55);
+\node[note, font=\footnotesize] at (10.05,1.08) {Equivalent Discrete channel};
+\end{tikzpicture}
+}
+\caption{Basic structure of a digital communication system.}
+\label{fig:digital_comm_system}
+\end{figure}
+
+For a memoryless complex baseband channel, a common model is
+\begin{equation*}
+y_t=h_t x_t+n_t,
+\end{equation*}
+where $x_t$ is the transmitted symbol, $h_t$ is the channel coefficient, and $n_t$ is additive noise. This model may be extended to include fading, power-amplifier nonlinearity, carrier-frequency offset, phase noise, and inter-symbol interference. These impairments change the statistical relation between $\mathbf{x}$ and $\mathbf{y}$, so they directly affect Demodulation reliability and the subsequent channel-decoding process.
+
+BIBCM-ID is introduced after this general system view because it is a specific coded-modulation architecture. It combines bit interleaving, high-order Modulation, channel coding, and iterative exchange of soft information. The next section describes this structure and identifies the three main components considered throughout the thesis: Modulation/Demodulation, channel coding, and interleaving.
+
+\section{BIBCM-ID System Architecture}
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.96\textwidth]{bibcmid_block_diagram.png}
-\caption{Block diagram of the BIBCM-ID system model.}
+\caption{BIBCM-ID transmitter, interleaver, channel, and iterative receiver structure.}
 \label{fig:bicmid_block}
 \end{figure}
 
@@ -75,7 +117,7 @@ where $h_t$ is the channel coefficient, $E_s$ is the symbol energy, and $n_t$ is
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.88\textwidth]{bibcmid_soft_iteration.png}
-\caption{Soft-information exchange in the iterative BIBCM-ID receiver.}
+\caption{Soft-information exchange between Demodulation and channel decoding in BIBCM-ID.}
 \label{fig:bicmid_soft_iteration}
 \end{figure}
 
@@ -117,28 +159,20 @@ The interleaver permutes coded bits before modulation. This block reduces correl
 
 Interleaver design has been studied extensively in recent years. Algebraic interleavers, S-random interleavers, protograph-aware interleavers, and hardware-oriented contention-free interleavers have been proposed to improve convergence, reduce adverse low-weight patterns, and support parallel processing. For this reason, the thesis does not claim novelty in interleaver construction. It acknowledges the interleaver as a key component and focuses on modulation and channel coding.
 
-\section{Research Scope and Contributions}
-\begin{itemize}
-\item Analyze the BIBCM-ID system and clarify the roles of modulation, channel coding, and interleaving.
-\end{itemize}
-\begin{itemize}
-\item Develop a detailed thesis-level explanation of neural check-node update approximation for LDPC decoding.
-\end{itemize}
-\begin{itemize}
-\item Use the autoencoder modulation materials to analyze intelligent modulation under non-ideal channels.
-\end{itemize}
-\begin{itemize}
-\item Position AutoEncoder-based Modulation as a complementary study that supports the BIBCM-ID soft-information interface, while keeping ANN-assisted LDPC decoding as the main technical contribution.
-\end{itemize}
-\section{Literature-Oriented Discussion}
-The technical background of this thesis is built on three research lines. The first line is LDPC coding and iterative message-passing decoding. Gallager's original LDPC construction, Tanner-graph representation, factor-graph inference, SPA decoding, and Min-Sum variants provide the mathematical basis for the ANN-assisted decoder studied in Chapter 2 \cite{gallager1962,tanner1981,kschischang2001,hu2001spa,chen2002}. This literature is important because the neural model in this thesis is not a replacement for coding theory; it is a compact approximation of a well-defined check-node operation.
+\section{Soft-Information Processing in BIBCM-ID}
+\input{expanded_ch1.tex}
+
+\input{expanded_ch1_ml.tex}
+
+\section{Related Work on BIBCM-ID and Neural Receivers}
+The technical background of this thesis is built on three research lines. The first line is LDPC coding and iterative message-passing decoding. Gallager's original LDPC construction, Tanner-graph representation, factor-graph inference, SPA decoding, and Min-Sum variants provide the mathematical basis for the ANN-assisted decoder studied in Chapter 3 \cite{gallager1962,tanner1981,kschischang2001,hu2001spa,chen2002}. This literature is important because the neural model in this thesis is not a replacement for coding theory; it is a compact approximation of a well-defined check-node operation.
 
 The second line is BICM-ID/BIBCM-ID. Bit-interleaved coded modulation combines channel coding, bit interleaving, and high-order Modulation \cite{zehavi1992,caire1998,li1997,li1998}. Iterative Demodulation and decoding improve performance by exchanging extrinsic information between the Demodulation block and the channel decoder. In this setting, the quality of LLR values is as important as the final hard decision, because unreliable soft information can slow convergence or strengthen wrong decisions.
 
 The third line is deep learning for physical-layer communication. Neural belief-propagation methods, learned Min-Sum corrections, and compact neural decoders show that model-driven learning can improve or simplify iterative decoding \cite{nachmani2016,nachmani2018,lugosch2017,kuck2020,wang2022}. AutoEncoder-based communication studies show that learned Modulation and Demodulation can adapt to channel impairments such as PA nonlinearity, CFO, fading, and noise \cite{oshea2017,dorner2018,aoudia2019,rapp1991,saleh1981}. In this thesis, these works are used to support a hybrid viewpoint: the established BIBCM-ID processing chain is retained, while neural networks are studied as tools for nonlinear approximation, reliability control, and channel-aware signal representation.
 
-Across these research lines, the common engineering criterion is not only BER. A useful method should also preserve soft-information meaning, control computational complexity, avoid overconfident unreliable messages, and remain robust when the actual channel differs from the training or design model. This criterion motivates the detailed discussion of LLR reliability in the next section.
-\section{Soft-Information Reliability in BIBCM-ID}
+Across these research lines, the common engineering criterion is not only BER. A useful method should also preserve soft-information meaning, control computational complexity, avoid overconfident unreliable messages, and remain robust when the actual channel differs from the training or design model. This criterion motivates the detailed discussion of LLR reliability in this section.
+
 A central internal variable of a BIBCM-ID receiver is not the hard bit decision but the reliability attached to each bit. This reliability is usually represented by an LLR. A positive LLR favors one bit value, a negative LLR favors the other, and the magnitude indicates confidence. In an iterative receiver, the magnitude is as important as the sign because it determines how strongly later blocks trust the message.
 
 If the channel model is correct, LLR computation has a clear probabilistic meaning. If the channel model is mismatched, the same formula may produce overconfident or underconfident values. For example, a demodulator that ignores PA compression may treat a distorted outer constellation point as if it were produced by Gaussian noise only. The resulting LLR may be biased. When this biased information is passed to the LDPC decoder, the decoder may reinforce an incorrect belief.
@@ -187,7 +221,23 @@ Equation~\eqref{eq:demod_iteration_ch1} shows the feedback direction from the ch
 \end{equation}
 Equation~\eqref{eq:ber_definition_ch1} defines the BER used throughout the thesis. Although BER is the final performance metric, it should be interpreted together with the number of simulated bits and the channel scenario.
 
-\input{expanded_ch1.tex}
+\section{Research Scope and Contributions}
+The preceding sections show that BIBCM-ID should be analyzed as a soft-information processing system rather than only as a concatenation of independent transmitter and receiver blocks. This thesis therefore defines its research scope at the two interfaces where the available results are technically strongest and most relevant: the LDPC decoder message-update mechanism and the Modulation/Demodulation side that produces soft reliability information for the decoder.
+
+\begin{itemize}
+\item The first scope item is to analyze the BIBCM-ID system and clarify the roles of Modulation, Demodulation, channel coding, and interleaving in the iterative receiver.
+\end{itemize}
+\begin{itemize}
+\item The central contribution is the thesis-level formulation and interpretation of ANN-assisted LDPC decoding, with emphasis on compact neural approximation of the check-node update and reliability-aware message adjustment.
+\end{itemize}
+\begin{itemize}
+\item The supporting contribution is the analysis of AutoEncoder-based Modulation under non-ideal channels, including PA nonlinearity, CFO, fading, and the implications for soft-output Demodulation.
+\end{itemize}
+\begin{itemize}
+\item The thesis positions learned Modulation/Demodulation as a complementary direction that supports the BIBCM-ID soft-information interface, while ANN-assisted LDPC decoding remains the main technical contribution.
+\end{itemize}
+
+This scope deliberately avoids presenting the interleaver as a new contribution. Interleaver design is recognized as an important and active research direction, but the present work uses it as part of the BIBCM-ID framework. The research effort is instead directed toward neural processing where the available mathematical model, simulation evidence, and engineering interpretation are sufficiently clear for a master's thesis in telecommunications engineering.
 
 \section{Chapter Conclusion}
 This chapter has established the technical foundation and research scope of the thesis. The BIBCM-ID receiver has been described as an iterative coded-modulation structure in which Modulation, Demodulation, interleaving, and channel decoding are connected through soft information rather than through hard decisions alone. This viewpoint is important because the LDPC decoder does not operate on ideal transmitted bits; it operates on LLR values whose sign and magnitude are shaped by the channel, the constellation, the labeling rule, the interleaver, and the Demodulation method.
@@ -196,7 +246,215 @@ The discussion has also clarified the role of the three main BIBCM-ID components
 
 From this foundation, the thesis adopts a controlled deep-learning perspective. Neural networks are not introduced as black-box replacements for the communication system. They are considered where they can approximate nonlinear processing, reshape unreliable soft messages, or adapt signal representation under channel mismatch. This chapter therefore justifies the two following technical directions: ANN-assisted LDPC decoding as the central contribution, and learned Modulation/Demodulation as a supporting study of the soft-information source that feeds the decoder.
 
-The next chapter begins with a BPSK/AWGN LDPC-decoding experiment even though the broader system context is BIBCM-ID. This is a deliberate staged validation choice. BPSK/AWGN isolates the LDPC check-node update and makes the LLR convention unambiguous before the method is related to high-order Demodulation and block-interleaved iterative processing.
+The next chapter studies learned Modulation and Demodulation before the thesis turns to the LDPC decoder. This ordering is useful because the decoder receives reliability information produced upstream by the Demodulation block. A clear understanding of learned signal representation and LLR quality therefore provides the context for the ANN-assisted LDPC decoding analysis in Chapter 3.
+
+\chapter[\textbf{DEEP LEARNING FOR MODULATION}]{DEEP LEARNING FOR INTELLIGENT MODULATION}
+\section{Why Modulation Is a Learning Target}
+Modulation determines how coded bits become physical signals. In an ideal channel, conventional constellations such as 16-QAM are efficient and well understood. In non-ideal channels, however, the constellation observed at the receiver may differ significantly from the transmitted one. PA nonlinearity compresses amplitudes, CFO rotates phases, fading changes gain, and ISI introduces memory.
+
+These impairments are not only visual distortions. They directly affect LLR computation. A demodulator that assumes a clean 16-QAM constellation may assign incorrect reliability to received samples. In iterative decoding, incorrect reliability can reduce convergence or cause error propagation. This makes modulation and demodulation important candidates for learning-based correction.
+
+Autoencoder-based modulation studies the communication link as a trainable system. The transmitter network maps messages to normalized channel symbols. The channel layer adds noise and impairments. The receiver network estimates the transmitted message. This framework allows the signal representation to adapt to the channel used during training.
+
+\begin{equation}
+y=hx+n.
+\end{equation}
+Equation (2.1) is the basic flat-fading channel model. The transmitted symbol x is multiplied by a channel coefficient h and corrupted by additive noise n. More complex impairments such as PA nonlinearity, CFO, and ISI modify this basic relation.
+
+\begin{equation}
+L(b_k|y)=\ln\frac{\sum_{s\in\mathcal{S}_{k,1}}\exp(-|y-hs|^2/N_0)}
+{\sum_{s\in\mathcal{S}_{k,0}}\exp(-|y-hs|^2/N_0)}.
+\end{equation}
+Equation (2.2) is the bit-level LLR for a conventional constellation under a Gaussian-noise assumption. S\_k\textasciicircum{}1 and S\_k\textasciicircum{}0 are the subsets of constellation points whose kth bit is 1 or 0. When the actual channel includes nonlinear distortion, this expression may become mismatched.
+
+\begin{equation}
+\mathrm{PAPR}=\frac{\max_n |x[n]|^2}{\mathbb{E}\{|x[n]|^2\}}.
+\end{equation}
+Equation (2.3) defines the peak-to-average power ratio. PAPR is relevant because high-amplitude symbols are more vulnerable to PA nonlinearity.
+
+\begin{equation}
+d_{\min}=\min_{i\ne j}\|s_i-s_j\|_2.
+\end{equation}
+Equation (2.4) defines the minimum Euclidean distance of a constellation. Larger distance usually improves noise robustness, but nonlinear channels can change the effective distances after transmission.
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}{0.47\textwidth}
+\centering
+\includegraphics[width=\textwidth]{qam16.png}
+\caption{Reference 16-QAM constellation.}
+\end{subfigure}\hfill
+\begin{subfigure}{0.47\textwidth}
+\centering
+\includegraphics[width=\textwidth]{qam16_after_pa.png}
+\caption{PA-distorted 16-QAM constellation.}
+\end{subfigure}
+\caption{Effect of PA nonlinearity on 16-QAM signal geometry.}
+\label{fig:qam16_pa_distortion}
+\end{figure}
+
+\section{AutoEncoder Communication Model}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.88\textwidth]{autoencoder.png}
+\caption{AutoEncoder-based learned Modulation and Demodulation model.}
+\end{figure}
+The autoencoder model has an encoder, a channel layer, and a decoder. The encoder is analogous to a transmitter modulator. The channel layer may be differentiable or simulated. The decoder is analogous to a receiver detector. Training usually minimizes cross-entropy between the transmitted message and the detected message while enforcing an average-power constraint.
+
+Power normalization is essential. Without it, the network could reduce errors simply by increasing transmit energy. A meaningful learned modulation scheme should satisfy the same or comparable power constraint as the baseline. SNR also needs to be varied during training or evaluation, because a constellation optimized for one SNR may not remain optimal across the full operating range.
+
+The autoencoder approach is useful for research because it can reveal how a signal representation changes when the channel changes. For example, under PA nonlinearity, the learned constellation may avoid high-amplitude regions. Under CFO, a multi-symbol model may use temporal structure. Under fading, the receiver may learn robust decision boundaries.
+
+\begin{equation}
+m\rightarrow x=f_{\theta}(m),\qquad y=\mathcal{H}(x),\qquad \hat{p}(m|y)=g_{\phi}(y).
+\end{equation}
+Equation (2.5) describes the autoencoder communication model. The transmitter network $f_\theta$ maps message $m$ to channel input $x$, the channel produces $y$, and the receiver network $g_\phi$ estimates the posterior probability of the message. The parameters $\theta$ and $\phi$ are optimized from data.
+
+\begin{equation}
+\mathbb{E}\{|x|^2\}\le P_0.
+\end{equation}
+Equation (2.6) is the average-power constraint. It prevents the learned transmitter from improving detection simply by increasing transmit energy. Any learned modulation should be compared with a conventional baseline under a comparable power constraint.
+
+\begin{equation}
+x_{\mathrm{norm}}=\sqrt{P_0}\frac{x_{\mathrm{raw}}}{\sqrt{\mathbb{E}\{|x_{\mathrm{raw}}|^2\}+\epsilon}}.
+\end{equation}
+Equation (2.7) is a typical normalization step used to enforce average-power control in neural modulation. If $P_0=1$, it reduces to unit-average-power normalization.
+
+\begin{equation}
+\mathcal{L}_{\mathrm{CE}}=-\sum_{m=1}^{M}\mathbf{1}\{m\}\log\hat{p}(m|y).
+\end{equation}
+Equation (2.8) is the cross-entropy loss commonly used for message classification in communication AutoEncoders. Although useful for training, this loss does not automatically guarantee calibrated bit-level LLRs for iterative decoding.
+
+\begin{equation}
+\mathrm{SER}=\frac{N_{\mathrm{sym,err}}}{N_{\mathrm{sym}}}.
+\end{equation}
+Equation (2.9) defines symbol error rate, which is often used when studying modulation before full channel-code integration.
+
+\section{Non-Ideal Channel Conditions}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.78\textwidth]{pa_characteristic.png}
+\caption{Rapp-type power-amplifier nonlinearity used in the channel model.}
+\end{figure}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.78\textwidth]{cfo_effect.png}
+\caption{Constellation rotation caused by carrier-frequency offset.}
+\end{figure}
+Power amplifier nonlinearity is a major practical impairment. A PA is efficient when operated near saturation, but this causes nonlinear amplitude compression. Outer constellation points are compressed more strongly, reducing distances between received clusters. If AM/PM distortion exists, phase is also changed. Learned modulation may improve robustness by shaping symbols away from regions with pronounced compression.
+
+Carrier-frequency offset occurs when transmitter and receiver oscillators are not perfectly aligned. CFO causes phase rotation that accumulates over time. In single-symbol detection, this rotation looks like an unknown phase error. In multi-symbol processing, the receiver can observe the rotation pattern and estimate it implicitly. This motivates sequence-based autoencoder modulation.
+
+Rayleigh fading and ISI represent propagation impairments. Rayleigh fading changes amplitude and phase randomly, while ISI makes the current received sample depend on previous transmitted symbols. A neural receiver can process context and may learn equalization-like behavior. However, this also increases complexity and latency.
+
+\begin{table}[H]
+\centering
+\caption{Non-ideal channel effects considered for learned Modulation.}
+\label{tab:learned_modulation_impairments}
+\begin{tabularx}{\textwidth}{p{0.23\textwidth}p{0.30\textwidth}Y}
+\toprule
+Impairment & Main effect on signal geometry & Relevance to learned Modulation\\
+\midrule
+PA nonlinearity & Compresses high-amplitude symbols and may introduce amplitude-dependent phase shifts & Encourages the learned constellation to avoid regions strongly distorted by the amplifier\\
+CFO & Produces phase rotation that accumulates with time & Motivates multi-symbol neural receivers that exploit temporal phase evolution\\
+Rayleigh fading & Randomly changes amplitude and phase of the received signal & Requires robust signal geometry and Demodulation metrics across channel realizations\\
+ISI & Couples adjacent transmitted symbols through channel memory & Makes sequence-aware detection more useful than purely memoryless decisions\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{equation}
+g(r)=\frac{r}{\left[1+\left(r/A_{\mathrm{sat}}\right)^{2p}\right]^{1/(2p)}}.
+\end{equation}
+Equation (2.10) is a common Rapp-type AM/AM PA model. A\_sat controls saturation amplitude and p controls smoothness. This model explains why high-amplitude constellation points are compressed more strongly.
+
+\begin{equation}
+\Phi(r)=\frac{\alpha_{\mathrm{PM}}r^2}{1+\beta_{\mathrm{PM}}r^2}.
+\end{equation}
+Equation (2.11) is a simple AM/PM distortion model. It indicates that the phase shift can depend on signal amplitude.
+
+\begin{equation}
+y_{\mathrm{CFO}}[k]=x[k]e^{j2\pi \Delta f T_s k}+w[k].
+\end{equation}
+Equation (2.12) represents carrier-frequency offset. The phase rotation grows with symbol index k, which motivates multi-symbol processing because a sequence carries information about the rotation trend.
+
+\begin{equation}
+y[n]=\sum_{\ell=0}^{L-1}h[\ell]x[n-\ell]+w[n].
+\end{equation}
+Equation (2.13) represents a multipath channel with ISI. The received sample depends on multiple transmitted symbols, so memoryless detection may be insufficient. A sequence-based neural receiver can learn to exploit this temporal dependence.
+
+\begin{equation}
+h[\ell]\sim\mathcal{CN}(0,\sigma_{\ell}^{2}),\qquad \sum_{\ell}\sigma_{\ell}^{2}=1.
+\end{equation}
+Equation (2.14) gives a common statistical model for Rayleigh multipath coefficients with normalized average power.
+
+\begin{equation}
+\mathcal{L}_{\mathrm{BCE}}=-\frac{1}{K}\sum_{k=1}^{K}\left[b_k\log \hat{b}_k+(1-b_k)\log(1-\hat{b}_k)\right].
+\end{equation}
+Equation (2.15) is a bit-wise binary cross-entropy objective. It is more directly related to soft bit output than message-level cross-entropy and is therefore relevant for learned Demodulation that supplies LLR-like information to an LDPC decoder.
+
+\section{Simulation Scenarios for Learned Modulation}
+\begin{table}[H]
+\centering
+\caption{Evaluation scenarios for AutoEncoder-based Modulation.}
+\label{tab:ae_modulation_scenarios}
+\begin{tabularx}{\textwidth}{p{0.25\textwidth}p{0.30\textwidth}Y}
+\toprule
+Scenario & Compared condition & Main interpretation\\
+\midrule
+Single-symbol AE & 16-QAM and learned constellation under PA/Rayleigh channel & Evaluates whether learned signal geometry can reduce BER under nonlinear amplitude distortion and fading\\
+Multi-symbol AE & Learned sequence model under CFO values of 0.005 and 0.01 & Tests whether temporal context can implicitly compensate accumulated carrier phase rotation\\
+AE with neural redundancy & Learned Modulation combined with neural FEC-like redundancy & Provides supporting evidence on the coupling between Modulation, redundancy, and receiver-side inference\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.86\textwidth]{ae_scenario1_ber.png}
+\caption{BER of learned Modulation under PA nonlinearity and Rayleigh fading.}
+\end{figure}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.86\textwidth]{ae_scenario2_cfo0005.png}
+\caption{BER of multi-symbol AutoEncoder Modulation with CFO = 0.005.}
+\end{figure}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.86\textwidth]{ae_scenario2_cfo001.png}
+\caption{BER of multi-symbol AutoEncoder Modulation with CFO = 0.01.}
+\end{figure}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.86\textwidth]{ae_scenario3_fec.png}
+\caption{BER of AutoEncoder Modulation with neural redundancy.}
+\end{figure}
+The simulation scenarios considered in this chapter include several AutoEncoder configurations. Scenario 1 compares a single-symbol AutoEncoder with 16-QAM under a Rayleigh plus PA channel. This scenario evaluates whether learned constellation shaping can improve BER when nonlinear amplitude distortion is present.
+
+Scenario 2 studies a multiple-symbol AutoEncoder under CFO. Two CFO values are shown in the result figures. This scenario is important because CFO compensation is difficult for a purely memoryless Demodulator. A sequence model can exploit phase evolution across symbols and may reduce the need for an explicit synchronization block.
+
+Scenario 3 studies an AutoEncoder with a neural channel-coding feature. This scenario is best interpreted as a supporting experiment on the relationship between learned Modulation and redundancy, rather than as the central LDPC-decoding result of the thesis.
+
+\input{expanded_ch3.tex}
+\input{expanded_demapper.tex}
+
+\section{Interpretation and BIBCM-ID Relevance}
+The AutoEncoder results are interpreted as evidence that learned Modulation and Demodulation can adapt to selected channel impairments. They do not establish that learned constellations should replace standardized modulation in general-purpose systems. Conventional constellations provide interoperability, simple implementation, and predictable Demodulation rules. Learned modulation offers adaptability, but its benefit depends on the channel model, training distribution, power constraint, receiver structure, and calibration of soft outputs.
+
+The reason this topic is included in a thesis centered on ANN-assisted LDPC decoding is the soft-information interface. In BIBCM-ID, the LDPC decoder does not receive ideal bits; it receives reliability values produced by the Demodulation block after interleaving and channel observation. If PA distortion, CFO, fading, or ISI makes conventional LLRs biased, the LDPC decoder receives messages with reduced reliability. A study of learned Modulation/Demodulation is therefore relevant because it analyzes the upstream source of the information consumed by the LDPC decoder.
+
+The main thesis contribution remains the ANN-assisted LDPC check-node update. This contribution is directly located inside the LDPC decoder and can reduce computational burden by approximating the nonlinear SPA check-node operation with a compact neural model. Under the evaluated conditions, the most defensible interpretation is that the ANN approximation can preserve decoding behavior close to SPA while reducing the cost of nonlinear operations; reliability-aware labeling may improve BER in selected simulations, but the broader engineering value is the balance between decoding quality and implementation complexity.
+
+AutoEncoder-based Modulation is presented as a complementary investigation. It supports the overall BIBCM-ID context by showing how learned signal representations may produce observations that are more robust under non-ideal channels. The chapter therefore connects AutoEncoder results to Modulation, Demodulation, and LLR quality, while keeping the primary LDPC-decoding contribution clearly centered on ANN-assisted check-node processing.
+
+A technically consistent interpretation must separate final BER from message quality. A neural receiver can reduce hard-decision errors in a simulated scenario while still producing probabilities that are not well calibrated for iterative decoding. For this reason, future development of learned Demodulation should emphasize bit-level probabilities, LLR calibration, and robustness across SNR and channel variations. These requirements are stated as design implications for later research on learned soft Demodulation.
+
+\section{Chapter Conclusion}
+This chapter has analyzed deep learning for intelligent Modulation and Demodulation under non-ideal wireless channels. The discussion began from the observation that conventional constellations and Demodulation rules are usually derived under simplified assumptions such as AWGN, linear amplification, or separately compensated synchronization errors. In practical wireless channels, PA nonlinearity, CFO, fading, and ISI can distort the received constellation and reduce the reliability of the LLR values passed to the channel decoder.
+
+AutoEncoder-based Modulation is therefore examined as a supporting study of the BIBCM-ID soft-information chain. The transmitter network, differentiable or simulated channel layer, and receiver network provide a framework for learning signal representations adapted to specific impairments. The simulation scenarios indicate that learned representations can reduce the effect of PA compression, exploit temporal structure under CFO, and support receiver processing in channels with memory. These results should not be read as a general replacement for standardized Modulation, because their validity depends on the training distribution, baseline fairness, power normalization, and receiver complexity.
+
+The main relevance of this chapter to the thesis title lies in LLR quality. LDPC decoding performance depends on the reliability values produced before the decoder, not only on the internal decoding algorithm. A learned Modulation/Demodulation block becomes compatible with BIBCM-ID only when it can provide calibrated bit-level soft information and, in an iterative setting, accept a priori information from the decoder. The chapter therefore strengthens the system interpretation of the ANN-LDPC contribution: Chapter 2 explains how learned front-end processing may affect the reliability messages entering the decoder, while Chapter 3 improves or approximates the processing of reliability messages inside the decoder.
 
 \chapter[\textbf{ANN-ASSISTED LDPC DECODING}]{ANN-ASSISTED LDPC DECODING}
 \section{LDPC Decoding and the Check-Node Update}
@@ -209,12 +467,12 @@ Min-Sum reduces this cost by using the sign product and the minimum magnitude of
 \begin{equation}
 \mathbf{H}\mathbf{c}^{T}=\mathbf{0}.
 \end{equation}
-Equation (2.1) is the parity-check condition for an LDPC code. The sparse parity-check matrix H defines the Tanner graph. A valid codeword c should satisfy all parity constraints. Decoding can therefore be interpreted as the process of finding the most likely codeword that satisfies these constraints.
+Equation (3.1) is the parity-check condition for an LDPC code. The sparse parity-check matrix H defines the Tanner graph. A valid codeword c should satisfy all parity constraints. Decoding can therefore be interpreted as the process of finding the most likely codeword that satisfies these constraints.
 
 \begin{equation}
 L_{\mathrm{ch},j}=\ln\frac{p(y_j|c_j=1)}{p(y_j|c_j=0)}.
 \end{equation}
-Equation (2.2) gives the channel LLR used to initialize the LDPC decoder. For the BPSK/AWGN derivation under the LLR convention above, the equivalent binary mapping is $c_j=1\mapsto +1$ and $c_j=0\mapsto -1$. With $y_j=s_j+n_j$ and $n_j\sim\mathcal{N}(0,\sigma^2)$,
+Equation (3.2) gives the channel LLR used to initialize the LDPC decoder. For the BPSK/AWGN derivation under the LLR convention above, the equivalent binary mapping is $c_j=1\mapsto +1$ and $c_j=0\mapsto -1$. With $y_j=s_j+n_j$ and $n_j\sim\mathcal{N}(0,\sigma^2)$,
 \begin{equation*}
 L_{\mathrm{ch},j}=\frac{2y_j}{\sigma^2}.
 \end{equation*}
@@ -223,45 +481,45 @@ If the alternative BPSK mapping $0\mapsto +1$, $1\mapsto -1$ is used, the sign o
 \begin{equation}
 L_{j\rightarrow i}^{(t)}=L_{\mathrm{ch},j}+\sum_{i'\in\mathcal{N}(j)\setminus i}L_{i'\rightarrow j}^{(t-1)}.
 \end{equation}
-Equation (2.3) is the variable-node update in the LLR domain. The message from variable node j to check node i is the channel reliability plus all incoming check-node messages except the one from check node i. This exclusion is necessary to preserve the extrinsic-information principle.
+Equation (3.3) is the variable-node update in the LLR domain. The message from variable node j to check node i is the channel reliability plus all incoming check-node messages except the one from check node i. This exclusion is necessary to preserve the extrinsic-information principle.
 
 \begin{equation}
 L_{i\rightarrow j}^{(t)}=
 2\tanh^{-1}\!\prod_{j'\in\mathcal{N}(i)\setminus j}\tanh\!\left(\frac{L_{j'\rightarrow i}^{(t)}}{2}\right).
 \end{equation}
-Equation (2.4) is the SPA check-node update. It is accurate but computationally expensive because it contains hyperbolic tangent and inverse hyperbolic tangent operations. This is the main mathematical motivation for replacing or approximating the CN update by a compact ANN.
+Equation (3.4) is the SPA check-node update. It is accurate but computationally expensive because it contains hyperbolic tangent and inverse hyperbolic tangent operations. This is the main mathematical motivation for replacing or approximating the CN update by a compact ANN.
 
 \begin{equation}
 L_{i\rightarrow j}^{(t)}\approx
 \left(\prod_{j'\ne j}\mathrm{sign}(L_{j'\rightarrow i}^{(t)})\right)
 \min_{j'\ne j}|L_{j'\rightarrow i}^{(t)}|.
 \end{equation}
-Equation (2.5) shows the Min-Sum approximation. It keeps the sign product and minimum magnitude behavior of SPA, but discards nonlinear correction terms. This greatly reduces complexity but can degrade decoding~performance.
+Equation (3.5) shows the Min-Sum approximation. It keeps the sign product and minimum magnitude behavior of SPA, but discards nonlinear correction terms. This greatly reduces complexity but can degrade decoding~performance.
 
 \begin{equation}
 L_{i\rightarrow j,\mathrm{NMS}}^{(t)}=\alpha L_{i\rightarrow j,\mathrm{MS}}^{(t)},\qquad 0<\alpha\le 1.
 \end{equation}
-Equation (2.6) gives the normalized Min-Sum correction. The scalar $\alpha$ reduces overestimated message magnitudes and partially compensates for the approximation error of Min-Sum.
+Equation (3.6) gives the normalized Min-Sum correction. The scalar $\alpha$ reduces overestimated message magnitudes and partially compensates for the approximation error of Min-Sum.
 
 \begin{equation}
 L_{i\rightarrow j,\mathrm{OMS}}^{(t)}=\mathrm{sign}(L_{\mathrm{MS}})\max(|L_{\mathrm{MS}}|-\beta,0).
 \end{equation}
-Equation (2.7) gives the offset Min-Sum correction. The offset $\beta$ subtracts a fixed reliability margin from the Min-Sum magnitude.
+Equation (3.7) gives the offset Min-Sum correction. The offset $\beta$ subtracts a fixed reliability margin from the Min-Sum magnitude.
 
 \begin{equation}
 L_{\mathrm{APP},j}^{(t)}=L_{\mathrm{ch},j}+\sum_{i\in\mathcal{N}(j)}L_{i\rightarrow j}^{(t)}.
 \end{equation}
-Equation (2.8) defines the a posteriori LLR used for the hard decision after one decoding iteration.
+Equation (3.8) defines the a posteriori LLR used for the hard decision after one decoding iteration.
 
 \begin{equation}
 \hat{c}_j=\begin{cases}1,&L_{\mathrm{APP},j}\ge 0,\\0,&L_{\mathrm{APP},j}<0.\end{cases}
 \end{equation}
-Equation (2.9) gives the hard decision rule under the LLR sign convention used in this thesis.
+Equation (3.9) gives the hard decision rule under the LLR sign convention used in this thesis.
 
 \begin{equation}
 \mathbf{s}=\mathbf{H}\hat{\mathbf{c}}^{T}.
 \end{equation}
-Equation (2.10) defines the syndrome vector. Decoding is successful when all syndrome components are zero.
+Equation (3.10) defines the syndrome vector. Decoding is successful when all syndrome components are zero.
 
 \section{Neural Approximation of the LDPC Check-Node Update}
 The neural-assisted decoder considered in this thesis uses a multilayer perceptron to approximate the check-node update messages in LDPC belief-propagation decoding. The model is deliberately compact. It uses incoming LLR or VN-to-CN messages as input and produces the CN-to-VN update message as output. The representative one-hidden-layer configuration uses four input values, eight hidden units, and one output value. This gives 49 trainable parameters when biases are included.
@@ -287,7 +545,7 @@ The neural-assisted decoder considered in this thesis uses a multilayer perceptr
 \node[align=center] at (3.5,-3.45) {$d_h=8$\\ReLU hidden layer};
 \node[align=center] at (7,-3.45) {$\hat{r}\in\mathbb{R}$\\CN message};
 \end{tikzpicture}
-\caption{Compact MLP used for local LDPC check-node message approximation.}
+\caption{Compact MLP approximating the LDPC check-node update.}
 \label{fig:ann_ldpc_mlp}
 \end{figure}
 
@@ -298,7 +556,7 @@ The activation function used in the hidden layer is ReLU. This is simpler than t
 \begin{equation}
 \hat{\mathbf{r}}=f_{\theta}(\mathbf{q}).
 \end{equation}
-Equation (2.11) represents the compact MLP used to approximate the CN update. For the representative 49-parameter configuration, the input vector is the four VN-to-CN messages that enter a degree-five check node excluding the outgoing edge:
+Equation (3.11) represents the compact MLP used to approximate the CN update. For the representative 49-parameter configuration, the input vector is the four VN-to-CN messages that enter a degree-five check node excluding the outgoing edge:
 \begin{equation*}
 \mathbf{q}_{i,j}^{(t)}=
 \big[L_{j_1\rightarrow i}^{(t)},L_{j_2\rightarrow i}^{(t)},L_{j_3\rightarrow i}^{(t)},L_{j_4\rightarrow i}^{(t)}\big]^T,\quad
@@ -309,12 +567,12 @@ The output $\hat{r}$ is the ANN-estimated CN-to-VN message. Because ReLU is simp
 \begin{equation}
 \mathrm{ReLU}(x)=\max(x,0).
 \end{equation}
-Equation (2.12) defines the ReLU activation. It is computationally simple and avoids expensive transcendental functions.
+Equation (3.12) defines the ReLU activation. It is computationally simple and avoids expensive transcendental functions.
 
 \begin{equation}
 N_{\theta}=d_{\mathrm{in}}d_h+d_h+d_hd_{\mathrm{out}}+d_{\mathrm{out}}.
 \end{equation}
-Equation (2.13) estimates the number of trainable parameters in a one-hidden-layer MLP. This expression is useful for discussing hardware complexity. With $d_{\mathrm{in}}=4$, $d_h=8$, and $d_{\mathrm{out}}=1$, the parameter count is
+Equation (3.13) estimates the number of trainable parameters in a one-hidden-layer MLP. This expression is useful for discussing hardware complexity. With $d_{\mathrm{in}}=4$, $d_h=8$, and $d_{\mathrm{out}}=1$, the parameter count is
 \begin{equation*}
 N_{\theta}=4\times 8+8+8\times 1+1=49.
 \end{equation*}
@@ -325,7 +583,7 @@ The training data are generated offline using BPSK transmission over an AWGN cha
 
 \begin{table}[H]
 \centering
-\caption{Simulation and training configuration for ANN-assisted LDPC decoding.}
+\caption{Simulation and training setup for ANN-assisted LDPC decoding.}
 \label{tab:ann_ldpc_config}
 \begin{tabularx}{\textwidth}{p{0.33\textwidth}Y}
 \toprule
@@ -347,7 +605,7 @@ Evaluation range & SNR points from $-1$ to $7$ dB in Figure~\ref{fig:ann_ldpc_be
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.78\textwidth]{ann_ldpc_training_loss.png}
-\caption{Training-loss curve of the compact ANN used for LDPC check-node approximation.}
+\caption{Training loss of the compact ANN check-node model.}
 \label{fig:ann_ldpc_training_loss}
 \end{figure}
 
@@ -358,27 +616,27 @@ In the second scenario, the labels are modified using reliability information. I
 \begin{equation}
 \mathcal{L}_{\mathrm{MAE}}=\frac{1}{N}\sum_{n=1}^{N}\left|\hat{r}_n-r_n\right|.
 \end{equation}
-Equation (2.14) is the MAE loss used for training. The target $r_n$ may be the SPA message or the enhanced reliability-aware label. MAE is appropriate because the objective is to approximate message values rather than classify codewords directly.
+Equation (3.14) is the MAE loss used for training. The target $r_n$ may be the SPA message or the enhanced reliability-aware label. MAE is appropriate because the objective is to approximate message values rather than classify codewords directly.
 
 \begin{equation}
 r_n=\begin{cases}r_n^{\mathrm{SPA}},&\mathrm{SPA\ label},\\ \eta_n r_n^{\mathrm{SPA}},&\mathrm{reliability\ aware\ label}.\end{cases}
 \end{equation}
-Equation (2.15) summarizes the two label strategies. The first case trains the ANN to imitate SPA. In the second case, $\eta_n\in[0,1]$ is a reliability factor selected during offline label construction. The reference message used to decide whether a candidate SPA message is suspicious is not an additional online input to the deployed ANN; the deployed model receives only the local vector $\mathbf{q}$ and produces the CN-to-VN update. If the reference is produced using clean transmitted bits or other information unavailable at a real receiver, the label should be interpreted as a genie-aided feasibility target for studying message attenuation, not as a deployable decoder input. Under this interpretation, the second case reduces the magnitude of unreliable messages and allows the ANN to learn a damping-like behavior that may reduce short-cycle error amplification.
+Equation (3.15) summarizes the two label strategies. The first case trains the ANN to imitate SPA. In the second case, $\eta_n\in[0,1]$ is a reliability factor selected during offline label construction. The reference message used to decide whether a candidate SPA message is suspicious is not an additional online input to the deployed ANN; the deployed model receives only the local vector $\mathbf{q}$ and produces the CN-to-VN update. If the reference is produced using clean transmitted bits or other information unavailable at a real receiver, the label should be interpreted as a genie-aided feasibility target for studying message attenuation, not as a deployable decoder input. Under this interpretation, the second case reduces the magnitude of unreliable messages and allows the ANN to learn a damping-like behavior that may reduce short-cycle error amplification.
 
 \begin{equation}
 \theta^{\star}=\arg\min_{\theta}\mathbb{E}_{\mathbf{q},\mathbf{r}}\left[\ell(f_{\theta}(\mathbf{q}),\mathbf{r})\right].
 \end{equation}
-Equation (2.16) states the training problem in expectation form. The neural function $f_\theta$ is optimized to approximate the selected target update.
+Equation (3.16) states the training problem in expectation form. The neural function $f_\theta$ is optimized to approximate the selected target update.
 
 \begin{equation}
 \theta_{t+1}=\theta_t-\gamma_t\nabla_{\theta}\mathcal{L}(\theta_t).
 \end{equation}
-Equation (2.17) is the generic gradient-based parameter update. In the implementation, Adam is used instead of plain gradient descent, but the equation explains the learning principle.
+Equation (3.17) is the generic gradient-based parameter update. In the implementation, Adam is used instead of plain gradient descent, but the equation explains the learning principle.
 
 \begin{equation}
 \mathrm{SNR}_{\mathrm{dB}}=10\log_{10}\frac{E_s}{N_0}.
 \end{equation}
-Equation (2.18) denotes the SNR variable used when generating AWGN training data across multiple channel conditions.
+Equation (3.18) denotes the SNR variable used when generating AWGN training data across multiple channel conditions.
 
 \section{Interpretation of the Two Scenarios}
 The SPA-approximation scenario is conservative. It asks the ANN to behave like a known algorithm. If the ANN output is close to SPA and the BER curve is close to SPA, the model has successfully learned the nonlinear update. The value of this scenario lies in complexity reduction and hardware feasibility rather than in creating a new decoding principle.
@@ -393,7 +651,7 @@ The BER comparison in Figure~\ref{fig:ann_ldpc_ber_comparison} shows that the AN
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.86\textwidth]{ann_ldpc_ber_comparison.png}
-\caption{BER comparison for QC-LDPC $(332,664)$ decoding using the proposed ANN update, SPA, and Min-Sum.}
+\caption{BER comparison for QC-LDPC decoding algorithms.}
 \label{fig:ann_ldpc_ber_comparison}
 \end{figure}
 
@@ -403,7 +661,7 @@ The training-loss curve supports the feasibility of the model. The loss decrease
 
 \begin{table}[H]
 \centering
-\caption{Decoder comparison criteria used to interpret the ANN-LDPC result.}
+\caption{Decoder operations and interpretation for the ANN-LDPC study.}
 \label{tab:ann_ldpc_decoder_comparison}
 \begin{tabularx}{\textwidth}{p{0.23\textwidth}p{0.25\textwidth}Y}
 \toprule
@@ -452,194 +710,20 @@ The proposed neural direction is deliberately model-driven. The parity-check mat
 
 The BER results support two conclusions with different levels of claim. First, the ANN trained to imitate SPA can preserve decoding behavior close to SPA while avoiding explicit tanh and inverse-tanh computations. This result is mainly a complexity-oriented contribution. Second, the reliability-aware label strategy shows that learned message attenuation can improve practical decoding behavior in the evaluated finite-length loopy graph. This gain is interpreted conditionally rather than universally, because it depends on the code, channel model, training labels, SNR range, and simulation length. The chapter therefore positions ANN-assisted LDPC decoding as a practical hybrid method: it keeps the structure of classical coding theory while using learning to approximate or regulate a nonlinear message update.
 
-\chapter[\textbf{DEEP LEARNING FOR INTELLIGENT MODULATION}]{DEEP LEARNING FOR INTELLIGENT MODULATION}
-\section{Why Modulation Is a Learning Target}
-Modulation determines how coded bits become physical signals. In an ideal channel, conventional constellations such as 16-QAM are efficient and well understood. In non-ideal channels, however, the constellation observed at the receiver may differ significantly from the transmitted one. PA nonlinearity compresses amplitudes, CFO rotates phases, fading changes gain, and ISI introduces memory.
-
-These impairments are not only visual distortions. They directly affect LLR computation. A demodulator that assumes a clean 16-QAM constellation may assign incorrect reliability to received samples. In iterative decoding, incorrect reliability can reduce convergence or cause error propagation. This makes modulation and demodulation important candidates for learning-based correction.
-
-Autoencoder-based modulation studies the communication link as a trainable system. The transmitter network maps messages to normalized channel symbols. The channel layer adds noise and impairments. The receiver network estimates the transmitted message. This framework allows the signal representation to adapt to the channel used during training.
-
-\begin{equation}
-y=hx+n.
-\end{equation}
-Equation (3.1) is the basic flat-fading channel model. The transmitted symbol x is multiplied by a channel coefficient h and corrupted by additive noise n. More complex impairments such as PA nonlinearity, CFO, and ISI modify this basic relation.
-
-\begin{equation}
-L(b_k|y)=\ln\frac{\sum_{s\in\mathcal{S}_{k,1}}\exp(-|y-hs|^2/N_0)}
-{\sum_{s\in\mathcal{S}_{k,0}}\exp(-|y-hs|^2/N_0)}.
-\end{equation}
-Equation (3.2) is the bit-level LLR for a conventional constellation under a Gaussian-noise assumption. S\_k\textasciicircum{}1 and S\_k\textasciicircum{}0 are the subsets of constellation points whose kth bit is 1 or 0. When the actual channel includes nonlinear distortion, this expression may become mismatched.
-
-\begin{equation}
-\mathrm{PAPR}=\frac{\max_n |x[n]|^2}{\mathbb{E}\{|x[n]|^2\}}.
-\end{equation}
-Equation (3.3) defines the peak-to-average power ratio. PAPR is relevant because high-amplitude symbols are more vulnerable to PA nonlinearity.
-
-\begin{equation}
-d_{\min}=\min_{i\ne j}\|s_i-s_j\|_2.
-\end{equation}
-Equation (3.4) defines the minimum Euclidean distance of a constellation. Larger distance usually improves noise robustness, but nonlinear channels can change the effective distances after transmission.
-
-\begin{figure}[H]
-\centering
-\begin{subfigure}{0.47\textwidth}
-\centering
-\includegraphics[width=\textwidth]{qam16.png}
-\caption{Conventional 16-QAM constellation.}
-\end{subfigure}\hfill
-\begin{subfigure}{0.47\textwidth}
-\centering
-\includegraphics[width=\textwidth]{qam16_after_pa.png}
-\caption{16-QAM constellation after PA distortion.}
-\end{subfigure}
-\caption{Effect of PA nonlinearity on a conventional 16-QAM constellation.}
-\label{fig:qam16_pa_distortion}
-\end{figure}
-
-\section{Autoencoder Communication Model}
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.88\textwidth]{autoencoder.png}
-\caption{AutoEncoder communication model for learned modulation.}
-\end{figure}
-The autoencoder model has an encoder, a channel layer, and a decoder. The encoder is analogous to a transmitter modulator. The channel layer may be differentiable or simulated. The decoder is analogous to a receiver detector. Training usually minimizes cross-entropy between the transmitted message and the detected message while enforcing an average-power constraint.
-
-Power normalization is essential. Without it, the network could reduce errors simply by increasing transmit energy. A meaningful learned modulation scheme should satisfy the same or comparable power constraint as the baseline. SNR also needs to be varied during training or evaluation, because a constellation optimized for one SNR may not remain optimal across the full operating range.
-
-The autoencoder approach is useful for research because it can reveal how a signal representation changes when the channel changes. For example, under PA nonlinearity, the learned constellation may avoid high-amplitude regions. Under CFO, a multi-symbol model may use temporal structure. Under fading, the receiver may learn robust decision boundaries.
-
-\begin{equation}
-m\rightarrow x=f_{\theta}(m),\qquad y=\mathcal{H}(x),\qquad \hat{p}(m|y)=g_{\phi}(y).
-\end{equation}
-Equation (3.5) describes the autoencoder communication model. The transmitter network $f_\theta$ maps message $m$ to channel input $x$, the channel produces $y$, and the receiver network $g_\phi$ estimates the posterior probability of the message. The parameters $\theta$ and $\phi$ are optimized from data.
-
-\begin{equation}
-\mathbb{E}\{|x|^2\}\le P_0.
-\end{equation}
-Equation (3.6) is the average-power constraint. It prevents the learned transmitter from improving detection simply by increasing transmit energy. Any learned modulation should be compared with a conventional baseline under a comparable power constraint.
-
-\begin{equation}
-x_{\mathrm{norm}}=\sqrt{P_0}\frac{x_{\mathrm{raw}}}{\sqrt{\mathbb{E}\{|x_{\mathrm{raw}}|^2\}+\epsilon}}.
-\end{equation}
-Equation (3.7) is a typical normalization step used to enforce average-power control in neural modulation. If $P_0=1$, it reduces to unit-average-power normalization.
-
-\begin{equation}
-\mathcal{L}_{\mathrm{CE}}=-\sum_{m=1}^{M}\mathbf{1}\{m\}\log\hat{p}(m|y).
-\end{equation}
-Equation (3.8) is the cross-entropy loss commonly used for message classification in communication AutoEncoders. Although useful for training, this loss does not automatically guarantee calibrated bit-level LLRs for iterative decoding.
-
-\begin{equation}
-\mathrm{SER}=\frac{N_{\mathrm{sym,err}}}{N_{\mathrm{sym}}}.
-\end{equation}
-Equation (3.9) defines symbol error rate, which is often used when studying modulation before full channel-code integration.
-
-\section{Non-Ideal Channel Conditions}
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.78\textwidth]{pa_characteristic.png}
-\caption{Power-amplifier nonlinearity used in the non-ideal channel analysis.}
-\end{figure}
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.78\textwidth]{cfo_effect.png}
-\caption{Carrier-frequency-offset effect on constellation evolution over time.}
-\end{figure}
-Power amplifier nonlinearity is a major practical impairment. A PA is efficient when operated near saturation, but this causes nonlinear amplitude compression. Outer constellation points are compressed more strongly, reducing distances between received clusters. If AM/PM distortion exists, phase is also changed. Learned modulation may improve robustness by shaping symbols away from regions with pronounced compression.
-
-Carrier-frequency offset occurs when transmitter and receiver oscillators are not perfectly aligned. CFO causes phase rotation that accumulates over time. In single-symbol detection, this rotation looks like an unknown phase error. In multi-symbol processing, the receiver can observe the rotation pattern and estimate it implicitly. This motivates sequence-based autoencoder modulation.
-
-Rayleigh fading and ISI represent propagation impairments. Rayleigh fading changes amplitude and phase randomly, while ISI makes the current received sample depend on previous transmitted symbols. A neural receiver can process context and may learn equalization-like behavior. However, this also increases complexity and latency.
-
-\begin{equation}
-g(r)=\frac{r}{\left[1+\left(r/A_{\mathrm{sat}}\right)^{2p}\right]^{1/(2p)}}.
-\end{equation}
-Equation (3.10) is a common Rapp-type AM/AM PA model. A\_sat controls saturation amplitude and p controls smoothness. This model explains why high-amplitude constellation points are compressed more strongly.
-
-\begin{equation}
-\Phi(r)=\frac{\alpha_{\mathrm{PM}}r^2}{1+\beta_{\mathrm{PM}}r^2}.
-\end{equation}
-Equation (3.11) is a simple AM/PM distortion model. It indicates that the phase shift can depend on signal amplitude.
-
-\begin{equation}
-y_{\mathrm{CFO}}[k]=x[k]e^{j2\pi \Delta f T_s k}+w[k].
-\end{equation}
-Equation (3.12) represents carrier-frequency offset. The phase rotation grows with symbol index k, which motivates multi-symbol processing because a sequence carries information about the rotation trend.
-
-\begin{equation}
-y[n]=\sum_{\ell=0}^{L-1}h[\ell]x[n-\ell]+w[n].
-\end{equation}
-Equation (3.13) represents a multipath channel with ISI. The received sample depends on multiple transmitted symbols, so memoryless detection may be insufficient. A sequence-based neural receiver can learn to exploit this temporal dependence.
-
-\begin{equation}
-h[\ell]\sim\mathcal{CN}(0,\sigma_{\ell}^{2}),\qquad \sum_{\ell}\sigma_{\ell}^{2}=1.
-\end{equation}
-Equation (3.14) gives a common statistical model for Rayleigh multipath coefficients with normalized average power.
-
-\begin{equation}
-\mathcal{L}_{\mathrm{BCE}}=-\frac{1}{K}\sum_{k=1}^{K}\left[b_k\log \hat{b}_k+(1-b_k)\log(1-\hat{b}_k)\right].
-\end{equation}
-Equation (3.15) is a bit-wise binary cross-entropy objective. It is more directly related to soft bit output than message-level cross-entropy and is therefore relevant for learned Demodulation that supplies LLR-like information to an LDPC decoder.
-
-\section{Simulation Scenarios for Learned Modulation}
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.86\textwidth]{ae_scenario1_ber.png}
-\caption{BER result for the single-symbol AutoEncoder scenario under PA/Rayleigh conditions.}
-\end{figure}
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.86\textwidth]{ae_scenario2_cfo0005.png}
-\caption{BER result for the multi-symbol AutoEncoder scenario with CFO = 0.005.}
-\end{figure}
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.86\textwidth]{ae_scenario2_cfo001.png}
-\caption{BER result for the multi-symbol AutoEncoder scenario with CFO = 0.01.}
-\end{figure}
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.86\textwidth]{ae_scenario3_fec.png}
-\caption{BER result for the AutoEncoder scenario with neural FEC characteristics.}
-\end{figure}
-The simulation scenarios considered in this chapter include several AutoEncoder configurations. Scenario 1 compares a single-symbol AutoEncoder with 16-QAM under a Rayleigh plus PA channel. This scenario evaluates whether learned constellation shaping can improve BER when nonlinear amplitude distortion is present.
-
-Scenario 2 studies a multiple-symbol AutoEncoder under CFO. Two CFO values are shown in the result figures. This scenario is important because CFO compensation is difficult for a purely memoryless Demodulator. A sequence model can exploit phase evolution across symbols and may reduce the need for an explicit synchronization block.
-
-Scenario 3 studies an AutoEncoder with a neural channel-coding feature. This scenario is best interpreted as a supporting experiment on the relationship between learned Modulation and redundancy, rather than as the central LDPC-decoding result of the thesis.
-
-\input{expanded_ch3.tex}
-\input{expanded_demapper.tex}
-
-\section{Interpretation and BIBCM-ID Relevance}
-The AutoEncoder results are interpreted as evidence that learned Modulation and Demodulation can adapt to selected channel impairments. They do not establish that learned constellations should replace standardized modulation in general-purpose systems. Conventional constellations provide interoperability, simple implementation, and predictable Demodulation rules. Learned modulation offers adaptability, but its benefit depends on the channel model, training distribution, power constraint, receiver structure, and calibration of soft outputs.
-
-The reason this topic is included in a thesis centered on ANN-assisted LDPC decoding is the soft-information interface. In BIBCM-ID, the LDPC decoder does not receive ideal bits; it receives reliability values produced by the Demodulation block after interleaving and channel observation. If PA distortion, CFO, fading, or ISI makes conventional LLRs biased, the LDPC decoder receives messages with reduced reliability. A study of learned Modulation/Demodulation is therefore relevant because it analyzes the upstream source of the information consumed by the LDPC decoder.
-
-The main thesis contribution remains the ANN-assisted LDPC check-node update. This contribution is directly located inside the LDPC decoder and can reduce computational burden by approximating the nonlinear SPA check-node operation with a compact neural model. Under the evaluated conditions, the most defensible interpretation is that the ANN approximation can preserve decoding behavior close to SPA while reducing the cost of nonlinear operations; reliability-aware labeling may improve BER in selected simulations, but the broader engineering value is the balance between decoding quality and implementation complexity.
-
-AutoEncoder-based Modulation is presented as a complementary investigation. It supports the overall BIBCM-ID context by showing how learned signal representations may produce observations that are more robust under non-ideal channels. The chapter therefore connects AutoEncoder results to Modulation, Demodulation, and LLR quality, while keeping the primary LDPC-decoding contribution clearly centered on ANN-assisted check-node processing.
-
-A technically consistent interpretation must separate final BER from message quality. A neural receiver can reduce hard-decision errors in a simulated scenario while still producing probabilities that are not well calibrated for iterative decoding. For this reason, future development of learned Demodulation should emphasize bit-level probabilities, LLR calibration, and robustness across SNR and channel variations. These requirements are stated as design implications for later research on learned soft Demodulation.
-
-\section{Chapter Conclusion}
-This chapter has analyzed deep learning for intelligent Modulation and Demodulation under non-ideal wireless channels. The discussion began from the observation that conventional constellations and Demodulation rules are usually derived under simplified assumptions such as AWGN, linear amplification, or separately compensated synchronization errors. In practical wireless channels, PA nonlinearity, CFO, fading, and ISI can distort the received constellation and reduce the reliability of the LLR values passed to the channel decoder.
-
-AutoEncoder-based Modulation is therefore examined as a supporting study of the BIBCM-ID soft-information chain. The transmitter network, differentiable or simulated channel layer, and receiver network provide a framework for learning signal representations adapted to specific impairments. The simulation scenarios indicate that learned representations can reduce the effect of PA compression, exploit temporal structure under CFO, and support receiver processing in channels with memory. These results should not be read as a general replacement for standardized Modulation, because their validity depends on the training distribution, baseline fairness, power normalization, and receiver complexity.
-
-The main relevance of this chapter to the thesis title lies in LLR quality. LDPC decoding performance depends on the reliability values produced before the decoder, not only on the internal decoding algorithm. A learned Modulation/Demodulation block becomes compatible with BIBCM-ID only when it can provide calibrated bit-level soft information and, in an iterative setting, accept a priori information from the decoder. The chapter therefore strengthens the system interpretation of the ANN-LDPC contribution: Chapter 2 improves or approximates the processing of reliability messages inside the decoder, while Chapter 3 explains how learned front-end processing may affect the reliability messages entering that decoder.
-
 \chapter*{CONCLUSION AND RECOMMENDATIONS}
 \addcontentsline{toc}{chapter}{\textbf{CONCLUSION AND RECOMMENDATIONS}}
-This thesis has studied the utilization of artificial neural networks in LDPC decoding for BIBCM-ID-oriented communication systems. The theoretical part reviewed the role of Modulation, Demodulation, interleaving, soft information, and channel decoding in iterative coded modulation. This foundation clarifies why the quality of LLR messages is a central issue: the LDPC decoder operates on reliability information, and incorrect or overconfident messages can reduce iterative-decoding effectiveness.
+This thesis has studied the utilization of artificial neural networks in LDPC decoding for BIBCM-ID-oriented communication systems. The theoretical part reviewed the role of Modulation, Demodulation, interleaving, soft information, channel decoding, and model-driven deep learning in iterative coded modulation. This foundation clarifies why the quality of LLR messages is a central issue: the LDPC decoder operates on reliability information, and incorrect or overconfident messages can reduce iterative-decoding effectiveness.
 
 \noindent\textbf{Validated decoder result.} The main technical contribution is the analysis of ANN-assisted LDPC decoding. A compact neural model is used to approximate the check-node update, which is one of the nonlinear and computationally expensive operations in SPA decoding. In the representative configuration, the MLP uses four input values, eight hidden units, one output value, and 49 trainable parameters; the corresponding inference cost is about 40 multiply-accumulate operations per outgoing message plus ReLU comparisons. For the QC-LDPC $(332,664)$ code over the BPSK/AWGN channel, Figure~\ref{fig:ann_ldpc_ber_comparison} shows that the ANN update follows the SPA curve closely and improves over Min-Sum in the waterfall region under the plotted conditions. In the enhanced-label case, the plotted curve indicates an approximate $0.2$--$0.4$ dB horizontal shift around the $10^{-5}$ BER decade. These results should be interpreted primarily in terms of complexity reduction, preservation of SPA-like decoding quality, and reliability-aware message control under the stated simulation conditions.
 
-\noindent\textbf{Supporting system analysis.} The AutoEncoder Modulation study is included as a complementary analysis of the Modulation and Demodulation side of the BIBCM-ID soft-information chain. The simulation results show that learned signal representations can adapt to PA distortion, CFO, fading, and sequence-dependent channel effects. This part strengthens the discussion of how upstream signal mapping and receiver observation quality affect LDPC decoding, while the main quantitative evidence for the thesis remains the ANN-LDPC decoder analysis.
+\noindent\textbf{Supporting system analysis.} The AutoEncoder Modulation study is included as a complementary analysis of the Modulation and Demodulation side of the BIBCM-ID soft-information chain. The simulation results in Chapter 2 show that learned signal representations can adapt to PA distortion, CFO, fading, and sequence-dependent channel effects. This part strengthens the discussion of how upstream signal mapping and receiver observation quality affect LDPC decoding, while the main quantitative evidence for the thesis remains the ANN-LDPC decoder analysis presented in Chapter 3.
 
 \noindent\textbf{Recommendations.} Overall, the thesis supports a hybrid view of deep learning in communication systems. Neural networks are most defensible when they approximate difficult nonlinear operations, correct model mismatch, or improve the reliability of soft information while preserving the structure of established coding and modulation theory. Future work should focus on calibrated bit-level LLR output for neural Demodulation, broader validation over LDPC code structures and channel conditions, fixed-point and quantization-aware ANN decoder design, and complexity-throughput evaluation for practical receiver architectures. For the ANN-LDPC result specifically, a final simulation package should include the parity-check matrix, $I_{\max}$, stopping rule, random seeds, and per-SNR frame/error logs so that the reported BER trends can be reproduced and, where sufficient error counts are available, promoted to stronger statistical claims.
 \begin{thebibliography}{99}
 \addcontentsline{toc}{chapter}{\textbf{REFERENCES}}
+\bibitem{bishop2006} C. M. Bishop, Pattern Recognition and Machine Learning. Springer, 2006.
+\bibitem{lecun2015} Y. LeCun, Y. Bengio, and G. Hinton, ``Deep learning,'' Nature, vol. 521, pp. 436--444, 2015.
+\bibitem{goodfellow2016} I. Goodfellow, Y. Bengio, and A. Courville, Deep Learning. MIT Press, 2016.
 \bibitem{shannon1948} C. E. Shannon, ``A mathematical theory of communication,'' Bell System Technical Journal, vol. 27, no. 3, pp. 379--423, 1948.
 \bibitem{gallager1962} R. G. Gallager, ``Low-density parity-check codes,'' IRE Transactions on Information Theory, vol. 8, no. 1, pp. 21--28, 1962.
 \bibitem{tanner1981} R. M. Tanner, ``A recursive approach to low complexity codes,'' IEEE Transactions on Information Theory, vol. 27, no. 5, pp. 533--547, 1981.
